@@ -31,17 +31,10 @@ const ProfileCard = ({ profile, onSwipe, isTop }: ProfileCardProps) => {
 
   return (
     <motion.div
-      className="absolute w-full h-full cursor-grab active:cursor-grabbing"
-      style={{ x, y, rotate }}
-      drag={isTop}
-      dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
-      dragElastic={0.9}
-      onDragEnd={handleDragEnd}
-      whileTap={{ scale: 1.02 }}
+      className="absolute w-full h-full"
       initial={{ scale: 0.95, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
       exit={{ 
-        x: x.get() > 0 ? 300 : -300, 
         opacity: 0,
         transition: { duration: 0.3 }
       }}
