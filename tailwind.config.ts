@@ -87,6 +87,10 @@ export default {
           from: { opacity: "0" },
           to: { opacity: "1" },
         },
+        "spin-slow": {
+          from: { transform: "rotate(0deg)" },
+          to: { transform: "rotate(360deg)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -95,6 +99,7 @@ export default {
         "float": "float 3s ease-in-out infinite",
         "slide-up": "slide-up 0.5s ease-out",
         "fade-in": "fade-in 0.3s ease-out",
+        "spin-slow": "spin-slow 20s linear infinite",
       },
     },
   },

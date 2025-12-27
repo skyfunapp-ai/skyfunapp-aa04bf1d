@@ -79,9 +79,15 @@ const Index = () => {
       <Header />
       
       <main className="container max-w-lg mx-auto px-4 pt-20 pb-8 h-screen flex flex-col">
-        {/* Globe Icon */}
-        <div className="flex justify-center py-4">
-          <Globe size={48} className="text-primary-foreground" />
+        {/* Globe Icon & Auth Links */}
+        <div className="flex flex-col items-center py-4 space-y-3">
+          <div className="animate-spin-slow">
+            <Globe size={80} className="text-emerald-400" strokeWidth={1.5} />
+          </div>
+          <div className="flex flex-col items-center space-y-1 text-primary-foreground">
+            <button className="text-lg font-medium hover:underline">Check In (Log In)</button>
+            <button className="text-sm opacity-80 hover:underline">Purchase Flight (Create Account)</button>
+          </div>
         </div>
         
         {/* Card Stack */}
