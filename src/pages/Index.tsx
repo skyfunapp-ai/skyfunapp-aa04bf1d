@@ -8,6 +8,7 @@ import EmptyState from "@/components/EmptyState";
 import { profiles as initialProfiles } from "@/data/profiles";
 import { Profile } from "@/types/profile";
 import { toast } from "sonner";
+import { Globe } from "lucide-react";
 
 const Index = () => {
   const [profiles, setProfiles] = useState<Profile[]>([...initialProfiles]);
@@ -78,6 +79,11 @@ const Index = () => {
       <Header />
       
       <main className="container max-w-lg mx-auto px-4 pt-20 pb-8 h-screen flex flex-col">
+        {/* Globe Icon */}
+        <div className="flex justify-center py-4">
+          <Globe size={48} className="text-primary-foreground" />
+        </div>
+        
         {/* Card Stack */}
         <div className="relative flex-1 min-h-0 mb-6">
           {profiles.length === 0 ? (
