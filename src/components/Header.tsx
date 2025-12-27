@@ -1,4 +1,4 @@
-import { PlaneTakeoff } from "lucide-react";
+import { PlaneTakeoff, PlaneLanding } from "lucide-react";
 
 const Header = () => {
   return (
@@ -9,6 +9,7 @@ const Header = () => {
           <span className="text-xl font-bold text-primary-foreground">
             SkyFunApp
           </span>
+          <PlaneLanding size={24} className="text-primary-foreground rotate-12" />
         </div>
       </div>
     </header>
