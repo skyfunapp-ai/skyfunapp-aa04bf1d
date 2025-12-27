@@ -10,11 +10,11 @@ const Index = () => {
         {/* Globe Icon & Auth Links */}
         <div className="flex flex-col items-center space-y-6">
           <div className="animate-spin-slow">
-            <Globe size={80} className="text-emerald-400" strokeWidth={1.5} />
+            <Globe size={240} className="text-emerald-400" strokeWidth={1.5} />
           </div>
-          <div className="flex flex-col items-center space-y-2 text-primary-foreground">
-            <button className="text-lg font-medium hover:underline">Check In (Log In)</button>
-            <button className="text-sm opacity-80 hover:underline">Purchase Flight (Create Account)</button>
+          <div className="flex flex-col items-center space-y-4 text-primary-foreground">
+            <button className="text-5xl font-medium hover:underline">Check In (Log In)</button>
+            <button className="text-3xl opacity-80 hover:underline">Purchase Flight (Create Account)</button>
           </div>
         </div>
       </main>
