@@ -1,5 +1,5 @@
 import Header from "@/components/Header";
-import { Globe } from "lucide-react";
+import { Earth } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FcGoogle } from "react-icons/fc";
 import { FaInstagram, FaFacebook, FaTiktok } from "react-icons/fa";
@@ -13,7 +13,7 @@ const Index = () => {
         {/* Globe Icon & Auth Links */}
         <div className="flex flex-col items-center space-y-6">
           <div className="animate-spin-slow" style={{ transformStyle: 'preserve-3d' }}>
-            <Globe size={240} className="text-emerald-400" strokeWidth={1.5} />
+            <Earth size={240} className="text-emerald-400" strokeWidth={1.5} />
           </div>
           <div className="flex flex-col items-center space-y-4 text-primary-foreground">
             <button className="text-5xl font-medium hover:underline">Check In (Log In)</button>
@@ -25,16 +25,16 @@ const Index = () => {
         <div className="mt-12 flex flex-col items-center space-y-4">
           <p className="text-xl text-muted-foreground">Continue with</p>
           <div className="flex flex-wrap justify-center gap-4">
-            <Button variant="outline" size="lg" className="px-6 py-4 h-auto">
+            <Button variant="outline" size="lg" className="px-6 py-4 h-auto bg-white">
               <FcGoogle size={32} />
             </Button>
-            <Button variant="outline" size="lg" className="px-6 py-4 h-auto">
+            <Button variant="outline" size="lg" className="px-6 py-4 h-auto bg-white">
               <FaInstagram size={32} className="text-pink-500" />
             </Button>
-            <Button variant="outline" size="lg" className="px-6 py-4 h-auto">
+            <Button variant="outline" size="lg" className="px-6 py-4 h-auto bg-white">
               <FaFacebook size={32} className="text-blue-600" />
             </Button>
-            <Button variant="outline" size="lg" className="px-6 py-4 h-auto">
+            <Button variant="outline" size="lg" className="px-6 py-4 h-auto bg-white">
               <FaTiktok size={32} />
             </Button>
           </div>
