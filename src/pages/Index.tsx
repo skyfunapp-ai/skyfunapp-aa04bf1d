@@ -1,6 +1,8 @@
 import Header from "@/components/Header";
 import { Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { FcGoogle } from "react-icons/fc";
+import { FaInstagram, FaFacebook, FaTiktok } from "react-icons/fa";
 
 const Index = () => {
   return (
@@ -23,17 +25,17 @@ const Index = () => {
         <div className="mt-12 flex flex-col items-center space-y-4">
           <p className="text-xl text-muted-foreground">Continue with</p>
           <div className="flex flex-wrap justify-center gap-4">
-            <Button variant="outline" size="lg" className="text-xl px-6 py-4 h-auto">
-              Google
+            <Button variant="outline" size="lg" className="px-6 py-4 h-auto">
+              <FcGoogle size={32} />
             </Button>
-            <Button variant="outline" size="lg" className="text-xl px-6 py-4 h-auto">
-              Instagram
+            <Button variant="outline" size="lg" className="px-6 py-4 h-auto">
+              <FaInstagram size={32} className="text-pink-500" />
             </Button>
-            <Button variant="outline" size="lg" className="text-xl px-6 py-4 h-auto">
-              Facebook
+            <Button variant="outline" size="lg" className="px-6 py-4 h-auto">
+              <FaFacebook size={32} className="text-blue-600" />
             </Button>
-            <Button variant="outline" size="lg" className="text-xl px-6 py-4 h-auto">
-              TikTok
+            <Button variant="outline" size="lg" className="px-6 py-4 h-auto">
+              <FaTiktok size={32} />
             </Button>
           </div>
         </div>
