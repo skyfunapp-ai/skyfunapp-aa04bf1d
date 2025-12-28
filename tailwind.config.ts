@@ -87,10 +87,10 @@ export default {
           from: { opacity: "0" },
           to: { opacity: "1" },
         },
-        "spin-slow": {
-          from: { transform: "rotate(0deg)" },
-          to: { transform: "rotate(360deg)" },
-        },
+      "spin-slow": {
+        from: { transform: "rotateY(0deg)" },
+        to: { transform: "rotateY(360deg)" },
+      },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
