@@ -1,8 +1,8 @@
 import Header from "@/components/Header";
-import { Earth } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FcGoogle } from "react-icons/fc";
 import { FaInstagram, FaFacebook, FaTiktok } from "react-icons/fa";
+import globeImage from "@/assets/globe.png";
 
 const Index = () => {
   return (
@@ -13,7 +13,7 @@ const Index = () => {
         {/* Globe Icon & Auth Links */}
         <div className="flex flex-col items-center space-y-6">
           <div className="animate-spin-slow" style={{ transformStyle: 'preserve-3d' }}>
-            <Earth size={240} className="text-emerald-400" strokeWidth={1.5} />
+            <img src={globeImage} alt="Earth globe" className="w-60 h-60 object-contain" />
           </div>
           <div className="flex flex-col items-center space-y-4 text-primary-foreground">
             <button className="text-5xl font-medium hover:underline">Check In (Log In)</button>
