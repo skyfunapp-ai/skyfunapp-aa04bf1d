@@ -1,8 +1,9 @@
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { FcGoogle } from "react-icons/fc";
 import { FaInstagram, FaFacebook, FaTiktok } from "react-icons/fa";
-import globeImage from "@/assets/globe.png";
 
 const Index = () => {
   return (
@@ -10,14 +11,33 @@ const Index = () => {
       <Header />
       
       <main className="flex-1 flex flex-col items-center justify-center px-4">
-        {/* Globe Icon & Auth Links */}
+        {/* Auth Links */}
         <div className="flex flex-col items-center space-y-6">
-          <div className="animate-spin-slow" style={{ transformStyle: 'preserve-3d' }}>
-            <img src={globeImage} alt="Earth globe" className="w-60 h-60 object-contain" />
-          </div>
           <div className="flex flex-col items-center space-y-4 text-primary-foreground">
             <button className="text-5xl font-medium hover:underline">Check In (Log In)</button>
             <button className="text-3xl opacity-80 hover:underline">Purchase Flight (Create Account)</button>
+          </div>
+        </div>
+
+        {/* Username & Password Fields */}
+        <div className="mt-8 w-full max-w-sm space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="username" className="text-primary-foreground text-lg">Username</Label>
+            <Input 
+              id="username" 
+              type="text" 
+              placeholder="Enter your username" 
+              className="h-12 text-lg"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="password" className="text-primary-foreground text-lg">Password</Label>
+            <Input 
+              id="password" 
+              type="password" 
+              placeholder="Enter your password" 
+              className="h-12 text-lg"
+            />
           </div>
         </div>
 
