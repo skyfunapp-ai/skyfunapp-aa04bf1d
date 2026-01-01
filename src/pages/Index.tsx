@@ -4,10 +4,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { FcGoogle } from "react-icons/fc";
 import { FaInstagram, FaFacebook, FaTiktok } from "react-icons/fa";
+import backgroundImage from "@/assets/background.png";
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div 
+      className="min-h-screen flex flex-col bg-cover bg-center bg-no-repeat"
+      style={{ backgroundImage: `url(${backgroundImage})` }}
+    >
       <Header />
       
       <main className="flex-1 flex flex-col items-center justify-center px-4">
