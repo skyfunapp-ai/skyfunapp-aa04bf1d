@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,6 +8,12 @@ import { FaInstagram, FaFacebook, FaTiktok } from "react-icons/fa";
 import backgroundImage from "@/assets/background.png";
 
 const Index = () => {
+  const navigate = useNavigate();
+
+  const handleLogin = () => {
+    navigate("/dashboard");
+  };
+
   return (
     <div 
       className="min-h-screen flex flex-col bg-cover bg-center bg-no-repeat"
@@ -18,7 +25,7 @@ const Index = () => {
         {/* Auth Links */}
         <div className="flex flex-col items-center space-y-6">
           <div className="flex flex-col items-center space-y-4 text-primary-foreground">
-            <button className="text-5xl font-medium hover:underline">Check In (Log In)</button>
+            <button onClick={handleLogin} className="text-5xl font-medium hover:underline">Check In (Log In)</button>
             <button className="text-3xl opacity-80 hover:underline">Purchase Flight (Create Account)</button>
           </div>
         </div>
