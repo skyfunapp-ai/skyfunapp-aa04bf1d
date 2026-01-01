@@ -8,16 +8,16 @@ const Dashboard = () => {
       <HeaderMinimal />
       
       <main className="flex-1 flex flex-col px-4 pt-24">
-        <div className="flex gap-4 mt-12 justify-center">
+        <div className="flex gap-4 mt-12 justify-center items-start">
           <img 
             src={ziplineImage} 
             alt="Zipline adventure" 
-            className="w-1/2 max-w-md h-64 object-cover rounded-lg"
+            className="w-1/2 max-w-sm object-contain rounded-lg"
           />
           <img 
             src={bikingImage} 
             alt="Beach biking" 
-            className="w-1/2 max-w-md h-64 object-cover rounded-lg"
+            className="w-1/2 max-w-sm object-contain rounded-lg"
           />
         </div>
       </main>
