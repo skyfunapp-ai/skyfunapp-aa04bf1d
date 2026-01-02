@@ -1,12 +1,35 @@
+import { useState } from "react";
 import HeaderMinimal from "@/components/HeaderMinimal";
+import BottomNav from "@/components/BottomNav";
+import EditProfileModal from "@/components/EditProfileModal";
 import ziplineImage from "@/assets/zipline.jpeg";
 import bikingImage from "@/assets/biking.jpeg";
-import { User, Search, MessageCircle } from "lucide-react";
+
+interface ProfileData {
+  name: string;
+  occupation: string;
+  hobbies: string[];
+  interestedIn: string[];
+  favoriteFood: string[];
+}
 
 const Dashboard = () => {
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [profileData, setProfileData] = useState<ProfileData>({
+    name: "Cynthia-Marie Smith",
+    occupation: "Business Owner",
+    hobbies: [],
+    interestedIn: [],
+    favoriteFood: [],
+  });
+
+  const handleEditClick = () => {
+    setIsEditOpen(true);
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <HeaderMinimal />
+      <HeaderMinimal onEditClick={handleEditClick} />
       
       <main className="flex-1 flex flex-col items-center pt-24 pb-20">
         <div className="flex w-full justify-center items-stretch">
@@ -22,21 +45,53 @@ const Dashboard = () => {
           />
         </div>
         
-        <div className="mt-6 text-center">
-          <h2 className="text-xl font-bold text-primary-foreground">Cynthia-Marie Smith</h2>
-          <p className="text-primary-foreground mt-2">Business Owner</p>
-          <p className="text-primary-foreground mt-2">Hobbies</p>
-          <p className="text-primary-foreground mt-2">Interested In</p>
+        <div className="mt-6 text-center px-4">
+          <h2 className="text-2xl font-bold text-primary-foreground">{profileData.name}</h2>
+          <p className="text-primary-foreground mt-2">{profileData.occupation}</p>
+          
+          <div className="mt-4">
+            <p className="text-primary-foreground font-semibold">Hobbies</p>
+            {profileData.hobbies.length > 0 && (
+              <div className="flex flex-wrap justify-center gap-2 mt-1">
+                {profileData.hobbies.map((hobby, i) => (
+                  <span key={i} className="text-primary-foreground/80 text-sm">{hobby}</span>
+                ))}
+              </div>
+            )}
+          </div>
+          
+          <div className="mt-3">
+            <p className="text-primary-foreground font-semibold">Interested In</p>
+            {profileData.interestedIn.length > 0 && (
+              <div className="flex flex-wrap justify-center gap-2 mt-1">
+                {profileData.interestedIn.map((interest, i) => (
+                  <span key={i} className="text-primary-foreground/80 text-sm">{interest}</span>
+                ))}
+              </div>
+            )}
+          </div>
+          
+          <div className="mt-3">
+            <p className="text-primary-foreground font-semibold">Favorite Food</p>
+            {profileData.favoriteFood.length > 0 && (
+              <div className="flex flex-wrap justify-center gap-2 mt-1">
+                {profileData.favoriteFood.map((food, i) => (
+                  <span key={i} className="text-primary-foreground/80 text-sm">{food}</span>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </main>
       
-      <nav className="fixed bottom-0 left-0 right-0 bg-background/80 backdrop-blur-lg border-t border-border py-4">
-        <div className="flex justify-around items-center">
-          <User size={28} className="text-primary-foreground" />
-          <Search size={28} className="text-primary-foreground" />
-          <MessageCircle size={28} className="text-primary-foreground" />
-        </div>
-      </nav>
+      <BottomNav activePage="profile" />
+      
+      <EditProfileModal
+        open={isEditOpen}
+        onOpenChange={setIsEditOpen}
+        profileData={profileData}
+        onSave={setProfileData}
+      />
     </div>
   );
 };
