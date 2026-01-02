@@ -6,7 +6,7 @@ const HeaderMinimal = () => {
       <div className="w-full px-4 h-24 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <PlaneTakeoff size={48} className="text-primary-foreground -rotate-12 drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]" />
-          <span className="text-3xl font-bold text-primary-foreground drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">SkyFunApp</span>
+          <span className="text-3xl font-bold italic text-primary-foreground drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">SkyFunApp</span>
         </div>
         <button className="p-2 hover:bg-accent rounded-md transition-colors">
           <Pencil size={28} className="text-primary-foreground" />
