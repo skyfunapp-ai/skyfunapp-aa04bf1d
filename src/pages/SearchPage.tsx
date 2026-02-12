@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import HeaderMinimal from "@/components/HeaderMinimal";
 import BottomNav from "@/components/BottomNav";
-import { Search, Plane, ChevronDown, MapPin } from "lucide-react";
+import { Search, Plane, MapPin } from "lucide-react";
 import { flights, airports, appUsers } from "@/data/flights";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {
   Select,
   SelectContent,
@@ -14,6 +16,7 @@ import {
 
 const SearchPage = () => {
   const [selectedAirport, setSelectedAirport] = useState("All Airports");
+  const navigate = useNavigate();
 
   const filteredFlights =
     selectedAirport === "All Airports"
@@ -31,7 +34,6 @@ const SearchPage = () => {
       <HeaderMinimal />
 
       <main className="flex-1 flex flex-col pt-24 pb-20 px-4">
-        {/* Flight Search Dropdown - upper right */}
         <div className="flex justify-end mb-4">
           <div className="w-64">
             <Select value={selectedAirport} onValueChange={setSelectedAirport}>
@@ -54,7 +56,6 @@ const SearchPage = () => {
           </div>
         </div>
 
-        {/* Flights List */}
         {filteredFlights.length > 0 && (
           <div className="mb-6">
             <h2 className="text-lg font-bold text-primary-foreground mb-3 flex items-center gap-2">
@@ -93,7 +94,6 @@ const SearchPage = () => {
           </div>
         )}
 
-        {/* App Users */}
         <div>
           <h2 className="text-lg font-bold text-primary-foreground mb-3 flex items-center gap-2">
             <Search size={20} /> People Using SkyFunApp
@@ -103,12 +103,13 @@ const SearchPage = () => {
               {appUsers.map((user) => (
                 <div
                   key={user.id}
-                  className="flex items-center gap-3 bg-card/80 backdrop-blur rounded-xl px-4 py-3 border border-border/50"
+                  onClick={() => navigate(`/user/${user.id}`)}
+                  className="flex items-center gap-3 bg-card/80 backdrop-blur rounded-xl px-4 py-3 border border-border/50 cursor-pointer hover:bg-card/95 transition-colors"
                 >
-                  {/* Avatar */}
-                  <div className="w-10 h-10 rounded-full bg-accent flex items-center justify-center text-accent-foreground text-sm font-bold shrink-0">
-                    {user.avatar}
-                  </div>
+                  <Avatar className="w-10 h-10 shrink-0">
+                    <AvatarImage src={user.photo} alt={user.name} />
+                    <AvatarFallback className="text-sm font-bold">{user.avatar}</AvatarFallback>
+                  </Avatar>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold text-card-foreground truncate">
                       {user.name}
@@ -118,7 +119,6 @@ const SearchPage = () => {
                       {user.location}
                     </div>
                   </div>
-                  {/* Status dot */}
                   <div
                     className={`w-3 h-3 rounded-full shrink-0 ${
                       user.status === "online"

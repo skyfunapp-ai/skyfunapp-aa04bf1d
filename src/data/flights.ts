@@ -69,22 +69,24 @@ export interface AppUser {
   location: string;
   status: "online" | "offline" | "away";
   avatar: string;
+  photo: string;
+  bio: string;
 }
 
 export const appUsers: AppUser[] = [
-  { id: "1", name: "Cynthia-Marie Smith", location: "Atlanta, GA", status: "online", avatar: "CS" },
-  { id: "2", name: "Marcus Johnson", location: "New York, NY", status: "online", avatar: "MJ" },
-  { id: "3", name: "Aisha Williams", location: "Los Angeles, CA", status: "away", avatar: "AW" },
-  { id: "4", name: "David Chen", location: "San Francisco, CA", status: "online", avatar: "DC" },
-  { id: "5", name: "Priya Patel", location: "Chicago, IL", status: "offline", avatar: "PP" },
-  { id: "6", name: "James O'Brien", location: "London, UK", status: "online", avatar: "JO" },
-  { id: "7", name: "Sofia Rodriguez", location: "Miami, FL", status: "away", avatar: "SR" },
-  { id: "8", name: "Kenji Tanaka", location: "Tokyo, Japan", status: "online", avatar: "KT" },
-  { id: "9", name: "Fatima Al-Hassan", location: "Dubai, UAE", status: "online", avatar: "FA" },
-  { id: "10", name: "Lucas Müller", location: "Frankfurt, Germany", status: "offline", avatar: "LM" },
-  { id: "11", name: "Amara Okafor", location: "Johannesburg, SA", status: "online", avatar: "AO" },
-  { id: "12", name: "Elena Petrov", location: "Paris, France", status: "away", avatar: "EP" },
-  { id: "13", name: "Raj Sharma", location: "New Delhi, India", status: "online", avatar: "RS" },
-  { id: "14", name: "Olivia Thompson", location: "Sydney, Australia", status: "online", avatar: "OT" },
-  { id: "15", name: "Carlos Mendes", location: "São Paulo, Brazil", status: "offline", avatar: "CM" },
+  { id: "1", name: "Cynthia-Marie Smith", location: "Atlanta, GA", status: "online", avatar: "CS", photo: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&crop=face", bio: "Business owner & travel enthusiast" },
+  { id: "2", name: "Marcus Johnson", location: "New York, NY", status: "online", avatar: "MJ", photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=face", bio: "Photographer exploring the world" },
+  { id: "3", name: "Aisha Williams", location: "Los Angeles, CA", status: "away", avatar: "AW", photo: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop&crop=face", bio: "Yoga instructor & foodie" },
+  { id: "4", name: "David Chen", location: "San Francisco, CA", status: "online", avatar: "DC", photo: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop&crop=face", bio: "Tech entrepreneur & hiker" },
+  { id: "5", name: "Priya Patel", location: "Chicago, IL", status: "offline", avatar: "PP", photo: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=200&fit=crop&crop=face", bio: "Chef & culinary blogger" },
+  { id: "6", name: "James O'Brien", location: "London, UK", status: "online", avatar: "JO", photo: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&crop=face", bio: "Musician & world traveler" },
+  { id: "7", name: "Sofia Rodriguez", location: "Miami, FL", status: "away", avatar: "SR", photo: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&h=200&fit=crop&crop=face", bio: "Marine biologist & diver" },
+  { id: "8", name: "Kenji Tanaka", location: "Tokyo, Japan", status: "online", avatar: "KT", photo: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop&crop=face", bio: "Architect & design lover" },
+  { id: "9", name: "Fatima Al-Hassan", location: "Dubai, UAE", status: "online", avatar: "FA", photo: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=200&h=200&fit=crop&crop=face", bio: "Fashion designer & art collector" },
+  { id: "10", name: "Lucas Müller", location: "Frankfurt, Germany", status: "offline", avatar: "LM", photo: "https://images.unsplash.com/photo-1519345182560-3f2917c472ef?w=200&h=200&fit=crop&crop=face", bio: "Engineer & cycling enthusiast" },
+  { id: "11", name: "Amara Okafor", location: "Johannesburg, SA", status: "online", avatar: "AO", photo: "https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=200&h=200&fit=crop&crop=face", bio: "Environmental activist & writer" },
+  { id: "12", name: "Elena Petrov", location: "Paris, France", status: "away", avatar: "EP", photo: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=200&h=200&fit=crop&crop=face", bio: "Gallery curator & sommelier" },
+  { id: "13", name: "Raj Sharma", location: "New Delhi, India", status: "online", avatar: "RS", photo: "https://images.unsplash.com/photo-1463453091185-61582044d556?w=200&h=200&fit=crop&crop=face", bio: "Software developer & cricket fan" },
+  { id: "14", name: "Olivia Thompson", location: "Sydney, Australia", status: "online", avatar: "OT", photo: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=200&h=200&fit=crop&crop=face", bio: "Surfer & wildlife photographer" },
+  { id: "15", name: "Carlos Mendes", location: "São Paulo, Brazil", status: "offline", avatar: "CM", photo: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=200&h=200&fit=crop&crop=face", bio: "Music producer & DJ" },
 ];
