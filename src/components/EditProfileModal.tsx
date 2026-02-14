@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
+import { X, Camera } from "lucide-react";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 interface ProfileData {
   name: string;
@@ -11,6 +12,7 @@ interface ProfileData {
   hobbies: string[];
   interestedIn: string[];
   favoriteFood: string[];
+  profilePhoto?: string;
 }
 
 interface EditProfileModalProps {
@@ -25,10 +27,22 @@ const EditProfileModal = ({ open, onOpenChange, profileData, onSave }: EditProfi
   const [newHobby, setNewHobby] = useState("");
   const [newInterest, setNewInterest] = useState("");
   const [newFood, setNewFood] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleSave = () => {
     onSave(formData);
     onOpenChange(false);
+  };
+
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData(prev => ({ ...prev, profilePhoto: reader.result as string }));
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const addItem = (field: "hobbies" | "interestedIn" | "favoriteFood", value: string, setter: (v: string) => void) => {
@@ -56,6 +70,32 @@ const EditProfileModal = ({ open, onOpenChange, profileData, onSave }: EditProfi
         </DialogHeader>
         
         <div className="space-y-4 mt-4">
+          {/* Profile Photo */}
+          <div className="flex flex-col items-center gap-3">
+            <Avatar className="w-24 h-24">
+              <AvatarImage src={formData.profilePhoto} alt="Profile" />
+              <AvatarFallback className="text-2xl font-bold">
+                {formData.name.split(" ").map(n => n[0]).join("")}
+              </AvatarFallback>
+            </Avatar>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handlePhotoChange}
+              className="hidden"
+            />
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => fileInputRef.current?.click()}
+              className="flex items-center gap-2"
+            >
+              <Camera size={16} />
+              Browse Photo
+            </Button>
+          </div>
+
           <div>
             <Label className="text-primary-foreground">Name</Label>
             <Input

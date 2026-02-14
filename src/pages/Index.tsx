@@ -1,5 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
+import { Menu } from "lucide-react";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,6 +22,37 @@ const Index = () => {
       style={{ backgroundImage: `url(${backgroundImage})` }}
     >
       <Header />
+      {/* Hamburger menu */}
+      <div className="fixed top-6 right-4 z-50">
+        <Sheet>
+          <SheetTrigger asChild>
+            <button className="p-2 hover:bg-accent rounded-md transition-colors">
+              <Menu size={32} className="text-primary-foreground" />
+            </button>
+          </SheetTrigger>
+          <SheetContent side="right" className="bg-background border-border">
+            <SheetHeader>
+              <SheetTitle className="text-primary-foreground text-xl">Menu</SheetTitle>
+            </SheetHeader>
+            <nav className="mt-6 space-y-2">
+              {[
+                { label: "Profile", path: "/dashboard" },
+                { label: "Search", path: "/search" },
+                { label: "Messages", path: "/messages" },
+                { label: "Skoin", path: "/skoin" },
+              ].map((item) => (
+                <button
+                  key={item.path}
+                  onClick={() => navigate(item.path)}
+                  className="w-full text-left px-4 py-3 rounded-lg text-lg font-medium text-primary-foreground hover:bg-accent/20 transition-colors"
+                >
+                  {item.label}
+                </button>
+              ))}
+            </nav>
+          </SheetContent>
+        </Sheet>
+      </div>
       
       <main className="flex-1 flex flex-col items-center justify-center px-4">
         {/* Auth Links */}

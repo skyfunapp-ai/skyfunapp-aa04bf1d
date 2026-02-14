@@ -29,7 +29,7 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <HeaderMinimal onEditClick={handleEditClick} />
+      <HeaderMinimal onEditClick={handleEditClick} showEdit={true} />
       
       <main className="flex-1 flex flex-col items-center pt-24 pb-20">
         <div className="flex w-full justify-center items-stretch">
