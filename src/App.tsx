@@ -9,6 +9,7 @@ import SearchPage from "./pages/SearchPage";
 import MessagesPage from "./pages/MessagesPage";
 import UserProfilePage from "./pages/UserProfilePage";
 import NotFound from "./pages/NotFound";
+import SkoinPage from "./pages/SkoinPage";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -24,6 +25,7 @@ const App = () => (
           <Route path="/messages" element={<MessagesPage />} />
           <Route path="/messages/:userId" element={<MessagesPage />} />
           <Route path="/user/:userId" element={<UserProfilePage />} />
+          <Route path="/skoin" element={<SkoinPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
