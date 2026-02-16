@@ -3,8 +3,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { X, Camera } from "lucide-react";
+import { X, Camera, MapPin } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { airports } from "@/data/flights";
 
 interface ProfileData {
   name: string;
@@ -13,6 +16,7 @@ interface ProfileData {
   interestedIn: string[];
   favoriteFood: string[];
   profilePhoto?: string;
+  currentAirport?: string;
 }
 
 interface EditProfileModalProps {
@@ -112,6 +116,30 @@ const EditProfileModal = ({ open, onOpenChange, profileData, onSave }: EditProfi
               onChange={(e) => setFormData(prev => ({ ...prev, occupation: e.target.value }))}
               className="mt-1 bg-background/50 border-border text-primary-foreground"
             />
+          </div>
+
+          {/* Current Airport Location */}
+          <div>
+            <Label className="text-primary-foreground flex items-center gap-2">
+              <MapPin size={16} /> Current Airport Location
+            </Label>
+            <Select
+              value={formData.currentAirport || ""}
+              onValueChange={(value) => setFormData(prev => ({ ...prev, currentAirport: value }))}
+            >
+              <SelectTrigger className="mt-1 bg-background/50 border-border text-primary-foreground">
+                <SelectValue placeholder="Select your airport" />
+              </SelectTrigger>
+              <SelectContent className="bg-card text-card-foreground border-border z-50 max-h-60">
+                <ScrollArea className="h-60">
+                  {airports.filter(a => a !== "All Airports").map((airport) => (
+                    <SelectItem key={airport} value={airport}>
+                      {airport}
+                    </SelectItem>
+                  ))}
+                </ScrollArea>
+              </SelectContent>
+            </Select>
           </div>
           
           <div>

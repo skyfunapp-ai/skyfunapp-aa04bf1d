@@ -10,6 +10,9 @@ import MessagesPage from "./pages/MessagesPage";
 import UserProfilePage from "./pages/UserProfilePage";
 import NotFound from "./pages/NotFound";
 import SkoinPage from "./pages/SkoinPage";
+import AboutPage from "./pages/AboutPage";
+import SafetyPage from "./pages/SafetyPage";
+import HelpPage from "./pages/HelpPage";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -26,6 +29,9 @@ const App = () => (
           <Route path="/messages/:userId" element={<MessagesPage />} />
           <Route path="/user/:userId" element={<UserProfilePage />} />
           <Route path="/skoin" element={<SkoinPage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/safety" element={<SafetyPage />} />
+          <Route path="/help" element={<HelpPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

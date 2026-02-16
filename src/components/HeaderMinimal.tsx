@@ -18,10 +18,13 @@ const HeaderMinimal = ({ onEditClick, showEdit = false }: HeaderMinimalProps) =>
   const navigate = useNavigate();
 
   const menuItems = [
+    { label: "About", path: "/about" },
     { label: "Profile", path: "/dashboard" },
     { label: "Search", path: "/search" },
     { label: "Messages", path: "/messages" },
     { label: "Skoin", path: "/skoin" },
+    { label: "Safety", path: "/safety" },
+    { label: "Help", path: "/help" },
   ];
 
   return (
