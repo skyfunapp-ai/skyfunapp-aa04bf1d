@@ -7,7 +7,7 @@ const SkoinPage = () => {
     <div className="min-h-screen flex flex-col bg-background">
       <HeaderMinimal />
 
-      <main className="flex-1 flex flex-col items-center justify-center pt-24 pb-20 px-4">
+      <main className="flex-1 flex flex-col items-center justify-center pt-20 sm:pt-24 pb-20 px-4">
         <h1 className="text-4xl font-bold text-primary-foreground mb-12">Skoin</h1>
 
         <div className="space-y-8 w-full max-w-xs">
