@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { MapPin } from "lucide-react";
 import HeaderMinimal from "@/components/HeaderMinimal";
 import BottomNav from "@/components/BottomNav";
 import EditProfileModal from "@/components/EditProfileModal";
@@ -11,6 +12,8 @@ interface ProfileData {
   hobbies: string[];
   interestedIn: string[];
   favoriteFood: string[];
+  profilePhoto?: string;
+  currentAirport?: string;
 }
 
 const Dashboard = () => {
@@ -48,6 +51,11 @@ const Dashboard = () => {
         <div className="mt-6 text-center px-4">
           <h2 className="text-2xl font-bold text-primary-foreground">{profileData.name}</h2>
           <p className="text-primary-foreground mt-2">{profileData.occupation}</p>
+          {profileData.currentAirport && (
+            <p className="text-primary-foreground/70 mt-1 flex items-center justify-center gap-1 text-sm">
+              <MapPin size={14} /> {profileData.currentAirport}
+            </p>
+          )}
           
           <div className="mt-4">
             <p className="text-primary-foreground font-semibold">Hobbies</p>
