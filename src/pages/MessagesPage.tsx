@@ -34,7 +34,7 @@ const MessagesPage = () => {
       <div className="min-h-screen flex flex-col bg-background">
         <HeaderMinimal />
 
-        <main className="flex-1 flex flex-col pt-24 pb-20 px-4">
+        <main className="flex-1 flex flex-col pt-20 sm:pt-24 pb-20 px-4">
           {/* Chat header */}
           <div className="flex items-center gap-3 mb-4">
             <button
@@ -108,7 +108,7 @@ const MessagesPage = () => {
     <div className="min-h-screen flex flex-col bg-background">
       <HeaderMinimal />
 
-      <main className="flex-1 flex flex-col pt-24 pb-20 px-4">
+      <main className="flex-1 flex flex-col pt-20 sm:pt-24 pb-20 px-4">
         <h2 className="text-lg font-bold text-primary-foreground mb-4">Messages</h2>
 
         <ScrollArea className="flex-1">

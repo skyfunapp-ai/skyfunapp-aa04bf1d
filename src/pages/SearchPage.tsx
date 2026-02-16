@@ -33,7 +33,7 @@ const SearchPage = () => {
     <div className="min-h-screen flex flex-col bg-background">
       <HeaderMinimal />
 
-      <main className="flex-1 flex flex-col pt-24 pb-20 px-4">
+      <main className="flex-1 flex flex-col pt-20 sm:pt-24 pb-20 px-4">
         <div className="flex justify-end mb-4">
           <div className="w-64">
             <Select value={selectedAirport} onValueChange={setSelectedAirport}>
