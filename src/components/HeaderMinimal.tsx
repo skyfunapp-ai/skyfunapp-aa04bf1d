@@ -25,6 +25,7 @@ const HeaderMinimal = ({ onEditClick, showEdit = false }: HeaderMinimalProps) =>
     { label: "Skoin", path: "/skoin" },
     { label: "Safety", path: "/safety" },
     { label: "Help", path: "/help" },
+    { label: "Log Out", path: "/" },
   ];
 
   return (
@@ -40,7 +41,7 @@ const HeaderMinimal = ({ onEditClick, showEdit = false }: HeaderMinimalProps) =>
               onClick={onEditClick}
               className="p-2 hover:bg-accent rounded-md transition-colors"
             >
-              <Pencil size={28} className="text-primary-foreground" />
+              <Pencil size={20} className="text-primary-foreground" />
             </button>
           )}
           <Sheet>

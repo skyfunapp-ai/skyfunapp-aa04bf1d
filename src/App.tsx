@@ -10,6 +10,7 @@ import MessagesPage from "./pages/MessagesPage";
 import UserProfilePage from "./pages/UserProfilePage";
 import NotFound from "./pages/NotFound";
 import SkoinPage from "./pages/SkoinPage";
+import SkoinPaymentPage from "./pages/SkoinPaymentPage";
 import AboutPage from "./pages/AboutPage";
 import SafetyPage from "./pages/SafetyPage";
 import HelpPage from "./pages/HelpPage";
@@ -29,6 +30,7 @@ const App = () => (
           <Route path="/messages/:userId" element={<MessagesPage />} />
           <Route path="/user/:userId" element={<UserProfilePage />} />
           <Route path="/skoin" element={<SkoinPage />} />
+          <Route path="/skoin/payment" element={<SkoinPaymentPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/safety" element={<SafetyPage />} />
           <Route path="/help" element={<HelpPage />} />

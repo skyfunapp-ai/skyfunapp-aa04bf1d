@@ -1,8 +1,17 @@
 import HeaderMinimal from "@/components/HeaderMinimal";
 import BottomNav from "@/components/BottomNav";
 import { Coins } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const SkoinPage = () => {
+  const navigate = useNavigate();
+
+  const coinOptions = [
+    { coins: 1, price: ".99", label: "1 Gold Coin", badge: null },
+    { coins: 6, price: "4.99", label: "6 Gold Coins", badge: "6" },
+    { coins: 12, price: "9.99", label: "12 Gold Coins", badge: "12" },
+  ];
+
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <HeaderMinimal />
@@ -11,38 +20,24 @@ const SkoinPage = () => {
         <h1 className="text-4xl font-bold text-primary-foreground mb-12">Skoin</h1>
 
         <div className="space-y-8 w-full max-w-xs">
-          {/* 1 Gold Coin */}
-          <div className="flex items-center justify-between bg-card/80 backdrop-blur rounded-2xl px-6 py-5 border border-border/50">
-            <div className="flex items-center gap-3">
-              <Coins size={36} className="text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.5)]" />
-              <span className="text-lg font-semibold text-card-foreground">1 Gold Coin</span>
-            </div>
-            <span className="text-xl font-bold text-primary-foreground">$.99</span>
-          </div>
-
-          {/* 6 Gold Coins */}
-          <div className="flex items-center justify-between bg-card/80 backdrop-blur rounded-2xl px-6 py-5 border border-border/50">
-            <div className="flex items-center gap-3">
-              <div className="relative">
-                <Coins size={36} className="text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.5)]" />
-                <span className="absolute -top-1 -right-2 bg-accent text-accent-foreground text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">6</span>
+          {coinOptions.map((option) => (
+            <button
+              key={option.coins}
+              onClick={() => navigate(`/skoin/payment?coins=${option.coins}&price=${option.price}`)}
+              className="w-full flex items-center justify-between bg-card/80 backdrop-blur rounded-2xl px-6 py-5 border border-border/50 hover:bg-card/95 transition-colors cursor-pointer"
+            >
+              <div className="flex items-center gap-3">
+                <div className="relative">
+                  <Coins size={36} className="text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.5)]" />
+                  {option.badge && (
+                    <span className="absolute -top-1 -right-2 bg-accent text-accent-foreground text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">{option.badge}</span>
+                  )}
+                </div>
+                <span className="text-lg font-semibold text-card-foreground">{option.label}</span>
               </div>
-              <span className="text-lg font-semibold text-card-foreground">6 Gold Coins</span>
-            </div>
-            <span className="text-xl font-bold text-primary-foreground">$4.99</span>
-          </div>
-
-          {/* 12 Gold Coins */}
-          <div className="flex items-center justify-between bg-card/80 backdrop-blur rounded-2xl px-6 py-5 border border-border/50">
-            <div className="flex items-center gap-3">
-              <div className="relative">
-                <Coins size={36} className="text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.5)]" />
-                <span className="absolute -top-1 -right-2 bg-accent text-accent-foreground text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">12</span>
-              </div>
-              <span className="text-lg font-semibold text-card-foreground">12 Gold Coins</span>
-            </div>
-            <span className="text-xl font-bold text-primary-foreground">$9.99</span>
-          </div>
+              <span className="text-xl font-bold text-primary-foreground">${option.price}</span>
+            </button>
+          ))}
         </div>
       </main>
 
