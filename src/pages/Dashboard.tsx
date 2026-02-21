@@ -3,6 +3,7 @@ import { MapPin } from "lucide-react";
 import HeaderMinimal from "@/components/HeaderMinimal";
 import BottomNav from "@/components/BottomNav";
 import EditProfileModal from "@/components/EditProfileModal";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 interface ProfileData {
   name: string;
@@ -48,6 +49,16 @@ const Dashboard = () => {
           </div>
         ) : (
           <div className="mt-6 text-center px-4">
+            {profileData.profilePhoto && (
+              <div className="flex justify-center mb-4">
+                <Avatar className="w-28 h-28">
+                  <AvatarImage src={profileData.profilePhoto} alt={profileData.name} />
+                  <AvatarFallback className="text-2xl font-bold">
+                    {profileData.name.split(" ").map(n => n[0]).join("")}
+                  </AvatarFallback>
+                </Avatar>
+              </div>
+            )}
             <h2 className="text-2xl font-bold text-primary-foreground">{profileData.name}</h2>
             <p className="text-primary-foreground mt-2">{profileData.occupation}</p>
             {profileData.currentAirport && (
