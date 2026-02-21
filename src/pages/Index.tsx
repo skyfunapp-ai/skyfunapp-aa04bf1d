@@ -7,7 +7,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { FcGoogle } from "react-icons/fc";
 import { FaInstagram, FaFacebook, FaTiktok } from "react-icons/fa";
-import backgroundImage from "@/assets/background.png";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -16,11 +15,12 @@ const Index = () => {
     navigate("/dashboard");
   };
 
+  const handleSocialLogin = () => {
+    navigate("/dashboard");
+  };
+
   return (
-    <div 
-      className="min-h-screen flex flex-col bg-cover bg-center bg-no-repeat"
-      style={{ backgroundImage: `url(${backgroundImage})` }}
-    >
+    <div className="min-h-screen flex flex-col bg-background">
       <Header />
       {/* Hamburger menu */}
       <div className="fixed top-6 right-4 z-50">
@@ -59,7 +59,7 @@ const Index = () => {
         <div className="flex flex-col items-center space-y-4 sm:space-y-6">
           <div className="flex flex-col items-center space-y-2 sm:space-y-4 text-primary-foreground">
             <button onClick={handleLogin} className="text-2xl sm:text-5xl font-medium hover:underline">Check In (Log In)</button>
-            <button className="text-lg sm:text-3xl opacity-80 hover:underline">Purchase Flight (Create Account)</button>
+            <button onClick={handleLogin} className="text-lg sm:text-3xl opacity-80 hover:underline">Purchase Flight (Create Account)</button>
           </div>
         </div>
 
@@ -89,16 +89,16 @@ const Index = () => {
         <div className="mt-8 sm:mt-12 flex flex-col items-center space-y-3 sm:space-y-4">
           <p className="text-base sm:text-xl text-muted-foreground">Continue with</p>
           <div className="flex flex-wrap justify-center gap-4">
-            <Button variant="outline" size="lg" className="px-6 py-4 h-auto bg-white">
+            <Button variant="outline" size="lg" className="px-6 py-4 h-auto bg-white" onClick={handleSocialLogin}>
               <FcGoogle size={32} />
             </Button>
-            <Button variant="outline" size="lg" className="px-6 py-4 h-auto bg-white">
+            <Button variant="outline" size="lg" className="px-6 py-4 h-auto bg-white" onClick={handleSocialLogin}>
               <FaInstagram size={32} className="text-pink-500" />
             </Button>
-            <Button variant="outline" size="lg" className="px-6 py-4 h-auto bg-white">
+            <Button variant="outline" size="lg" className="px-6 py-4 h-auto bg-white" onClick={handleSocialLogin}>
               <FaFacebook size={32} className="text-blue-600" />
             </Button>
-            <Button variant="outline" size="lg" className="px-6 py-4 h-auto bg-white">
+            <Button variant="outline" size="lg" className="px-6 py-4 h-auto bg-white" onClick={handleSocialLogin}>
               <FaTiktok size={32} />
             </Button>
           </div>
