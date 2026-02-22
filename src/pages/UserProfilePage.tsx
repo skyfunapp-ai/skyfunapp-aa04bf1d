@@ -1,14 +1,42 @@
 import { useParams, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import HeaderMinimal from "@/components/HeaderMinimal";
 import BottomNav from "@/components/BottomNav";
 import { appUsers } from "@/data/flights";
-import { MapPin, ArrowLeft, MessageCircle } from "lucide-react";
+import { MapPin, ArrowLeft, MessageCircle, ShieldAlert, ShieldCheck } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { toast } from "@/hooks/use-toast";
 
 const UserProfilePage = () => {
   const { userId } = useParams();
   const navigate = useNavigate();
   const user = appUsers.find((u) => u.id === userId);
+
+  const [blocked, setBlocked] = useState(false);
+
+  useEffect(() => {
+    if (userId) {
+      const blockedUsers: string[] = JSON.parse(localStorage.getItem("blockedUsers") || "[]");
+      setBlocked(blockedUsers.includes(userId));
+    }
+  }, [userId]);
+
+  const toggleBlock = () => {
+    if (!userId) return;
+    const blockedUsers: string[] = JSON.parse(localStorage.getItem("blockedUsers") || "[]");
+    let updated: string[];
+    if (blocked) {
+      updated = blockedUsers.filter((id) => id !== userId);
+      toast({ title: `${user?.name} unblocked` });
+    } else {
+      updated = [...blockedUsers, userId];
+      toast({ title: `${user?.name} blocked` });
+    }
+    localStorage.setItem("blockedUsers", JSON.stringify(updated));
+    setBlocked(!blocked);
+  };
 
   if (!user) {
     return (
@@ -64,13 +92,24 @@ const UserProfilePage = () => {
 
             <p className="text-primary-foreground/80 mt-4 text-center">{user.bio}</p>
 
-            <button
-              onClick={() => navigate(`/messages/${user.id}`)}
-              className="mt-6 flex items-center gap-2 px-6 py-3 rounded-full bg-accent text-accent-foreground font-semibold hover:opacity-90 transition-opacity"
-            >
-              <MessageCircle size={18} />
-              Send Message
-            </button>
+            {/* Block / Unblock */}
+            <div className="flex items-center gap-3 mt-6 bg-card/80 backdrop-blur rounded-xl px-5 py-3 border border-border/50">
+              {blocked ? <ShieldAlert size={18} className="text-destructive" /> : <ShieldCheck size={18} className="text-green-500" />}
+              <Label htmlFor="block-toggle" className="text-sm text-primary-foreground cursor-pointer">
+                {blocked ? "Blocked" : "Block User"}
+              </Label>
+              <Switch id="block-toggle" checked={blocked} onCheckedChange={toggleBlock} />
+            </div>
+
+            {!blocked && (
+              <button
+                onClick={() => navigate(`/messages/${user.id}`)}
+                className="mt-4 flex items-center gap-2 px-6 py-3 rounded-full bg-accent text-accent-foreground font-semibold hover:opacity-90 transition-opacity"
+              >
+                <MessageCircle size={18} />
+                Send Message
+              </button>
+            )}
           </div>
         </div>
       </main>

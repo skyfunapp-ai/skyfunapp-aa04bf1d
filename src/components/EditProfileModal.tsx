@@ -41,11 +41,25 @@ const EditProfileModal = ({ open, onOpenChange, profileData, onSave }: EditProfi
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData(prev => ({ ...prev, profilePhoto: reader.result as string }));
+      // Create a high-quality object URL instead of base64 for better quality
+      const img = new Image();
+      const objectUrl = URL.createObjectURL(file);
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+          ctx.drawImage(img, 0, 0);
+          // Use maximum quality PNG for lossless, or high-quality JPEG
+          const mimeType = file.type === "image/png" ? "image/png" : "image/jpeg";
+          const quality = 1.0;
+          const dataUrl = canvas.toDataURL(mimeType, quality);
+          setFormData(prev => ({ ...prev, profilePhoto: dataUrl }));
+        }
+        URL.revokeObjectURL(objectUrl);
       };
-      reader.readAsDataURL(file);
+      img.src = objectUrl;
     }
   };
 
