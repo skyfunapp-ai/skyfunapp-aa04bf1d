@@ -28,7 +28,7 @@ const Dashboard = () => {
   // Initialize 3 free Skoin for new users
   useEffect(() => {
     if (localStorage.getItem("skoinBalance") === null) {
-      localStorage.setItem("skoinBalance", "3");
+      localStorage.setItem("skoinBalance", "5");
     }
   }, []);
 

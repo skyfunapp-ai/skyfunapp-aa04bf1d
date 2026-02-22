@@ -20,15 +20,7 @@ const MessagesPage = () => {
   const selectedUser = userId ? appUsers.find((u) => u.id === userId) : null;
 
   // Check Skoin balance
-  const getSkoinBalance = () => Number(localStorage.getItem("skoinBalance") ?? "3");
-  const setSkoinBalance = (n: number) => localStorage.setItem("skoinBalance", String(n));
-
-  // Initialize balance for new users
-  useEffect(() => {
-    if (localStorage.getItem("skoinBalance") === null) {
-      localStorage.setItem("skoinBalance", "3");
-    }
-  }, []);
+  const getSkoinBalance = () => Number(localStorage.getItem("skoinBalance") ?? "5");
 
   // Load per-user messages
   useEffect(() => {
@@ -46,14 +38,6 @@ const MessagesPage = () => {
   const handleSend = () => {
     if (!input.trim() || !userId) return;
 
-    // Check Skoin balance
-    const balance = getSkoinBalance();
-    if (balance <= 0) {
-      toast({ title: "No Skoin remaining", description: "Purchase Skoin to continue chatting." });
-      navigate("/skoin");
-      return;
-    }
-
     // Check if blocked
     if (isBlocked(userId)) {
       toast({ title: "User is blocked", description: "Unblock this user to send messages." });
@@ -64,9 +48,6 @@ const MessagesPage = () => {
     messageStore[userId] = newMessages;
     setMessages(newMessages);
     setInput("");
-
-    // Deduct 1 Skoin per message
-    setSkoinBalance(balance - 1);
 
     // Simulate reply
     setTimeout(() => {

@@ -9,7 +9,7 @@ const SkoinPage = () => {
   const [balance, setBalance] = useState(0);
 
   useEffect(() => {
-    setBalance(Number(localStorage.getItem("skoinBalance") ?? "3"));
+    setBalance(Number(localStorage.getItem("skoinBalance") ?? "5"));
   }, []);
 
   const coinOptions = [

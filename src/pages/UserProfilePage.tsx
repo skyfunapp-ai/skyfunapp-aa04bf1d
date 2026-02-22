@@ -103,7 +103,23 @@ const UserProfilePage = () => {
 
             {!blocked && (
               <button
-                onClick={() => navigate(`/messages/${user.id}`)}
+                onClick={() => {
+                  const connectedUsers: string[] = JSON.parse(localStorage.getItem("connectedUsers") || "[]");
+                  if (!connectedUsers.includes(user.id)) {
+                    const balance = Number(localStorage.getItem("skoinBalance") ?? "5");
+                    if (balance <= 0) {
+                      toast({ title: "No Skoin remaining", description: "Purchase Skoin to connect with new users." });
+                      navigate("/skoin");
+                      return;
+                    }
+                    // Deduct 1 Skoin and mark as connected
+                    localStorage.setItem("skoinBalance", String(balance - 1));
+                    connectedUsers.push(user.id);
+                    localStorage.setItem("connectedUsers", JSON.stringify(connectedUsers));
+                    toast({ title: `Connected with ${user.name}`, description: "1 Skoin used. You can now chat freely!" });
+                  }
+                  navigate(`/messages/${user.id}`);
+                }}
                 className="mt-4 flex items-center gap-2 px-6 py-3 rounded-full bg-accent text-accent-foreground font-semibold hover:opacity-90 transition-opacity"
               >
                 <MessageCircle size={18} />
