@@ -24,9 +24,23 @@ const SearchPage = () => {
     ? flights.filter((f) => f.fromCode === selectedCode || f.toCode === selectedCode)
     : flights;
 
-  const filteredUsers = selectedCode
+  // Filter out blocked users
+  const blockedUsers: string[] = JSON.parse(localStorage.getItem("blockedUsers") || "[]");
+
+  const filteredUsers = (selectedCode
     ? appUsers.filter((u) => u.airportCode === selectedCode)
-    : appUsers;
+    : appUsers
+  ).filter((u) => !blockedUsers.includes(u.id));
+
+  const handleUserClick = (userId: string) => {
+    // If already connected, go directly to chat
+    const connectedUsers: string[] = JSON.parse(localStorage.getItem("connectedUsers") || "[]");
+    if (connectedUsers.includes(userId)) {
+      navigate(`/messages/${userId}`);
+    } else {
+      navigate(`/user/${userId}`);
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -109,7 +123,7 @@ const SearchPage = () => {
                 {filteredUsers.map((user) => (
                   <div
                     key={user.id}
-                    onClick={() => navigate(`/user/${user.id}`)}
+                    onClick={() => handleUserClick(user.id)}
                     className="flex items-center gap-3 bg-card/80 backdrop-blur rounded-xl px-4 py-3 border border-border/50 cursor-pointer hover:bg-card/95 transition-colors"
                   >
                     <Avatar className="w-10 h-10 shrink-0">
@@ -140,7 +154,7 @@ const SearchPage = () => {
             </ScrollArea>
           ) : (
             <div className="text-center py-8">
-              <p className="text-muted-foreground">No users found at {selectedCode}</p>
+              <p className="text-muted-foreground">No users found{selectedCode ? ` at ${selectedCode}` : ""}</p>
             </div>
           )}
         </div>

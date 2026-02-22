@@ -19,9 +19,14 @@ const UserProfilePage = () => {
   useEffect(() => {
     if (userId) {
       const blockedUsers: string[] = JSON.parse(localStorage.getItem("blockedUsers") || "[]");
-      setBlocked(blockedUsers.includes(userId));
+      // If this user is blocked, redirect away - can't view blocked profiles
+      if (blockedUsers.includes(userId)) {
+        navigate("/search", { replace: true });
+        return;
+      }
+      setBlocked(false);
     }
-  }, [userId]);
+  }, [userId, navigate]);
 
   const toggleBlock = () => {
     if (!userId) return;
@@ -33,6 +38,11 @@ const UserProfilePage = () => {
     } else {
       updated = [...blockedUsers, userId];
       toast({ title: `${user?.name} blocked` });
+      // Navigate away since blocked users can't be viewed
+      localStorage.setItem("blockedUsers", JSON.stringify(updated));
+      setBlocked(true);
+      setTimeout(() => navigate("/search", { replace: true }), 500);
+      return;
     }
     localStorage.setItem("blockedUsers", JSON.stringify(updated));
     setBlocked(!blocked);

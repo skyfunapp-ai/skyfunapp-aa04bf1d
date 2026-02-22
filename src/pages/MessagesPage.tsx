@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import HeaderMinimal from "@/components/HeaderMinimal";
 import BottomNav from "@/components/BottomNav";
 import { appUsers } from "@/data/flights";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { MapPin, ArrowLeft, Send } from "lucide-react";
+import { MapPin, ArrowLeft, Send, X } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "@/hooks/use-toast";
 
@@ -16,6 +16,7 @@ const MessagesPage = () => {
   const navigate = useNavigate();
   const [messages, setMessages] = useState<{ text: string; fromMe: boolean }[]>([]);
   const [input, setInput] = useState("");
+  const [incomingPopup, setIncomingPopup] = useState<{ userId: string; name: string; photo: string; avatar: string; message: string } | null>(null);
 
   const selectedUser = userId ? appUsers.find((u) => u.id === userId) : null;
 
@@ -28,6 +29,43 @@ const MessagesPage = () => {
       setMessages(messageStore[userId] || []);
     }
   }, [userId]);
+
+  // Simulate incoming message from a random user while in a chat
+  useEffect(() => {
+    if (!userId) return;
+    const blockedUsers: string[] = JSON.parse(localStorage.getItem("blockedUsers") || "[]");
+    const otherUsers = appUsers.filter((u) => u.id !== userId && !blockedUsers.includes(u.id));
+    if (otherUsers.length === 0) return;
+
+    const timer = setTimeout(() => {
+      const randomUser = otherUsers[Math.floor(Math.random() * otherUsers.length)];
+      setIncomingPopup({
+        userId: randomUser.id,
+        name: randomUser.name,
+        photo: randomUser.photo,
+        avatar: randomUser.avatar,
+        message: "Hey! Are you at the airport? ✈️",
+      });
+      // Store the incoming message
+      const existing = messageStore[randomUser.id] || [];
+      messageStore[randomUser.id] = [...existing, { text: "Hey! Are you at the airport? ✈️", fromMe: false }];
+    }, 8000 + Math.random() * 7000);
+
+    return () => clearTimeout(timer);
+  }, [userId]);
+
+  const handleIncomingClick = useCallback(() => {
+    if (!incomingPopup) return;
+    const targetId = incomingPopup.userId;
+    // Auto-connect receiver without deducting Skoin
+    const connectedUsers: string[] = JSON.parse(localStorage.getItem("connectedUsers") || "[]");
+    if (!connectedUsers.includes(targetId)) {
+      connectedUsers.push(targetId);
+      localStorage.setItem("connectedUsers", JSON.stringify(connectedUsers));
+    }
+    setIncomingPopup(null);
+    navigate(`/messages/${targetId}`);
+  }, [incomingPopup, navigate]);
 
   // Check if user is blocked
   const isBlocked = (id: string) => {
@@ -64,6 +102,31 @@ const MessagesPage = () => {
     return (
       <div className="min-h-screen flex flex-col bg-background">
         <HeaderMinimal />
+
+        {/* Incoming message popup */}
+        {incomingPopup && (
+          <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 animate-in slide-in-from-top-4 fade-in duration-300">
+            <div
+              onClick={handleIncomingClick}
+              className="flex items-center gap-3 bg-card border border-border rounded-2xl px-4 py-3 shadow-lg cursor-pointer hover:bg-card/90 transition-colors max-w-xs"
+            >
+              <Avatar className="w-10 h-10 shrink-0">
+                <AvatarImage src={incomingPopup.photo} alt={incomingPopup.name} />
+                <AvatarFallback className="text-sm font-bold">{incomingPopup.avatar}</AvatarFallback>
+              </Avatar>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-card-foreground truncate">{incomingPopup.name}</p>
+                <p className="text-xs text-muted-foreground truncate">{incomingPopup.message}</p>
+              </div>
+              <button
+                onClick={(e) => { e.stopPropagation(); setIncomingPopup(null); }}
+                className="text-muted-foreground hover:text-card-foreground p-1"
+              >
+                <X size={14} />
+              </button>
+            </div>
+          </div>
+        )}
 
         <main className="flex-1 flex flex-col pt-20 sm:pt-24 pb-20 px-4">
           <div className="flex items-center gap-3 mb-4">
@@ -139,8 +202,10 @@ const MessagesPage = () => {
     );
   }
 
-  // User list view - filter out blocked users
+  // Connected users only - no user directory
+  const connectedUsers: string[] = JSON.parse(localStorage.getItem("connectedUsers") || "[]");
   const blockedUsers: string[] = JSON.parse(localStorage.getItem("blockedUsers") || "[]");
+  const chatUsers = appUsers.filter((u) => connectedUsers.includes(u.id) && !blockedUsers.includes(u.id));
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -150,38 +215,48 @@ const MessagesPage = () => {
         <h2 className="text-lg font-bold text-primary-foreground mb-4">Messages</h2>
 
         <ScrollArea className="flex-1">
-          <div className="space-y-2">
-            {appUsers
-              .filter((u) => !blockedUsers.includes(u.id))
-              .map((user) => (
-                <div
-                  key={user.id}
-                  onClick={() => navigate(`/messages/${user.id}`)}
-                  className="flex items-center gap-3 bg-card/80 backdrop-blur rounded-xl px-4 py-3 border border-border/50 cursor-pointer hover:bg-card/95 transition-colors"
-                >
-                  <Avatar className="w-10 h-10 shrink-0">
-                    <AvatarImage src={user.photo} alt={user.name} />
-                    <AvatarFallback className="text-sm font-bold">{user.avatar}</AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-card-foreground truncate">{user.name}</p>
-                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                      <MapPin size={12} />
-                      {user.location}
-                    </div>
-                  </div>
+          {chatUsers.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-16">
+              <p className="text-muted-foreground text-sm text-center">No conversations yet.</p>
+              <p className="text-muted-foreground text-xs text-center mt-1">
+                Connect with users from the Search page to start chatting.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {chatUsers.map((user) => {
+                const lastMessages = messageStore[user.id];
+                const lastMsg = lastMessages?.[lastMessages.length - 1];
+                return (
                   <div
-                    className={`w-3 h-3 rounded-full shrink-0 ${
-                      user.status === "online"
-                        ? "bg-green-500"
-                        : user.status === "away"
-                        ? "bg-yellow-500"
-                        : "bg-muted-foreground/40"
-                    }`}
-                  />
-                </div>
-              ))}
-          </div>
+                    key={user.id}
+                    onClick={() => navigate(`/messages/${user.id}`)}
+                    className="flex items-center gap-3 bg-card/80 backdrop-blur rounded-xl px-4 py-3 border border-border/50 cursor-pointer hover:bg-card/95 transition-colors"
+                  >
+                    <Avatar className="w-10 h-10 shrink-0">
+                      <AvatarImage src={user.photo} alt={user.name} />
+                      <AvatarFallback className="text-sm font-bold">{user.avatar}</AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-card-foreground truncate">{user.name}</p>
+                      <p className="text-xs text-muted-foreground truncate">
+                        {lastMsg ? (lastMsg.fromMe ? `You: ${lastMsg.text}` : lastMsg.text) : "Tap to chat"}
+                      </p>
+                    </div>
+                    <div
+                      className={`w-3 h-3 rounded-full shrink-0 ${
+                        user.status === "online"
+                          ? "bg-green-500"
+                          : user.status === "away"
+                          ? "bg-yellow-500"
+                          : "bg-muted-foreground/40"
+                      }`}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </ScrollArea>
       </main>
 
