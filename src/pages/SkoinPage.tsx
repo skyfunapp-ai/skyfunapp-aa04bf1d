@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import HeaderMinimal from "@/components/HeaderMinimal";
 import BottomNav from "@/components/BottomNav";
 import { Coins } from "lucide-react";
@@ -5,6 +6,11 @@ import { useNavigate } from "react-router-dom";
 
 const SkoinPage = () => {
   const navigate = useNavigate();
+  const [balance, setBalance] = useState(0);
+
+  useEffect(() => {
+    setBalance(Number(localStorage.getItem("skoinBalance") ?? "3"));
+  }, []);
 
   const coinOptions = [
     { coins: 1, price: ".99", label: "1 Gold Coin", badge: null },
@@ -17,7 +23,10 @@ const SkoinPage = () => {
       <HeaderMinimal />
 
       <main className="flex-1 flex flex-col items-center justify-center pt-20 sm:pt-24 pb-20 px-4">
-        <h1 className="text-4xl font-bold text-primary-foreground mb-12">Skoin</h1>
+        <h1 className="text-4xl font-bold text-primary-foreground mb-2">Skoin</h1>
+        <p className="text-lg text-muted-foreground mb-10">
+          Balance: <span className="text-primary-foreground font-bold">{balance}</span> Skoin
+        </p>
 
         <div className="space-y-8 w-full max-w-xs">
           {coinOptions.map((option) => (

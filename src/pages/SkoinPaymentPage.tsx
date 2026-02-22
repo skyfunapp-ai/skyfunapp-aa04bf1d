@@ -28,9 +28,12 @@ const SkoinPaymentPage = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    // Add purchased Skoin to balance
+    const current = Number(localStorage.getItem("skoinBalance") ?? "0");
+    localStorage.setItem("skoinBalance", String(current + Number(coins)));
     toast({
-      title: "Payment Submitted",
-      description: `Your purchase of ${coins} Gold Coin${Number(coins) > 1 ? "s" : ""} for $${price} is being processed.`,
+      title: "Payment Successful!",
+      description: `${coins} Gold Coin${Number(coins) > 1 ? "s" : ""} added to your balance.`,
     });
     navigate("/skoin");
   };
