@@ -10,6 +10,8 @@ import { toast } from "@/hooks/use-toast";
 
 // Store messages per-user so they don't leak across conversations
 const messageStore: Record<string, { text: string; fromMe: boolean }[]> = {};
+// Track how many messages were seen per conversation
+const readCountStore: Record<string, number> = {};
 
 const MessagesPage = () => {
   const { userId } = useParams();
@@ -23,10 +25,11 @@ const MessagesPage = () => {
   // Check Skoin balance
   const getSkoinBalance = () => Number(localStorage.getItem("skoinBalance") ?? "5");
 
-  // Load per-user messages
+  // Load per-user messages & mark as read
   useEffect(() => {
     if (userId) {
       setMessages(messageStore[userId] || []);
+      readCountStore[userId] = (messageStore[userId] || []).length;
     }
   }, [userId]);
 
@@ -84,6 +87,7 @@ const MessagesPage = () => {
 
     const newMessages = [...messages, { text: input.trim(), fromMe: true }];
     messageStore[userId] = newMessages;
+    readCountStore[userId] = newMessages.length;
     setMessages(newMessages);
     setInput("");
 
@@ -91,6 +95,7 @@ const MessagesPage = () => {
     setTimeout(() => {
       const reply = [...(messageStore[userId] || []), { text: "Thanks for reaching out! ✈️", fromMe: false }];
       messageStore[userId] = reply;
+      readCountStore[userId] = reply.length;
       setMessages(reply);
     }, 1200);
   };
@@ -227,19 +232,29 @@ const MessagesPage = () => {
               {chatUsers.map((user) => {
                 const lastMessages = messageStore[user.id];
                 const lastMsg = lastMessages?.[lastMessages.length - 1];
+                const totalCount = lastMessages?.length || 0;
+                const readCount = readCountStore[user.id] || 0;
+                const unreadCount = Math.max(0, totalCount - readCount);
                 return (
                   <div
                     key={user.id}
                     onClick={() => navigate(`/messages/${user.id}`)}
                     className="flex items-center gap-3 bg-card/80 backdrop-blur rounded-xl px-4 py-3 border border-border/50 cursor-pointer hover:bg-card/95 transition-colors"
                   >
-                    <Avatar className="w-10 h-10 shrink-0">
-                      <AvatarImage src={user.photo} alt={user.name} />
-                      <AvatarFallback className="text-sm font-bold">{user.avatar}</AvatarFallback>
-                    </Avatar>
+                    <div className="relative shrink-0">
+                      <Avatar className="w-10 h-10">
+                        <AvatarImage src={user.photo} alt={user.name} />
+                        <AvatarFallback className="text-sm font-bold">{user.avatar}</AvatarFallback>
+                      </Avatar>
+                      {unreadCount > 0 && (
+                        <span className="absolute -top-1 -right-1 bg-accent text-accent-foreground text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                          {unreadCount}
+                        </span>
+                      )}
+                    </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-card-foreground truncate">{user.name}</p>
-                      <p className="text-xs text-muted-foreground truncate">
+                      <p className={`text-sm truncate ${unreadCount > 0 ? "font-bold text-card-foreground" : "font-semibold text-card-foreground"}`}>{user.name}</p>
+                      <p className={`text-xs truncate ${unreadCount > 0 ? "text-card-foreground font-medium" : "text-muted-foreground"}`}>
                         {lastMsg ? (lastMsg.fromMe ? `You: ${lastMsg.text}` : lastMsg.text) : "Tap to chat"}
                       </p>
                     </div>
