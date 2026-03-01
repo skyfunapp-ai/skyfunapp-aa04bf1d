@@ -4,19 +4,19 @@ import HeaderMinimal from "@/components/HeaderMinimal";
 import BottomNav from "@/components/BottomNav";
 import { appUsers } from "@/data/flights";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { MapPin, ArrowLeft, Send, X } from "lucide-react";
+import { MapPin, ArrowLeft, Send, X, Check, CheckCheck } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "@/hooks/use-toast";
 
 // Store messages per-user so they don't leak across conversations
-const messageStore: Record<string, { text: string; fromMe: boolean; timestamp: number }[]> = {};
+const messageStore: Record<string, { text: string; fromMe: boolean; timestamp: number; status?: "sent" | "delivered" | "seen" }[]> = {};
 // Track how many messages were seen per conversation
 const readCountStore: Record<string, number> = {};
 
 const MessagesPage = () => {
   const { userId } = useParams();
   const navigate = useNavigate();
-  const [messages, setMessages] = useState<{ text: string; fromMe: boolean; timestamp: number }[]>([]);
+  const [messages, setMessages] = useState<{ text: string; fromMe: boolean; timestamp: number; status?: "sent" | "delivered" | "seen" }[]>([]);
   const [input, setInput] = useState("");
   const [incomingPopup, setIncomingPopup] = useState<{ userId: string; name: string; photo: string; avatar: string; message: string } | null>(null);
 
@@ -85,15 +85,26 @@ const MessagesPage = () => {
       return;
     }
 
-    const newMessages = [...messages, { text: input.trim(), fromMe: true, timestamp: Date.now() }];
+    const newMessages = [...messages, { text: input.trim(), fromMe: true, timestamp: Date.now(), status: "sent" as const }];
     messageStore[userId] = newMessages;
     readCountStore[userId] = newMessages.length;
     setMessages(newMessages);
     setInput("");
 
-    // Simulate reply
+    // Simulate delivered after 500ms
     setTimeout(() => {
-      const reply = [...(messageStore[userId] || []), { text: "Thanks for reaching out! ✈️", fromMe: false, timestamp: Date.now() }];
+      const current = messageStore[userId] || [];
+      const updated = current.map((m, i) => i === current.length - 1 && m.fromMe ? { ...m, status: "delivered" as const } : m);
+      messageStore[userId] = updated;
+      readCountStore[userId] = updated.length;
+      setMessages(updated);
+    }, 500);
+
+    // Simulate reply (which marks previous as seen)
+    setTimeout(() => {
+      const current = messageStore[userId] || [];
+      const seen = current.map((m) => m.fromMe ? { ...m, status: "seen" as const } : m);
+      const reply = [...seen, { text: "Thanks for reaching out! ✈️", fromMe: false, timestamp: Date.now() }];
       messageStore[userId] = reply;
       readCountStore[userId] = reply.length;
       setMessages(reply);
@@ -175,9 +186,22 @@ const MessagesPage = () => {
                     {msg.text}
                   </div>
                   {msg.timestamp && (
-                    <span className="text-[10px] text-muted-foreground mt-0.5 px-1">
-                      {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </span>
+                    <div className={`flex items-center gap-1 mt-0.5 px-1 ${msg.fromMe ? "flex-row-reverse" : ""}`}>
+                      <span className="text-[10px] text-muted-foreground">
+                        {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                      {msg.fromMe && (
+                        <span className="flex items-center">
+                          {msg.status === "seen" ? (
+                            <CheckCheck size={12} className="text-accent" />
+                          ) : msg.status === "delivered" ? (
+                            <CheckCheck size={12} className="text-muted-foreground" />
+                          ) : (
+                            <Check size={12} className="text-muted-foreground" />
+                          )}
+                        </span>
+                      )}
+                    </div>
                   )}
                 </div>
               ))}
