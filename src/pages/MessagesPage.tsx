@@ -9,14 +9,14 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "@/hooks/use-toast";
 
 // Store messages per-user so they don't leak across conversations
-const messageStore: Record<string, { text: string; fromMe: boolean }[]> = {};
+const messageStore: Record<string, { text: string; fromMe: boolean; timestamp: number }[]> = {};
 // Track how many messages were seen per conversation
 const readCountStore: Record<string, number> = {};
 
 const MessagesPage = () => {
   const { userId } = useParams();
   const navigate = useNavigate();
-  const [messages, setMessages] = useState<{ text: string; fromMe: boolean }[]>([]);
+  const [messages, setMessages] = useState<{ text: string; fromMe: boolean; timestamp: number }[]>([]);
   const [input, setInput] = useState("");
   const [incomingPopup, setIncomingPopup] = useState<{ userId: string; name: string; photo: string; avatar: string; message: string } | null>(null);
 
@@ -51,7 +51,7 @@ const MessagesPage = () => {
       });
       // Store the incoming message
       const existing = messageStore[randomUser.id] || [];
-      messageStore[randomUser.id] = [...existing, { text: "Hey! Are you at the airport? ✈️", fromMe: false }];
+      messageStore[randomUser.id] = [...existing, { text: "Hey! Are you at the airport? ✈️", fromMe: false, timestamp: Date.now() }];
     }, 8000 + Math.random() * 7000);
 
     return () => clearTimeout(timer);
@@ -85,7 +85,7 @@ const MessagesPage = () => {
       return;
     }
 
-    const newMessages = [...messages, { text: input.trim(), fromMe: true }];
+    const newMessages = [...messages, { text: input.trim(), fromMe: true, timestamp: Date.now() }];
     messageStore[userId] = newMessages;
     readCountStore[userId] = newMessages.length;
     setMessages(newMessages);
@@ -93,7 +93,7 @@ const MessagesPage = () => {
 
     // Simulate reply
     setTimeout(() => {
-      const reply = [...(messageStore[userId] || []), { text: "Thanks for reaching out! ✈️", fromMe: false }];
+      const reply = [...(messageStore[userId] || []), { text: "Thanks for reaching out! ✈️", fromMe: false, timestamp: Date.now() }];
       messageStore[userId] = reply;
       readCountStore[userId] = reply.length;
       setMessages(reply);
@@ -164,7 +164,7 @@ const MessagesPage = () => {
                 </p>
               )}
               {messages.map((msg, i) => (
-                <div key={i} className={`flex ${msg.fromMe ? "justify-end" : "justify-start"}`}>
+                <div key={i} className={`flex flex-col ${msg.fromMe ? "items-end" : "items-start"}`}>
                   <div
                     className={`max-w-[75%] px-4 py-2 rounded-2xl text-sm ${
                       msg.fromMe
@@ -174,6 +174,11 @@ const MessagesPage = () => {
                   >
                     {msg.text}
                   </div>
+                  {msg.timestamp && (
+                    <span className="text-[10px] text-muted-foreground mt-0.5 px-1">
+                      {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                  )}
                 </div>
               ))}
             </div>
