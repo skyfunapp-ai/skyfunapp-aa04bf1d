@@ -2,9 +2,10 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import HeaderMinimal from "@/components/HeaderMinimal";
 import BottomNav from "@/components/BottomNav";
-import { Search, Plane, MapPin } from "lucide-react";
+import { Search, Plane, MapPin, ShieldOff } from "lucide-react";
 import { flights, airports, appUsers } from "@/data/flights";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { toast } from "@/hooks/use-toast";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {
   Select,
@@ -24,16 +25,24 @@ const SearchPage = () => {
     ? flights.filter((f) => f.fromCode === selectedCode || f.toCode === selectedCode)
     : flights;
 
-  // Filter out blocked users
-  const blockedUsers: string[] = JSON.parse(localStorage.getItem("blockedUsers") || "[]");
+  const [blockedUsers, setBlockedUsers] = useState<string[]>(
+    JSON.parse(localStorage.getItem("blockedUsers") || "[]")
+  );
 
-  const filteredUsers = (selectedCode
+  const filteredUsers = selectedCode
     ? appUsers.filter((u) => u.airportCode === selectedCode)
-    : appUsers
-  ).filter((u) => !blockedUsers.includes(u.id));
+    : appUsers;
+
+  const handleUnblock = (e: React.MouseEvent, userId: string, userName: string) => {
+    e.stopPropagation();
+    const updated = blockedUsers.filter((id) => id !== userId);
+    localStorage.setItem("blockedUsers", JSON.stringify(updated));
+    setBlockedUsers(updated);
+    toast({ title: `${userName} unblocked` });
+  };
 
   const handleUserClick = (userId: string) => {
-    // If already connected, go directly to chat
+    if (blockedUsers.includes(userId)) return;
     const connectedUsers: string[] = JSON.parse(localStorage.getItem("connectedUsers") || "[]");
     if (connectedUsers.includes(userId)) {
       navigate(`/messages/${userId}`);
@@ -120,36 +129,50 @@ const SearchPage = () => {
           {filteredUsers.length > 0 ? (
             <ScrollArea className="h-[calc(100vh-480px)]">
               <div className="space-y-2">
-                {filteredUsers.map((user) => (
-                  <div
-                    key={user.id}
-                    onClick={() => handleUserClick(user.id)}
-                    className="flex items-center gap-3 bg-card/80 backdrop-blur rounded-xl px-4 py-3 border border-border/50 cursor-pointer hover:bg-card/95 transition-colors"
-                  >
-                    <Avatar className="w-10 h-10 shrink-0">
-                      <AvatarImage src={user.photo} alt={user.name} />
-                      <AvatarFallback className="text-sm font-bold">{user.avatar}</AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-card-foreground truncate">
-                        {user.name}
-                      </p>
-                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                        <MapPin size={12} />
-                        {user.location}
-                      </div>
-                    </div>
+                {filteredUsers.map((user) => {
+                  const isBlocked = blockedUsers.includes(user.id);
+                  return (
                     <div
-                      className={`w-3 h-3 rounded-full shrink-0 ${
-                        user.status === "online"
-                          ? "bg-green-500"
-                          : user.status === "away"
-                          ? "bg-yellow-500"
-                          : "bg-muted-foreground/40"
-                      }`}
-                    />
-                  </div>
-                ))}
+                      key={user.id}
+                      onClick={() => handleUserClick(user.id)}
+                      className={`flex items-center gap-3 bg-card/80 backdrop-blur rounded-xl px-4 py-3 border border-border/50 transition-colors ${isBlocked ? "opacity-50" : "cursor-pointer hover:bg-card/95"}`}
+                    >
+                      <Avatar className="w-10 h-10 shrink-0">
+                        <AvatarImage src={user.photo} alt={user.name} />
+                        <AvatarFallback className="text-sm font-bold">{user.avatar}</AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-card-foreground truncate">
+                          {user.name}
+                          {isBlocked && <span className="text-xs text-destructive ml-1">(Blocked)</span>}
+                        </p>
+                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                          <MapPin size={12} />
+                          {user.location}
+                        </div>
+                      </div>
+                      {isBlocked ? (
+                        <button
+                          onClick={(e) => handleUnblock(e, user.id, user.name)}
+                          className="flex items-center gap-1 text-xs text-accent bg-accent/10 px-2 py-1 rounded-full hover:bg-accent/20 transition-colors shrink-0"
+                        >
+                          <ShieldOff size={12} />
+                          Unblock
+                        </button>
+                      ) : (
+                        <div
+                          className={`w-3 h-3 rounded-full shrink-0 ${
+                            user.status === "online"
+                              ? "bg-green-500"
+                              : user.status === "away"
+                              ? "bg-yellow-500"
+                              : "bg-muted-foreground/40"
+                          }`}
+                        />
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </ScrollArea>
           ) : (
