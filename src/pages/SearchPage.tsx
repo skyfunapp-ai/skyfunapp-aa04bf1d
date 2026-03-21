@@ -21,9 +21,13 @@ const SearchPage = () => {
 
   const selectedCode = selectedAirport !== "All Airports" ? selectedAirport.split(" - ")[0] : null;
 
+  const onlineAirportCodes = appUsers
+    .filter((u) => u.status === "online")
+    .map((u) => u.airportCode);
+
   const filteredFlights = selectedCode
     ? flights.filter((f) => f.fromCode === selectedCode || f.toCode === selectedCode)
-    : flights;
+    : flights.filter((f) => onlineAirportCodes.includes(f.fromCode) || onlineAirportCodes.includes(f.toCode));
 
   const [blockedUsers, setBlockedUsers] = useState<string[]>(
     JSON.parse(localStorage.getItem("blockedUsers") || "[]")
@@ -106,9 +110,6 @@ const SearchPage = () => {
                         {flight.departure} – {flight.arrival}
                       </div>
                     </div>
-                    <span className="text-sm font-bold text-primary-foreground">
-                      {flight.price}
-                    </span>
                   </div>
                 ))}
               </div>
