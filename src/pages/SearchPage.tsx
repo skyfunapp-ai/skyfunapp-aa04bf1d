@@ -2,8 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import HeaderMinimal from "@/components/HeaderMinimal";
 import BottomNav from "@/components/BottomNav";
-import { Search, Plane, MapPin, ShieldOff } from "lucide-react";
-import { flights, airports, appUsers } from "@/data/flights";
+import { Search, MapPin, ShieldOff, Plane } from "lucide-react";
+import { airports, appUsers } from "@/data/flights";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "@/hooks/use-toast";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -16,26 +16,23 @@ import {
 } from "@/components/ui/select";
 
 const SearchPage = () => {
-  const [selectedAirport, setSelectedAirport] = useState("All Airports");
+  const [fromAirport, setFromAirport] = useState("All Airports");
+  const [toAirport, setToAirport] = useState("All Airports");
   const navigate = useNavigate();
 
-  const selectedCode = selectedAirport !== "All Airports" ? selectedAirport.split(" - ")[0] : null;
-
-  const onlineAirportCodes = appUsers
-    .filter((u) => u.status === "online")
-    .map((u) => u.airportCode);
-
-  const filteredFlights = selectedCode
-    ? flights.filter((f) => f.fromCode === selectedCode || f.toCode === selectedCode)
-    : flights.filter((f) => onlineAirportCodes.includes(f.fromCode) || onlineAirportCodes.includes(f.toCode));
+  const fromCode = fromAirport !== "All Airports" ? fromAirport.split(" - ")[0] : null;
+  const toCode = toAirport !== "All Airports" ? toAirport.split(" - ")[0] : null;
 
   const [blockedUsers, setBlockedUsers] = useState<string[]>(
     JSON.parse(localStorage.getItem("blockedUsers") || "[]")
   );
 
-  const filteredUsers = selectedCode
-    ? appUsers.filter((u) => u.airportCode === selectedCode)
-    : appUsers;
+  // Filter users based on From (current location) and To (destination) selections
+  const filteredUsers = appUsers.filter((user) => {
+    const matchesFrom = !fromCode || user.airportCode === fromCode;
+    const matchesTo = !toCode || user.destinationCode === toCode;
+    return matchesFrom && matchesTo;
+  });
 
   const handleUnblock = (e: React.MouseEvent, userId: string, userName: string) => {
     e.stopPropagation();
@@ -60,14 +57,35 @@ const SearchPage = () => {
       <HeaderMinimal />
 
       <main className="flex-1 flex flex-col pt-20 sm:pt-24 pb-20 px-4">
-        <div className="flex justify-end mb-4">
-          <div className="w-64">
-            <Select value={selectedAirport} onValueChange={setSelectedAirport}>
+        {/* From and To Airport Selectors */}
+        <div className="space-y-3 mb-6">
+          <div>
+            <label className="text-sm font-medium text-primary-foreground flex items-center gap-2 mb-1">
+              <Plane size={14} className="rotate-45" /> From
+            </label>
+            <Select value={fromAirport} onValueChange={setFromAirport}>
               <SelectTrigger className="bg-card text-card-foreground border-border">
-                <div className="flex items-center gap-2">
-                  <Plane size={16} />
-                  <SelectValue placeholder="Select Airport" />
-                </div>
+                <SelectValue placeholder="Select departure airport" />
+              </SelectTrigger>
+              <SelectContent className="bg-card text-card-foreground border-border z-50 max-h-60">
+                <ScrollArea className="h-60">
+                  {airports.map((airport) => (
+                    <SelectItem key={airport} value={airport}>
+                      {airport}
+                    </SelectItem>
+                  ))}
+                </ScrollArea>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div>
+            <label className="text-sm font-medium text-primary-foreground flex items-center gap-2 mb-1">
+              <Plane size={14} className="-rotate-45" /> To
+            </label>
+            <Select value={toAirport} onValueChange={setToAirport}>
+              <SelectTrigger className="bg-card text-card-foreground border-border">
+                <SelectValue placeholder="Select destination airport" />
               </SelectTrigger>
               <SelectContent className="bg-card text-card-foreground border-border z-50 max-h-60">
                 <ScrollArea className="h-60">
@@ -82,53 +100,17 @@ const SearchPage = () => {
           </div>
         </div>
 
-        {filteredFlights.length > 0 && (
-          <div className="mb-6">
-            <h2 className="text-lg font-bold text-primary-foreground mb-3 flex items-center gap-2">
-              <Plane size={20} /> Airline Flights {selectedCode && `at ${selectedCode}`}
-            </h2>
-            <ScrollArea className="h-48">
-              <div className="space-y-2">
-                {filteredFlights.map((flight) => (
-                  <div
-                    key={flight.id}
-                    className="flex items-center justify-between bg-card/80 backdrop-blur rounded-xl px-4 py-3 border border-border/50"
-                  >
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-semibold text-accent">
-                          {flight.airline}
-                        </span>
-                        <span className="text-xs text-muted-foreground">
-                          {flight.flightNumber}
-                        </span>
-                      </div>
-                      <div className="text-sm font-medium text-card-foreground mt-1">
-                        {flight.fromCode} → {flight.toCode}
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        {flight.departure} – {flight.arrival}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </ScrollArea>
-          </div>
-        )}
-
-        {filteredFlights.length === 0 && selectedCode && (
-          <div className="mb-6 text-center py-8">
-            <p className="text-muted-foreground">No flights found at {selectedCode}</p>
-          </div>
-        )}
-
+        {/* Users List */}
         <div>
           <h2 className="text-lg font-bold text-primary-foreground mb-3 flex items-center gap-2">
-            <Search size={20} /> People {selectedCode ? `at ${selectedCode}` : "Using SkyFunApp"}
+            <Search size={20} /> 
+            {fromCode || toCode 
+              ? `People ${fromCode ? `from ${fromCode}` : ""}${fromCode && toCode ? " → " : ""}${toCode ? `to ${toCode}` : ""}`
+              : "People Using SkyFunApp"
+            }
           </h2>
           {filteredUsers.length > 0 ? (
-            <ScrollArea className="h-[calc(100vh-480px)]">
+            <ScrollArea className="h-[calc(100vh-380px)]">
               <div className="space-y-2">
                 {filteredUsers.map((user) => {
                   const isBlocked = blockedUsers.includes(user.id);
@@ -178,7 +160,7 @@ const SearchPage = () => {
             </ScrollArea>
           ) : (
             <div className="text-center py-8">
-              <p className="text-muted-foreground">No users found{selectedCode ? ` at ${selectedCode}` : ""}</p>
+              <p className="text-muted-foreground">No users found matching your search</p>
             </div>
           )}
         </div>

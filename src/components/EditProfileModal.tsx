@@ -17,6 +17,7 @@ interface ProfileData {
   favoriteFood: string[];
   profilePhoto?: string;
   currentAirport?: string;
+  destinationAirport?: string;
 }
 
 interface EditProfileModalProps {
@@ -155,7 +156,31 @@ const EditProfileModal = ({ open, onOpenChange, profileData, onSave }: EditProfi
               </SelectContent>
             </Select>
           </div>
-          
+
+          {/* Destination Airport */}
+          <div>
+            <Label className="text-primary-foreground flex items-center gap-2">
+              <MapPin size={16} /> Destination
+            </Label>
+            <Select
+              value={formData.destinationAirport || ""}
+              onValueChange={(value) => setFormData(prev => ({ ...prev, destinationAirport: value }))}
+            >
+              <SelectTrigger className="mt-1 bg-background/50 border-border text-primary-foreground">
+                <SelectValue placeholder="Select your destination" />
+              </SelectTrigger>
+              <SelectContent className="bg-card text-card-foreground border-border z-50 max-h-60">
+                <ScrollArea className="h-60">
+                  {airports.filter(a => a !== "All Airports").map((airport) => (
+                    <SelectItem key={airport} value={airport}>
+                      {airport}
+                    </SelectItem>
+                  ))}
+                </ScrollArea>
+              </SelectContent>
+            </Select>
+          </div>
+
           <div>
             <Label className="text-primary-foreground">Hobbies</Label>
             <div className="flex flex-wrap gap-2 mt-2">
