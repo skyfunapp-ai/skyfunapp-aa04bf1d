@@ -30,9 +30,7 @@ const SearchPage = () => {
   // Filter users based on From (current location) and To (destination) selections
   const filteredUsers = appUsers.filter((user) => {
     const matchesFrom = !fromCode || user.airportCode === fromCode;
-    // For destination matching, we check if a destination is stored for the user
-    // Since app users have airportCode as current location, we simulate destination
-    const matchesTo = !toCode; // When To is set, only show users with matching destination
+    const matchesTo = !toCode || user.destinationCode === toCode;
     return matchesFrom && matchesTo;
   });
 
