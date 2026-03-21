@@ -32,7 +32,7 @@ const SkoinPaymentPage = () => {
     const current = Number(localStorage.getItem("skoinBalance") ?? "0");
     localStorage.setItem("skoinBalance", String(current + Number(coins)));
     toast({
-      title: "Payment Successful!",
+      title: "Thank You! Payment Successful!",
       description: `${coins} Gold Coin${Number(coins) > 1 ? "s" : ""} added to your balance.`,
     });
     navigate("/skoin");
