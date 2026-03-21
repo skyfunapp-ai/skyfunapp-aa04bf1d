@@ -13,6 +13,7 @@ interface ProfileData {
   favoriteFood: string[];
   profilePhoto?: string;
   currentAirport?: string;
+  destinationAirport?: string;
 }
 
 const Dashboard = () => {
@@ -70,7 +71,12 @@ const Dashboard = () => {
             <p className="text-primary-foreground mt-2">{profileData.occupation}</p>
             {profileData.currentAirport && (
               <p className="text-primary-foreground/70 mt-1 flex items-center justify-center gap-1 text-sm">
-                <MapPin size={14} /> {profileData.currentAirport}
+                <MapPin size={14} /> From: {profileData.currentAirport}
+              </p>
+            )}
+            {profileData.destinationAirport && (
+              <p className="text-primary-foreground/70 mt-1 flex items-center justify-center gap-1 text-sm">
+                <MapPin size={14} /> To: {profileData.destinationAirport}
               </p>
             )}
             
