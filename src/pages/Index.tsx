@@ -92,8 +92,10 @@ const Index = () => {
             <Button variant="outline" size="lg" className="px-6 py-4 h-auto bg-white" onClick={handleSocialLogin}>
               <FcGoogle size={32} />
             </Button>
-            <Button variant="outline" size="lg" className="px-6 py-4 h-auto bg-white" onClick={handleSocialLogin}>
-              <FaInstagram size={32} className="text-pink-500" />
+            <Button variant="outline" size="lg" className="px-6 py-4 h-auto bg-white" asChild>
+              <a href="https://www.instagram.com/skyfunapp" target="_blank" rel="noopener noreferrer">
+                <FaInstagram size={32} className="text-pink-500" />
+              </a>
             </Button>
             <Button variant="outline" size="lg" className="px-6 py-4 h-auto bg-white" onClick={handleSocialLogin}>
               <FaFacebook size={32} className="text-blue-600" />

@@ -18,13 +18,24 @@ interface ProfileData {
 
 const Dashboard = () => {
   const [isEditOpen, setIsEditOpen] = useState(false);
-  const [profileData, setProfileData] = useState<ProfileData>({
-    name: "",
-    occupation: "",
-    hobbies: [],
-    interestedIn: [],
-    favoriteFood: [],
+  const [profileData, setProfileData] = useState<ProfileData>(() => {
+    const saved = localStorage.getItem("userProfile");
+    if (saved) {
+      try { return JSON.parse(saved); } catch { /* ignore */ }
+    }
+    return {
+      name: "",
+      occupation: "",
+      hobbies: [],
+      interestedIn: [],
+      favoriteFood: [],
+    };
   });
+
+  const handleSaveProfile = (data: ProfileData) => {
+    setProfileData(data);
+    localStorage.setItem("userProfile", JSON.stringify(data));
+  };
 
   // Initialize 3 free Skoin for new users
   useEffect(() => {
@@ -122,7 +133,7 @@ const Dashboard = () => {
         open={isEditOpen}
         onOpenChange={setIsEditOpen}
         profileData={profileData}
-        onSave={setProfileData}
+        onSave={handleSaveProfile}
       />
     </div>
   );
