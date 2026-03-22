@@ -107,6 +107,10 @@ const Index = () => {
           </div>
         </div>
 
+        <button onClick={() => navigate("/forgot-password")} className="mt-2 text-sm text-primary-foreground/60 hover:underline">
+          Forgot Password?
+        </button>
+
         {/* Social Links */}
         <div className="mt-8 sm:mt-12 flex flex-col items-center space-y-3 sm:space-y-4">
           <p className="text-base sm:text-xl text-muted-foreground">Follow us</p>
