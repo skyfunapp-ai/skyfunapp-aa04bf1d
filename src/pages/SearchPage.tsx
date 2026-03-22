@@ -3,17 +3,11 @@ import { useNavigate } from "react-router-dom";
 import HeaderMinimal from "@/components/HeaderMinimal";
 import BottomNav from "@/components/BottomNav";
 import { Search, MapPin, ShieldOff, Plane } from "lucide-react";
-import { airports, appUsers } from "@/data/flights";
+import { appUsers } from "@/data/flights";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "@/hooks/use-toast";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import AirportCombobox from "@/components/AirportCombobox";
 
 const SearchPage = () => {
   const [fromAirport, setFromAirport] = useState("All Airports");
@@ -63,40 +57,14 @@ const SearchPage = () => {
             <label className="text-sm font-medium text-primary-foreground flex items-center gap-2 mb-1">
               <Plane size={14} className="rotate-45" /> From
             </label>
-            <Select value={fromAirport} onValueChange={setFromAirport}>
-              <SelectTrigger className="bg-card text-card-foreground border-border">
-                <SelectValue placeholder="Select departure airport" />
-              </SelectTrigger>
-              <SelectContent className="bg-card text-card-foreground border-border z-50 max-h-60">
-                <ScrollArea className="h-60">
-                  {airports.map((airport) => (
-                    <SelectItem key={airport} value={airport}>
-                      {airport}
-                    </SelectItem>
-                  ))}
-                </ScrollArea>
-              </SelectContent>
-            </Select>
+            <AirportCombobox value={fromAirport} onChange={setFromAirport} placeholder="Search departure airport..." />
           </div>
 
           <div>
             <label className="text-sm font-medium text-primary-foreground flex items-center gap-2 mb-1">
               <Plane size={14} className="-rotate-45" /> To
             </label>
-            <Select value={toAirport} onValueChange={setToAirport}>
-              <SelectTrigger className="bg-card text-card-foreground border-border">
-                <SelectValue placeholder="Select destination airport" />
-              </SelectTrigger>
-              <SelectContent className="bg-card text-card-foreground border-border z-50 max-h-60">
-                <ScrollArea className="h-60">
-                  {airports.map((airport) => (
-                    <SelectItem key={airport} value={airport}>
-                      {airport}
-                    </SelectItem>
-                  ))}
-                </ScrollArea>
-              </SelectContent>
-            </Select>
+            <AirportCombobox value={toAirport} onChange={setToAirport} placeholder="Search destination airport..." />
           </div>
         </div>
 

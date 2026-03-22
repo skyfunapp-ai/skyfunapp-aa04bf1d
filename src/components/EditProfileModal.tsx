@@ -3,11 +3,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { X, Camera, MapPin } from "lucide-react";
+import { X, Camera } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { airports } from "@/data/flights";
+import AirportCombobox from "@/components/AirportCombobox";
 
 interface ProfileData {
   name: string;
@@ -135,50 +133,26 @@ const EditProfileModal = ({ open, onOpenChange, profileData, onSave }: EditProfi
 
           {/* Current Airport Location */}
           <div>
-            <Label className="text-primary-foreground flex items-center gap-2">
-              <MapPin size={16} /> Current Airport Location
-            </Label>
-            <Select
-              value={formData.currentAirport || ""}
-              onValueChange={(value) => setFormData(prev => ({ ...prev, currentAirport: value }))}
-            >
-              <SelectTrigger className="mt-1 bg-background/50 border-border text-primary-foreground">
-                <SelectValue placeholder="Select your airport" />
-              </SelectTrigger>
-              <SelectContent className="bg-card text-card-foreground border-border z-50 max-h-60">
-                <ScrollArea className="h-60">
-                  {airports.filter(a => a !== "All Airports").map((airport) => (
-                    <SelectItem key={airport} value={airport}>
-                      {airport}
-                    </SelectItem>
-                  ))}
-                </ScrollArea>
-              </SelectContent>
-            </Select>
+            <Label className="text-primary-foreground">Current Airport Location</Label>
+            <div className="mt-1">
+              <AirportCombobox
+                value={formData.currentAirport || ""}
+                onChange={(value) => setFormData(prev => ({ ...prev, currentAirport: value }))}
+                placeholder="Search your airport..."
+              />
+            </div>
           </div>
 
           {/* Destination Airport */}
           <div>
-            <Label className="text-primary-foreground flex items-center gap-2">
-              <MapPin size={16} /> Destination
-            </Label>
-            <Select
-              value={formData.destinationAirport || ""}
-              onValueChange={(value) => setFormData(prev => ({ ...prev, destinationAirport: value }))}
-            >
-              <SelectTrigger className="mt-1 bg-background/50 border-border text-primary-foreground">
-                <SelectValue placeholder="Select your destination" />
-              </SelectTrigger>
-              <SelectContent className="bg-card text-card-foreground border-border z-50 max-h-60">
-                <ScrollArea className="h-60">
-                  {airports.filter(a => a !== "All Airports").map((airport) => (
-                    <SelectItem key={airport} value={airport}>
-                      {airport}
-                    </SelectItem>
-                  ))}
-                </ScrollArea>
-              </SelectContent>
-            </Select>
+            <Label className="text-primary-foreground">Destination</Label>
+            <div className="mt-1">
+              <AirportCombobox
+                value={formData.destinationAirport || ""}
+                onChange={(value) => setFormData(prev => ({ ...prev, destinationAirport: value }))}
+                placeholder="Search destination..."
+              />
+            </div>
           </div>
 
           <div>
