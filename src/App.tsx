@@ -14,6 +14,7 @@ import SkoinPaymentPage from "./pages/SkoinPaymentPage";
 import AboutPage from "./pages/AboutPage";
 import SafetyPage from "./pages/SafetyPage";
 import HelpPage from "./pages/HelpPage";
+import CreateAccountPage from "./pages/CreateAccountPage";
 const queryClient = new QueryClient();
 
 const App = () => (
