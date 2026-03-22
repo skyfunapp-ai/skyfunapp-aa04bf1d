@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import { Menu } from "lucide-react";
@@ -7,15 +8,32 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { FcGoogle } from "react-icons/fc";
 import { FaInstagram, FaFacebook, FaTiktok } from "react-icons/fa";
+import { useToast } from "@/hooks/use-toast";
 
 const Index = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleLogin = () => {
-    navigate("/dashboard");
-  };
+    if (!username.trim() || !password) {
+      toast({ title: "Missing credentials", description: "Please enter your username and password.", variant: "destructive" });
+      return;
+    }
 
-  const handleSocialLogin = () => {
+    const accounts = JSON.parse(localStorage.getItem("userAccounts") || "[]");
+    const account = accounts.find(
+      (a: { username: string; password: string }) =>
+        a.username.toLowerCase() === username.trim().toLowerCase() && a.password === password
+    );
+
+    if (!account) {
+      toast({ title: "Login failed", description: "Invalid username or password.", variant: "destructive" });
+      return;
+    }
+
+    localStorage.setItem("currentUser", account.username);
     navigate("/dashboard");
   };
 
@@ -59,7 +77,7 @@ const Index = () => {
         <div className="flex flex-col items-center space-y-4 sm:space-y-6">
           <div className="flex flex-col items-center space-y-2 sm:space-y-4 text-primary-foreground">
             <button onClick={handleLogin} className="text-2xl sm:text-5xl font-medium hover:underline">Check In (Log In)</button>
-            <button onClick={handleLogin} className="text-lg sm:text-3xl opacity-80 hover:underline">Purchase Flight (Create Account)</button>
+            <button onClick={() => navigate("/create-account")} className="text-lg sm:text-3xl opacity-80 hover:underline">Purchase Flight (Create Account)</button>
           </div>
         </div>
 
@@ -70,7 +88,9 @@ const Index = () => {
             <Input 
               id="username" 
               type="text" 
-              placeholder="Enter your username" 
+              placeholder="Enter your username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               className="h-10 sm:h-12 text-base sm:text-lg"
             />
           </div>
@@ -79,29 +99,37 @@ const Index = () => {
             <Input 
               id="password" 
               type="password" 
-              placeholder="Enter your password" 
+              placeholder="Enter your password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               className="h-10 sm:h-12 text-base sm:text-lg"
             />
           </div>
         </div>
 
-        {/* Social Login Options */}
+        {/* Social Links */}
         <div className="mt-8 sm:mt-12 flex flex-col items-center space-y-3 sm:space-y-4">
-          <p className="text-base sm:text-xl text-muted-foreground">Continue with</p>
+          <p className="text-base sm:text-xl text-muted-foreground">Follow us</p>
           <div className="flex flex-wrap justify-center gap-4">
-            <Button variant="outline" size="lg" className="px-6 py-4 h-auto bg-white" onClick={handleSocialLogin}>
-              <FcGoogle size={32} />
+            <Button variant="outline" size="lg" className="px-6 py-4 h-auto bg-white" asChild>
+              <a href="https://www.instagram.com/skyfunapp" target="_blank" rel="noopener noreferrer">
+                <FcGoogle size={32} />
+              </a>
             </Button>
             <Button variant="outline" size="lg" className="px-6 py-4 h-auto bg-white" asChild>
               <a href="https://www.instagram.com/skyfunapp" target="_blank" rel="noopener noreferrer">
                 <FaInstagram size={32} className="text-pink-500" />
               </a>
             </Button>
-            <Button variant="outline" size="lg" className="px-6 py-4 h-auto bg-white" onClick={handleSocialLogin}>
-              <FaFacebook size={32} className="text-blue-600" />
+            <Button variant="outline" size="lg" className="px-6 py-4 h-auto bg-white" asChild>
+              <a href="https://www.facebook.com/profile.php?id=61578508537600" target="_blank" rel="noopener noreferrer">
+                <FaFacebook size={32} className="text-blue-600" />
+              </a>
             </Button>
-            <Button variant="outline" size="lg" className="px-6 py-4 h-auto bg-white" onClick={handleSocialLogin}>
-              <FaTiktok size={32} />
+            <Button variant="outline" size="lg" className="px-6 py-4 h-auto bg-white" asChild>
+              <a href="https://www.tiktok.com/@skyfunapp?lang=en" target="_blank" rel="noopener noreferrer">
+                <FaTiktok size={32} />
+              </a>
             </Button>
           </div>
         </div>

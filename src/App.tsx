@@ -14,6 +14,7 @@ import SkoinPaymentPage from "./pages/SkoinPaymentPage";
 import AboutPage from "./pages/AboutPage";
 import SafetyPage from "./pages/SafetyPage";
 import HelpPage from "./pages/HelpPage";
+import CreateAccountPage from "./pages/CreateAccountPage";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -25,6 +26,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/create-account" element={<CreateAccountPage />} />
           <Route path="/search" element={<SearchPage />} />
           <Route path="/messages" element={<MessagesPage />} />
           <Route path="/messages/:userId" element={<MessagesPage />} />
