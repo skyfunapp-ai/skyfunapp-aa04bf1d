@@ -16,6 +16,7 @@ import SafetyPage from "./pages/SafetyPage";
 import HelpPage from "./pages/HelpPage";
 import CreateAccountPage from "./pages/CreateAccountPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import PrivacyPage from "./pages/PrivacyPage";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -38,6 +39,7 @@ const App = () => (
           <Route path="/about" element={<AboutPage />} />
           <Route path="/safety" element={<SafetyPage />} />
           <Route path="/help" element={<HelpPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

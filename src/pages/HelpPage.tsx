@@ -12,10 +12,6 @@ const HelpPage = () => {
         </h1>
         <div className="max-w-md space-y-4 w-full">
           <div className="bg-card/80 backdrop-blur rounded-xl p-4 border border-border/50">
-            <h3 className="font-semibold text-card-foreground mb-2">How do I search for flights?</h3>
-            <p className="text-muted-foreground text-sm">Go to the Search page and use the airport dropdown to filter flights by departure or arrival airport.</p>
-          </div>
-          <div className="bg-card/80 backdrop-blur rounded-xl p-4 border border-border/50">
             <h3 className="font-semibold text-card-foreground mb-2">How do I message someone?</h3>
             <p className="text-muted-foreground text-sm">Visit a user's profile and tap "Send Message", or go to the Messages page to start a conversation.</p>
           </div>
