@@ -54,10 +54,11 @@ const Index = () => {
             </SheetHeader>
             <nav className="mt-6 space-y-2">
               {[
-                { label: "Profile", path: "/dashboard" },
-                { label: "Search", path: "/search" },
-                { label: "Messages", path: "/messages" },
+                { label: "About", path: "/about" },
                 { label: "Skoin", path: "/skoin" },
+                { label: "Safety", path: "/safety" },
+                { label: "Help", path: "/help" },
+                { label: "Privacy & Policy", path: "/privacy" },
               ].map((item) => (
                 <button
                   key={item.path}

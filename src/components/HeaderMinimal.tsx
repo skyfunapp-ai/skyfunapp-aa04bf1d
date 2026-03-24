@@ -17,16 +17,27 @@ interface HeaderMinimalProps {
 const HeaderMinimal = ({ onEditClick, showEdit = false }: HeaderMinimalProps) => {
   const navigate = useNavigate();
 
-  const menuItems = [
-    { label: "About", path: "/about" },
-    { label: "Profile", path: "/dashboard" },
-    { label: "Search", path: "/search" },
-    { label: "Messages", path: "/messages" },
-    { label: "Skoin", path: "/skoin" },
-    { label: "Safety", path: "/safety" },
-    { label: "Help", path: "/help" },
-    { label: "Log Out", path: "/" },
-  ];
+  const isLoggedIn = !!localStorage.getItem("currentUser");
+
+  const menuItems = isLoggedIn
+    ? [
+        { label: "About", path: "/about" },
+        { label: "Profile", path: "/dashboard" },
+        { label: "Search", path: "/search" },
+        { label: "Messages", path: "/messages" },
+        { label: "Skoin", path: "/skoin" },
+        { label: "Safety", path: "/safety" },
+        { label: "Help", path: "/help" },
+        { label: "Privacy & Policy", path: "/privacy" },
+        { label: "Log Out", path: "/" },
+      ]
+    : [
+        { label: "About", path: "/about" },
+        { label: "Skoin", path: "/skoin" },
+        { label: "Safety", path: "/safety" },
+        { label: "Help", path: "/help" },
+        { label: "Privacy & Policy", path: "/privacy" },
+      ];
 
   return (
     <header className="fixed top-0 left-0 right-0 z-40 bg-background/80 backdrop-blur-lg border-b border-border">
