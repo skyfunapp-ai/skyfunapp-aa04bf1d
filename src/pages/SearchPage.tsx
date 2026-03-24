@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import HeaderMinimal from "@/components/HeaderMinimal";
 import BottomNav from "@/components/BottomNav";
-import { Search, MapPin, ShieldOff, Plane } from "lucide-react";
+import { Search, MapPin, ShieldOff, Plane, Navigation } from "lucide-react";
+import { airports } from "@/data/flights";
 import { appUsers } from "@/data/flights";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "@/hooks/use-toast";
@@ -99,8 +100,14 @@ const SearchPage = () => {
                         </p>
                         <div className="flex items-center gap-1 text-xs text-muted-foreground">
                           <MapPin size={12} />
-                          {user.location}
+                          {airports.find(a => a.startsWith(user.airportCode))?.split(" - ")[1] || user.location}
                         </div>
+                        {user.destinationCode && (
+                          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                            <Navigation size={12} />
+                            {airports.find(a => a.startsWith(user.destinationCode!))?.split(" - ")[1] || user.destinationCode}
+                          </div>
+                        )}
                       </div>
                       {isBlocked ? (
                         <button

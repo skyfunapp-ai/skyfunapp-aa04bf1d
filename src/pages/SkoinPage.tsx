@@ -14,8 +14,8 @@ const SkoinPage = () => {
 
   const coinOptions = [
     { coins: 1, price: ".99", label: "1 Gold Coin", badge: null },
-    { coins: 25, price: "19.99", label: "25 Gold Coins", badge: "25" },
     { coins: 12, price: "9.99", label: "12 Gold Coins", badge: "12" },
+    { coins: 25, price: "19.99", label: "25 Gold Coins", badge: "25" },
   ];
 
   return (
