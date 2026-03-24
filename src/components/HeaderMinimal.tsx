@@ -29,7 +29,7 @@ const HeaderMinimal = ({ onEditClick, showEdit = false }: HeaderMinimalProps) =>
         { label: "Safety", path: "/safety" },
         { label: "Help", path: "/help" },
         { label: "Privacy & Policy", path: "/privacy" },
-        { label: "Log Out", path: "/" },
+        { label: "Log Out", path: "/logout" },
       ]
     : [
         { label: "About", path: "/about" },
@@ -69,7 +69,14 @@ const HeaderMinimal = ({ onEditClick, showEdit = false }: HeaderMinimalProps) =>
                 {menuItems.map((item) => (
                   <button
                     key={item.path}
-                    onClick={() => navigate(item.path)}
+                    onClick={() => {
+                      if (item.path === "/logout") {
+                        localStorage.removeItem("currentUser");
+                        navigate("/");
+                      } else {
+                        navigate(item.path);
+                      }
+                    }}
                     className="w-full text-left px-4 py-3 rounded-lg text-lg font-medium text-primary-foreground hover:bg-accent/20 transition-colors"
                   >
                     {item.label}
