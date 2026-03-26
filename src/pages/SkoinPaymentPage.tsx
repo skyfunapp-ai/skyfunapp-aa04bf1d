@@ -5,11 +5,11 @@ import BottomNav from "@/components/BottomNav";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Coins, CreditCard, ArrowLeft, Smartphone, Wallet } from "lucide-react";
+import { Coins, CreditCard, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { FaApple, FaPaypal } from "react-icons/fa";
+import { FaApple, FaPaypal, FaGoogle } from "react-icons/fa";
 
-type PaymentMethod = "credit" | "debit" | "applepay" | "paypal";
+type PaymentMethod = "card" | "paypal" | "applepay" | "googlepay";
 
 const SkoinPaymentPage = () => {
   const [searchParams] = useSearchParams();
@@ -19,7 +19,7 @@ const SkoinPaymentPage = () => {
   const coins = searchParams.get("coins") || "1";
   const price = searchParams.get("price") || ".99";
 
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("credit");
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("card");
   const [cardNumber, setCardNumber] = useState("");
   const [expiry, setExpiry] = useState("");
   const [cvv, setCvv] = useState("");
@@ -28,7 +28,8 @@ const SkoinPaymentPage = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Add purchased Skoin to balance
+    // TODO: Integrate with a real payment processor (e.g. Stripe) to securely route funds.
+    // Do NOT store bank routing/account numbers in client-side code.
     const current = Number(localStorage.getItem("skoinBalance") ?? "0");
     localStorage.setItem("skoinBalance", String(current + Number(coins)));
     toast({
@@ -38,7 +39,12 @@ const SkoinPaymentPage = () => {
     navigate("/skoin");
   };
 
-  const isCardPayment = paymentMethod === "credit" || paymentMethod === "debit";
+  const methodButtons: { key: PaymentMethod; label: string; icon: React.ReactNode }[] = [
+    { key: "card", label: "Credit/Debit", icon: <CreditCard size={16} /> },
+    { key: "paypal", label: "PayPal", icon: <FaPaypal size={16} /> },
+    { key: "applepay", label: "Apple Pay", icon: <FaApple size={16} /> },
+    { key: "googlepay", label: "Google Pay", icon: <FaGoogle size={16} /> },
+  ];
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -66,58 +72,25 @@ const SkoinPaymentPage = () => {
         <form onSubmit={handleSubmit} className="w-full max-w-sm space-y-5">
           {/* Payment Method Toggle */}
           <div className="grid grid-cols-2 gap-2">
-            <button
-              type="button"
-              onClick={() => setPaymentMethod("credit")}
-              className={`py-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 border transition-colors ${
-                paymentMethod === "credit"
-                  ? "bg-accent text-accent-foreground border-accent"
-                  : "bg-card/80 text-card-foreground border-border/50 hover:bg-card/95"
-              }`}
-            >
-              <CreditCard size={16} />
-              Credit
-            </button>
-            <button
-              type="button"
-              onClick={() => setPaymentMethod("debit")}
-              className={`py-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 border transition-colors ${
-                paymentMethod === "debit"
-                  ? "bg-accent text-accent-foreground border-accent"
-                  : "bg-card/80 text-card-foreground border-border/50 hover:bg-card/95"
-              }`}
-            >
-              <CreditCard size={16} />
-              Debit
-            </button>
-            <button
-              type="button"
-              onClick={() => setPaymentMethod("applepay")}
-              className={`py-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 border transition-colors ${
-                paymentMethod === "applepay"
-                  ? "bg-accent text-accent-foreground border-accent"
-                  : "bg-card/80 text-card-foreground border-border/50 hover:bg-card/95"
-              }`}
-            >
-              <FaApple size={16} />
-              Apple Pay
-            </button>
-            <button
-              type="button"
-              onClick={() => setPaymentMethod("paypal")}
-              className={`py-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 border transition-colors ${
-                paymentMethod === "paypal"
-                  ? "bg-accent text-accent-foreground border-accent"
-                  : "bg-card/80 text-card-foreground border-border/50 hover:bg-card/95"
-              }`}
-            >
-              <FaPaypal size={16} />
-              PayPal
-            </button>
+            {methodButtons.map((m) => (
+              <button
+                key={m.key}
+                type="button"
+                onClick={() => setPaymentMethod(m.key)}
+                className={`py-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 border transition-colors ${
+                  paymentMethod === m.key
+                    ? "bg-accent text-accent-foreground border-accent"
+                    : "bg-card/80 text-card-foreground border-border/50 hover:bg-card/95"
+                }`}
+              >
+                {m.icon}
+                {m.label}
+              </button>
+            ))}
           </div>
 
           {/* Card fields */}
-          {isCardPayment && (
+          {paymentMethod === "card" && (
             <>
               <div>
                 <Label className="text-primary-foreground">Name on Card</Label>
@@ -175,6 +148,16 @@ const SkoinPaymentPage = () => {
             </div>
           )}
 
+          {/* Google Pay */}
+          {paymentMethod === "googlepay" && (
+            <div className="text-center py-6">
+              <FaGoogle size={48} className="mx-auto text-primary-foreground mb-3" />
+              <p className="text-primary-foreground/70 text-sm">
+                Click below to complete payment with Google Pay
+              </p>
+            </div>
+          )}
+
           {/* PayPal */}
           {paymentMethod === "paypal" && (
             <div className="space-y-4">
@@ -198,6 +181,8 @@ const SkoinPaymentPage = () => {
           <Button type="submit" className="w-full py-6 text-lg font-bold mt-4">
             {paymentMethod === "applepay"
               ? `Pay with Apple Pay — $${price}`
+              : paymentMethod === "googlepay"
+              ? `Pay with Google Pay — $${price}`
               : paymentMethod === "paypal"
               ? `Pay with PayPal — $${price}`
               : `Pay $${price}`}
