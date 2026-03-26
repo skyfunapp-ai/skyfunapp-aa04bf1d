@@ -32,6 +32,7 @@ const HeaderMinimal = ({ onEditClick, showEdit = false }: HeaderMinimalProps) =>
         { label: "Log Out", path: "/logout" },
       ]
     : [
+        { label: "Home", path: "/" },
         { label: "About", path: "/about" },
         { label: "Skoin", path: "/skoin" },
         { label: "Safety", path: "/safety" },
