@@ -7,6 +7,9 @@ interface BottomNavProps {
 
 const BottomNav = ({ activePage }: BottomNavProps) => {
   const navigate = useNavigate();
+  const isLoggedIn = !!localStorage.getItem("currentUser");
+
+  if (!isLoggedIn) return null;
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-background/80 backdrop-blur-lg border-t border-border py-4">

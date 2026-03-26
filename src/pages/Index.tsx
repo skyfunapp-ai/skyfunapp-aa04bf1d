@@ -54,6 +54,7 @@ const Index = () => {
             </SheetHeader>
             <nav className="mt-6 space-y-2">
               {[
+                { label: "Home", path: "/" },
                 { label: "About", path: "/about" },
                 { label: "Skoin", path: "/skoin" },
                 { label: "Safety", path: "/safety" },
