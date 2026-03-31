@@ -9,31 +9,37 @@ import { Label } from "@/components/ui/label";
 import { FcGoogle } from "react-icons/fc";
 import { FaInstagram, FaFacebook, FaTiktok } from "react-icons/fa";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Index = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [username, setUsername] = useState("");
+  const { signIn, user, loading } = useAuth();
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleLogin = () => {
-    if (!username.trim() || !password) {
-      toast({ title: "Missing credentials", description: "Please enter your username and password.", variant: "destructive" });
+  // If already logged in, redirect to dashboard
+  if (!loading && user) {
+    navigate("/dashboard", { replace: true });
+    return null;
+  }
+
+  const handleLogin = async () => {
+    if (!email.trim() || !password) {
+      toast({ title: "Missing credentials", description: "Please enter your email and password.", variant: "destructive" });
       return;
     }
 
-    const accounts = JSON.parse(localStorage.getItem("userAccounts") || "[]");
-    const account = accounts.find(
-      (a: { username: string; password: string }) =>
-        a.username.toLowerCase() === username.trim().toLowerCase() && a.password === password
-    );
+    setSubmitting(true);
+    const { error } = await signIn(email.trim(), password);
+    setSubmitting(false);
 
-    if (!account) {
-      toast({ title: "Login failed", description: "Invalid username or password.", variant: "destructive" });
+    if (error) {
+      toast({ title: "Login failed", description: error.message, variant: "destructive" });
       return;
     }
 
-    localStorage.setItem("currentUser", account.username);
     navigate("/dashboard");
   };
 
@@ -78,21 +84,23 @@ const Index = () => {
         {/* Auth Links */}
         <div className="flex flex-col items-center space-y-4 sm:space-y-6">
           <div className="flex flex-col items-center space-y-2 sm:space-y-4 text-primary-foreground">
-            <button onClick={handleLogin} className="text-2xl sm:text-5xl font-medium hover:underline">Check In (Log In)</button>
+            <button onClick={handleLogin} disabled={submitting} className="text-2xl sm:text-5xl font-medium hover:underline">
+              {submitting ? "Checking In..." : "Check In (Log In)"}
+            </button>
             <button onClick={() => navigate("/create-account")} className="text-lg sm:text-3xl opacity-80 hover:underline">Purchase Flight (Create Account)</button>
           </div>
         </div>
 
-        {/* Username & Password Fields */}
+        {/* Email & Password Fields */}
         <div className="mt-6 sm:mt-8 w-full max-w-sm space-y-3 sm:space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="username" className="text-primary-foreground text-base sm:text-lg">Username</Label>
+            <Label htmlFor="email" className="text-primary-foreground text-base sm:text-lg">Email</Label>
             <Input 
-              id="username" 
-              type="text" 
-              placeholder="Enter your username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              id="email" 
+              type="email" 
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="h-10 sm:h-12 text-base sm:text-lg"
             />
           </div>

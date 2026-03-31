@@ -1,5 +1,6 @@
 import { User, Search, MessageCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface BottomNavProps {
   activePage: "profile" | "search" | "messages";
@@ -7,9 +8,9 @@ interface BottomNavProps {
 
 const BottomNav = ({ activePage }: BottomNavProps) => {
   const navigate = useNavigate();
-  const isLoggedIn = !!localStorage.getItem("currentUser");
+  const { user } = useAuth();
 
-  if (!isLoggedIn) return null;
+  if (!user) return null;
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-background/80 backdrop-blur-lg border-t border-border py-4">
