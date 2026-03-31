@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import HeaderMinimal from "@/components/HeaderMinimal";
 import BottomNav from "@/components/BottomNav";
 import { appUsers } from "@/data/flights";
@@ -8,44 +8,35 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
+import { useProfile, useConnections, useBlockedUsers } from "@/hooks/useProfile";
 
 const UserProfilePage = () => {
   const { userId } = useParams();
   const navigate = useNavigate();
   const user = appUsers.find((u) => u.id === userId);
 
-  const [blocked, setBlocked] = useState(false);
+  const { profile, updateProfile } = useProfile();
+  const { addConnection, isConnected } = useConnections();
+  const { isBlocked, blockUser, unblockUser } = useBlockedUsers();
+
+  const blocked = userId ? isBlocked(userId) : false;
 
   useEffect(() => {
-    if (userId) {
-      const blockedUsers: string[] = JSON.parse(localStorage.getItem("blockedUsers") || "[]");
-      // If this user is blocked, redirect away - can't view blocked profiles
-      if (blockedUsers.includes(userId)) {
-        navigate("/search", { replace: true });
-        return;
-      }
-      setBlocked(false);
+    if (userId && blocked) {
+      navigate("/search", { replace: true });
     }
-  }, [userId, navigate]);
+  }, [userId, blocked, navigate]);
 
-  const toggleBlock = () => {
-    if (!userId) return;
-    const blockedUsers: string[] = JSON.parse(localStorage.getItem("blockedUsers") || "[]");
-    let updated: string[];
+  const toggleBlock = async () => {
+    if (!userId || !user) return;
     if (blocked) {
-      updated = blockedUsers.filter((id) => id !== userId);
-      toast({ title: `${user?.name} unblocked` });
+      await unblockUser(userId);
+      toast({ title: `${user.name} unblocked` });
     } else {
-      updated = [...blockedUsers, userId];
-      toast({ title: `${user?.name} blocked` });
-      // Navigate away since blocked users can't be viewed
-      localStorage.setItem("blockedUsers", JSON.stringify(updated));
-      setBlocked(true);
+      await blockUser(userId);
+      toast({ title: `${user.name} blocked` });
       setTimeout(() => navigate("/search", { replace: true }), 500);
-      return;
     }
-    localStorage.setItem("blockedUsers", JSON.stringify(updated));
-    setBlocked(!blocked);
   };
 
   if (!user) {
@@ -102,7 +93,6 @@ const UserProfilePage = () => {
 
             <p className="text-primary-foreground/80 mt-4 text-center">{user.bio}</p>
 
-            {/* Block / Unblock */}
             <div className="flex items-center gap-3 mt-6 bg-card/80 backdrop-blur rounded-xl px-5 py-3 border border-border/50">
               {blocked ? <ShieldAlert size={18} className="text-destructive" /> : <ShieldCheck size={18} className="text-green-500" />}
               <Label htmlFor="block-toggle" className="text-sm text-primary-foreground cursor-pointer">
@@ -113,19 +103,15 @@ const UserProfilePage = () => {
 
             {!blocked && (
               <button
-                onClick={() => {
-                  const connectedUsers: string[] = JSON.parse(localStorage.getItem("connectedUsers") || "[]");
-                  if (!connectedUsers.includes(user.id)) {
-                    const balance = Number(localStorage.getItem("skoinBalance") ?? "5");
-                    if (balance <= 0) {
+                onClick={async () => {
+                  if (!isConnected(user.id)) {
+                    if (profile.skoinBalance <= 0) {
                       toast({ title: "No Skoin remaining", description: "Purchase Skoin to connect with new users." });
                       navigate("/skoin");
                       return;
                     }
-                    // Deduct 1 Skoin and mark as connected
-                    localStorage.setItem("skoinBalance", String(balance - 1));
-                    connectedUsers.push(user.id);
-                    localStorage.setItem("connectedUsers", JSON.stringify(connectedUsers));
+                    await updateProfile({ skoinBalance: profile.skoinBalance - 1 });
+                    await addConnection(user.id);
                     toast({ title: `Connected with ${user.name}`, description: "1 Skoin used. You can now chat freely!" });
                   }
                   navigate(`/messages/${user.id}`);

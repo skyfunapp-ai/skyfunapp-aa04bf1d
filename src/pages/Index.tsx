@@ -126,7 +126,7 @@ const Index = () => {
           <p className="text-base sm:text-xl text-muted-foreground">Follow us</p>
           <div className="flex flex-wrap justify-center gap-4">
             <Button variant="outline" size="lg" className="px-6 py-4 h-auto bg-white" asChild>
-              <a href="https://www.instagram.com/skyfunapp" target="_blank" rel="noopener noreferrer">
+              <a href="https://www.skyfunapp.com" target="_blank" rel="noopener noreferrer">
                 <FcGoogle size={32} />
               </a>
             </Button>
