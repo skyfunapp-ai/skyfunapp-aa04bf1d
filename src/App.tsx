@@ -13,6 +13,7 @@ import UserProfilePage from "./pages/UserProfilePage";
 import NotFound from "./pages/NotFound";
 import SkoinPage from "./pages/SkoinPage";
 import SkoinPaymentPage from "./pages/SkoinPaymentPage";
+import SkoinSuccessPage from "./pages/SkoinSuccessPage";
 import AboutPage from "./pages/AboutPage";
 import SafetyPage from "./pages/SafetyPage";
 import HelpPage from "./pages/HelpPage";
