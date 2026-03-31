@@ -9,6 +9,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "@/hooks/use-toast";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import AirportCombobox from "@/components/AirportCombobox";
+import { useConnections, useBlockedUsers } from "@/hooks/useProfile";
 
 const SearchPage = () => {
   const [fromAirport, setFromAirport] = useState("All Airports");
@@ -18,29 +19,24 @@ const SearchPage = () => {
   const fromCode = fromAirport !== "All Airports" ? fromAirport.split(" - ")[0] : null;
   const toCode = toAirport !== "All Airports" ? toAirport.split(" - ")[0] : null;
 
-  const [blockedUsers, setBlockedUsers] = useState<string[]>(
-    JSON.parse(localStorage.getItem("blockedUsers") || "[]")
-  );
+  const { isConnected } = useConnections();
+  const { blockedUserIds, unblockUser, isBlocked } = useBlockedUsers();
 
-  // Filter users based on From (current location) and To (destination) selections
   const filteredUsers = appUsers.filter((user) => {
     const matchesFrom = !fromCode || user.airportCode === fromCode;
     const matchesTo = !toCode || user.destinationCode === toCode;
     return matchesFrom && matchesTo;
   });
 
-  const handleUnblock = (e: React.MouseEvent, userId: string, userName: string) => {
+  const handleUnblock = async (e: React.MouseEvent, userId: string, userName: string) => {
     e.stopPropagation();
-    const updated = blockedUsers.filter((id) => id !== userId);
-    localStorage.setItem("blockedUsers", JSON.stringify(updated));
-    setBlockedUsers(updated);
+    await unblockUser(userId);
     toast({ title: `${userName} unblocked` });
   };
 
   const handleUserClick = (userId: string) => {
-    if (blockedUsers.includes(userId)) return;
-    const connectedUsers: string[] = JSON.parse(localStorage.getItem("connectedUsers") || "[]");
-    if (connectedUsers.includes(userId)) {
+    if (isBlocked(userId)) return;
+    if (isConnected(userId)) {
       navigate(`/messages/${userId}`);
     } else {
       navigate(`/user/${userId}`);
@@ -52,7 +48,6 @@ const SearchPage = () => {
       <HeaderMinimal />
 
       <main className="flex-1 flex flex-col pt-20 sm:pt-24 pb-20 px-4">
-        {/* From and To Airport Selectors */}
         <div className="space-y-3 mb-6">
           <div>
             <label className="text-sm font-medium text-primary-foreground flex items-center gap-2 mb-1">
@@ -60,7 +55,6 @@ const SearchPage = () => {
             </label>
             <AirportCombobox value={fromAirport} onChange={setFromAirport} placeholder="Search departure airport..." />
           </div>
-
           <div>
             <label className="text-sm font-medium text-primary-foreground flex items-center gap-2 mb-1">
               <Plane size={14} className="-rotate-45" /> To
@@ -69,7 +63,6 @@ const SearchPage = () => {
           </div>
         </div>
 
-        {/* Users List */}
         <div>
           <h2 className="text-lg font-bold text-primary-foreground mb-3 flex items-center gap-2">
             <Search size={20} /> 
@@ -82,12 +75,12 @@ const SearchPage = () => {
             <ScrollArea className="h-[calc(100vh-380px)]">
               <div className="space-y-2">
                 {filteredUsers.map((user) => {
-                  const isBlocked = blockedUsers.includes(user.id);
+                  const userBlocked = isBlocked(user.id);
                   return (
                     <div
                       key={user.id}
                       onClick={() => handleUserClick(user.id)}
-                      className={`flex items-center gap-3 bg-card/80 backdrop-blur rounded-xl px-4 py-3 border border-border/50 transition-colors ${isBlocked ? "opacity-50" : "cursor-pointer hover:bg-card/95"}`}
+                      className={`flex items-center gap-3 bg-card/80 backdrop-blur rounded-xl px-4 py-3 border border-border/50 transition-colors ${userBlocked ? "opacity-50" : "cursor-pointer hover:bg-card/95"}`}
                     >
                       <Avatar className="w-10 h-10 shrink-0">
                         <AvatarImage src={user.photo} alt={user.name} />
@@ -96,7 +89,7 @@ const SearchPage = () => {
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-semibold text-card-foreground truncate">
                           {user.name}
-                          {isBlocked && <span className="text-xs text-destructive ml-1">(Blocked)</span>}
+                          {userBlocked && <span className="text-xs text-destructive ml-1">(Blocked)</span>}
                         </p>
                         <div className="flex items-center gap-1 text-xs text-muted-foreground">
                           <MapPin size={12} />
@@ -109,7 +102,7 @@ const SearchPage = () => {
                           </div>
                         )}
                       </div>
-                      {isBlocked ? (
+                      {userBlocked ? (
                         <button
                           onClick={(e) => handleUnblock(e, user.id, user.name)}
                           className="flex items-center gap-1 text-xs text-accent bg-accent/10 px-2 py-1 rounded-full hover:bg-accent/20 transition-colors shrink-0"

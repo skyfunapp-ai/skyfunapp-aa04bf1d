@@ -7,10 +7,9 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { MapPin, ArrowLeft, Send, X, Check, CheckCheck } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "@/hooks/use-toast";
+import { useProfile, useConnections, useBlockedUsers } from "@/hooks/useProfile";
 
-// Store messages per-user so they don't leak across conversations
 const messageStore: Record<string, { text: string; fromMe: boolean; timestamp: number; status?: "sent" | "delivered" | "seen" }[]> = {};
-// Track how many messages were seen per conversation
 const readCountStore: Record<string, number> = {};
 
 const MessagesPage = () => {
@@ -22,10 +21,10 @@ const MessagesPage = () => {
 
   const selectedUser = userId ? appUsers.find((u) => u.id === userId) : null;
 
-  // Check Skoin balance
-  const getSkoinBalance = () => Number(localStorage.getItem("skoinBalance") ?? "5");
+  const { profile } = useProfile();
+  const { connectedUserIds, addConnection } = useConnections();
+  const { blockedUserIds, isBlocked } = useBlockedUsers();
 
-  // Load per-user messages & mark as read
   useEffect(() => {
     if (userId) {
       setMessages(messageStore[userId] || []);
@@ -33,11 +32,9 @@ const MessagesPage = () => {
     }
   }, [userId]);
 
-  // Simulate incoming message from a random user while in a chat
   useEffect(() => {
     if (!userId) return;
-    const blockedUsers: string[] = JSON.parse(localStorage.getItem("blockedUsers") || "[]");
-    const otherUsers = appUsers.filter((u) => u.id !== userId && !blockedUsers.includes(u.id));
+    const otherUsers = appUsers.filter((u) => u.id !== userId && !isBlocked(u.id));
     if (otherUsers.length === 0) return;
 
     const timer = setTimeout(() => {
@@ -49,37 +46,26 @@ const MessagesPage = () => {
         avatar: randomUser.avatar,
         message: "Hey! Are you at the airport? ✈️",
       });
-      // Store the incoming message
       const existing = messageStore[randomUser.id] || [];
       messageStore[randomUser.id] = [...existing, { text: "Hey! Are you at the airport? ✈️", fromMe: false, timestamp: Date.now() }];
     }, 8000 + Math.random() * 7000);
 
     return () => clearTimeout(timer);
-  }, [userId]);
+  }, [userId, blockedUserIds]);
 
-  const handleIncomingClick = useCallback(() => {
+  const handleIncomingClick = useCallback(async () => {
     if (!incomingPopup) return;
     const targetId = incomingPopup.userId;
-    // Auto-connect receiver without deducting Skoin
-    const connectedUsers: string[] = JSON.parse(localStorage.getItem("connectedUsers") || "[]");
-    if (!connectedUsers.includes(targetId)) {
-      connectedUsers.push(targetId);
-      localStorage.setItem("connectedUsers", JSON.stringify(connectedUsers));
+    if (!connectedUserIds.includes(targetId)) {
+      await addConnection(targetId);
     }
     setIncomingPopup(null);
     navigate(`/messages/${targetId}`);
-  }, [incomingPopup, navigate]);
-
-  // Check if user is blocked
-  const isBlocked = (id: string) => {
-    const blocked: string[] = JSON.parse(localStorage.getItem("blockedUsers") || "[]");
-    return blocked.includes(id);
-  };
+  }, [incomingPopup, navigate, connectedUserIds, addConnection]);
 
   const handleSend = () => {
     if (!input.trim() || !userId) return;
 
-    // Check if blocked
     if (isBlocked(userId)) {
       toast({ title: "User is blocked", description: "Unblock this user to send messages." });
       return;
@@ -91,7 +77,6 @@ const MessagesPage = () => {
     setMessages(newMessages);
     setInput("");
 
-    // Simulate delivered after 500ms
     setTimeout(() => {
       const current = messageStore[userId] || [];
       const updated = current.map((m, i) => i === current.length - 1 && m.fromMe ? { ...m, status: "delivered" as const } : m);
@@ -100,7 +85,6 @@ const MessagesPage = () => {
       setMessages(updated);
     }, 500);
 
-    // Simulate reply (which marks previous as seen)
     setTimeout(() => {
       const current = messageStore[userId] || [];
       const seen = current.map((m) => m.fromMe ? { ...m, status: "seen" as const } : m);
@@ -111,7 +95,6 @@ const MessagesPage = () => {
     }, 1200);
   };
 
-  // Chat view
   if (selectedUser) {
     const userBlocked = isBlocked(selectedUser.id);
 
@@ -119,7 +102,6 @@ const MessagesPage = () => {
       <div className="min-h-screen flex flex-col bg-background">
         <HeaderMinimal />
 
-        {/* Incoming message popup */}
         {incomingPopup && (
           <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 animate-in slide-in-from-top-4 fade-in duration-300">
             <div
@@ -134,10 +116,7 @@ const MessagesPage = () => {
                 <p className="text-sm font-semibold text-card-foreground truncate">{incomingPopup.name}</p>
                 <p className="text-xs text-muted-foreground truncate">{incomingPopup.message}</p>
               </div>
-              <button
-                onClick={(e) => { e.stopPropagation(); setIncomingPopup(null); }}
-                className="text-muted-foreground hover:text-card-foreground p-1"
-              >
+              <button onClick={(e) => { e.stopPropagation(); setIncomingPopup(null); }} className="text-muted-foreground hover:text-card-foreground p-1">
                 <X size={14} />
               </button>
             </div>
@@ -146,10 +125,7 @@ const MessagesPage = () => {
 
         <main className="flex-1 flex flex-col pt-20 sm:pt-24 pb-20 px-4">
           <div className="flex items-center gap-3 mb-4">
-            <button
-              onClick={() => navigate("/messages")}
-              className="text-primary-foreground/70 hover:text-primary-foreground transition-colors"
-            >
+            <button onClick={() => navigate("/messages")} className="text-primary-foreground/70 hover:text-primary-foreground transition-colors">
               <ArrowLeft size={20} />
             </button>
             <Avatar className="w-9 h-9">
@@ -165,40 +141,22 @@ const MessagesPage = () => {
           <ScrollArea className="flex-1 mb-4">
             <div className="space-y-3 min-h-[200px]">
               {messages.length === 0 && !userBlocked && (
-                <p className="text-center text-muted-foreground text-sm mt-12">
-                  Say hello to {selectedUser.name}!
-                </p>
+                <p className="text-center text-muted-foreground text-sm mt-12">Say hello to {selectedUser.name}!</p>
               )}
               {userBlocked && (
-                <p className="text-center text-destructive text-sm mt-12">
-                  You have blocked this user. Unblock from their profile to chat.
-                </p>
+                <p className="text-center text-destructive text-sm mt-12">You have blocked this user. Unblock from their profile to chat.</p>
               )}
               {messages.map((msg, i) => (
                 <div key={i} className={`flex flex-col ${msg.fromMe ? "items-end" : "items-start"}`}>
-                  <div
-                    className={`max-w-[75%] px-4 py-2 rounded-2xl text-sm ${
-                      msg.fromMe
-                        ? "bg-accent text-accent-foreground rounded-br-sm"
-                        : "bg-card text-card-foreground border border-border/50 rounded-bl-sm"
-                    }`}
-                  >
+                  <div className={`max-w-[75%] px-4 py-2 rounded-2xl text-sm ${msg.fromMe ? "bg-accent text-accent-foreground rounded-br-sm" : "bg-card text-card-foreground border border-border/50 rounded-bl-sm"}`}>
                     {msg.text}
                   </div>
                   {msg.timestamp && (
                     <div className={`flex items-center gap-1 mt-0.5 px-1 ${msg.fromMe ? "flex-row-reverse" : ""}`}>
-                      <span className="text-[10px] text-muted-foreground">
-                        {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                      </span>
+                      <span className="text-[10px] text-muted-foreground">{new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                       {msg.fromMe && (
                         <span className="flex items-center">
-                          {msg.status === "seen" ? (
-                            <CheckCheck size={12} className="text-accent" />
-                          ) : msg.status === "delivered" ? (
-                            <CheckCheck size={12} className="text-muted-foreground" />
-                          ) : (
-                            <Check size={12} className="text-muted-foreground" />
-                          )}
+                          {msg.status === "seen" ? <CheckCheck size={12} className="text-accent" /> : msg.status === "delivered" ? <CheckCheck size={12} className="text-muted-foreground" /> : <Check size={12} className="text-muted-foreground" />}
                         </span>
                       )}
                     </div>
@@ -217,18 +175,13 @@ const MessagesPage = () => {
                 placeholder="Type a message..."
                 className="flex-1 bg-card text-card-foreground border border-border rounded-full px-4 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent"
               />
-              <button
-                onClick={handleSend}
-                className="p-2.5 bg-accent text-accent-foreground rounded-full hover:opacity-90 transition-opacity"
-              >
+              <button onClick={handleSend} className="p-2.5 bg-accent text-accent-foreground rounded-full hover:opacity-90 transition-opacity">
                 <Send size={18} />
               </button>
             </div>
           )}
 
-          <p className="text-xs text-muted-foreground text-center mt-2">
-            Skoin balance: {getSkoinBalance()}
-          </p>
+          <p className="text-xs text-muted-foreground text-center mt-2">Skoin balance: {profile.skoinBalance}</p>
         </main>
 
         <BottomNav activePage="messages" />
@@ -236,10 +189,7 @@ const MessagesPage = () => {
     );
   }
 
-  // Connected users only - no user directory
-  const connectedUsers: string[] = JSON.parse(localStorage.getItem("connectedUsers") || "[]");
-  const blockedUsers: string[] = JSON.parse(localStorage.getItem("blockedUsers") || "[]");
-  const chatUsers = appUsers.filter((u) => connectedUsers.includes(u.id) && !blockedUsers.includes(u.id));
+  const chatUsers = appUsers.filter((u) => connectedUserIds.includes(u.id) && !isBlocked(u.id));
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -252,9 +202,7 @@ const MessagesPage = () => {
           {chatUsers.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16">
               <p className="text-muted-foreground text-sm text-center">No conversations yet.</p>
-              <p className="text-muted-foreground text-xs text-center mt-1">
-                Connect with users from the Search page to start chatting.
-              </p>
+              <p className="text-muted-foreground text-xs text-center mt-1">Connect with users from the Search page to start chatting.</p>
             </div>
           ) : (
             <div className="space-y-2">
@@ -276,9 +224,7 @@ const MessagesPage = () => {
                         <AvatarFallback className="text-sm font-bold">{user.avatar}</AvatarFallback>
                       </Avatar>
                       {unreadCount > 0 && (
-                        <span className="absolute -top-1 -right-1 bg-accent text-accent-foreground text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                          {unreadCount}
-                        </span>
+                        <span className="absolute -top-1 -right-1 bg-accent text-accent-foreground text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center">{unreadCount}</span>
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -287,15 +233,7 @@ const MessagesPage = () => {
                         {lastMsg ? (lastMsg.fromMe ? `You: ${lastMsg.text}` : lastMsg.text) : "Tap to chat"}
                       </p>
                     </div>
-                    <div
-                      className={`w-3 h-3 rounded-full shrink-0 ${
-                        user.status === "online"
-                          ? "bg-green-500"
-                          : user.status === "away"
-                          ? "bg-yellow-500"
-                          : "bg-muted-foreground/40"
-                      }`}
-                    />
+                    <div className={`w-3 h-3 rounded-full shrink-0 ${user.status === "online" ? "bg-green-500" : user.status === "away" ? "bg-yellow-500" : "bg-muted-foreground/40"}`} />
                   </div>
                 );
               })}
