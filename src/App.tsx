@@ -13,6 +13,7 @@ import UserProfilePage from "./pages/UserProfilePage";
 import NotFound from "./pages/NotFound";
 import SkoinPage from "./pages/SkoinPage";
 import SkoinPaymentPage from "./pages/SkoinPaymentPage";
+import SkoinSuccessPage from "./pages/SkoinSuccessPage";
 import AboutPage from "./pages/AboutPage";
 import SafetyPage from "./pages/SafetyPage";
 import HelpPage from "./pages/HelpPage";
@@ -41,6 +42,7 @@ const App = () => (
             <Route path="/user/:userId" element={<AirportProximityGate><UserProfilePage /></AirportProximityGate>} />
             <Route path="/skoin" element={<SkoinPage />} />
             <Route path="/skoin/payment" element={<SkoinPaymentPage />} />
+            <Route path="/skoin/success" element={<SkoinSuccessPage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/safety" element={<SafetyPage />} />
             <Route path="/help" element={<HelpPage />} />
