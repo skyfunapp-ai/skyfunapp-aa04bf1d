@@ -21,7 +21,7 @@ const AirportProximityGate = ({ children }: AirportProximityGateProps) => {
           nearestAirport={nearestAirport}
           distanceMiles={distanceMiles}
         />
-        <BottomNav activePage="home" />
+        <BottomNav activePage="profile" />
       </div>
     );
   }
