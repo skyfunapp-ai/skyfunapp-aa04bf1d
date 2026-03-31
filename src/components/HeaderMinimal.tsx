@@ -1,6 +1,6 @@
-import { PlaneTakeoff, Pencil, Menu, X } from "lucide-react";
-import { useState } from "react";
+import { PlaneTakeoff, Pencil, Menu } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   Sheet,
   SheetContent,
@@ -16,8 +16,9 @@ interface HeaderMinimalProps {
 
 const HeaderMinimal = ({ onEditClick, showEdit = false }: HeaderMinimalProps) => {
   const navigate = useNavigate();
+  const { user, signOut } = useAuth();
 
-  const isLoggedIn = !!localStorage.getItem("currentUser");
+  const isLoggedIn = !!user;
 
   const menuItems = isLoggedIn
     ? [
@@ -70,9 +71,9 @@ const HeaderMinimal = ({ onEditClick, showEdit = false }: HeaderMinimalProps) =>
                 {menuItems.map((item) => (
                   <button
                     key={item.path}
-                    onClick={() => {
+                    onClick={async () => {
                       if (item.path === "/logout") {
-                        localStorage.removeItem("currentUser");
+                        await signOut();
                         navigate("/");
                       } else {
                         navigate(item.path);
