@@ -3,16 +3,38 @@ import BottomNav from "@/components/BottomNav";
 import { Coins } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useProfile } from "@/hooks/useProfile";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
 
 const SkoinPage = () => {
   const navigate = useNavigate();
   const { profile, loading } = useProfile();
+  const { toast } = useToast();
+  const [purchasing, setPurchasing] = useState<number | null>(null);
 
   const coinOptions = [
     { coins: 1, price: ".99", label: "1 Gold Coin", badge: null },
     { coins: 12, price: "9.99", label: "12 Gold Coins", badge: "12" },
     { coins: 25, price: "19.99", label: "25 Gold Coins", badge: "25" },
   ];
+
+  const handlePurchase = async (coins: number) => {
+    setPurchasing(coins);
+    try {
+      const { data, error } = await supabase.functions.invoke("create-skoin-checkout", {
+        body: { coins },
+      });
+      if (error) throw error;
+      if (data?.url) {
+        window.location.href = data.url;
+      }
+    } catch (err: any) {
+      toast({ title: "Payment error", description: err.message || "Could not start checkout", variant: "destructive" });
+    } finally {
+      setPurchasing(null);
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -28,8 +50,9 @@ const SkoinPage = () => {
           {coinOptions.map((option) => (
             <button
               key={option.coins}
-              onClick={() => navigate(`/skoin/payment?coins=${option.coins}&price=${option.price}`)}
-              className="w-full flex items-center justify-between bg-card/80 backdrop-blur rounded-2xl px-6 py-5 border border-border/50 hover:bg-card/95 transition-colors cursor-pointer"
+              onClick={() => handlePurchase(option.coins)}
+              disabled={purchasing !== null}
+              className="w-full flex items-center justify-between bg-card/80 backdrop-blur rounded-2xl px-6 py-5 border border-border/50 hover:bg-card/95 transition-colors cursor-pointer disabled:opacity-50"
             >
               <div className="flex items-center gap-3">
                 <div className="relative">
@@ -40,7 +63,9 @@ const SkoinPage = () => {
                 </div>
                 <span className="text-lg font-semibold text-card-foreground">{option.label}</span>
               </div>
-              <span className="text-xl font-bold text-primary-foreground">${option.price}</span>
+              <span className="text-xl font-bold text-primary-foreground">
+                {purchasing === option.coins ? "..." : `$${option.price}`}
+              </span>
             </button>
           ))}
         </div>
