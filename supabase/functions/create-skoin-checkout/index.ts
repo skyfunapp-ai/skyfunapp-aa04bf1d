@@ -44,6 +44,7 @@ serve(async (req) => {
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       customer_email: customerId ? undefined : user.email,
+      payment_method_types: ["card", "paypal"],
       line_items: [{ price: entry.priceId, quantity: 1 }],
       mode: "payment",
       success_url: `${req.headers.get("origin")}/skoin/success?coins=${entry.coins}`,
