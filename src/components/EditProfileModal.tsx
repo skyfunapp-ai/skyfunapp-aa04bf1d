@@ -6,17 +6,7 @@ import { Button } from "@/components/ui/button";
 import { X, Camera } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import AirportCombobox from "@/components/AirportCombobox";
-
-interface ProfileData {
-  name: string;
-  occupation: string;
-  hobbies: string[];
-  interestedIn: string[];
-  favoriteFood: string[];
-  profilePhoto?: string;
-  currentAirport?: string;
-  destinationAirport?: string;
-}
+import { type ProfileData } from "@/hooks/useProfile";
 
 interface EditProfileModalProps {
   open: boolean;
