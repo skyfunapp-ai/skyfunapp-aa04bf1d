@@ -28,13 +28,13 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard" element={<AirportProximityGate><Dashboard /></AirportProximityGate>} />
           <Route path="/create-account" element={<CreateAccountPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-          <Route path="/search" element={<SearchPage />} />
-          <Route path="/messages" element={<MessagesPage />} />
-          <Route path="/messages/:userId" element={<MessagesPage />} />
-          <Route path="/user/:userId" element={<UserProfilePage />} />
+          <Route path="/search" element={<AirportProximityGate><SearchPage /></AirportProximityGate>} />
+          <Route path="/messages" element={<AirportProximityGate><MessagesPage /></AirportProximityGate>} />
+          <Route path="/messages/:userId" element={<AirportProximityGate><MessagesPage /></AirportProximityGate>} />
+          <Route path="/user/:userId" element={<AirportProximityGate><UserProfilePage /></AirportProximityGate>} />
           <Route path="/skoin" element={<SkoinPage />} />
           <Route path="/skoin/payment" element={<SkoinPaymentPage />} />
           <Route path="/about" element={<AboutPage />} />
