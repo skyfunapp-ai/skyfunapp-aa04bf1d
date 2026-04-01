@@ -25,6 +25,7 @@ const MessagesPage = () => {
   const { profile } = useProfile();
   const { connectedUserIds, addConnection } = useConnections();
   const { blockedUserIds, isBlocked } = useBlockedUsers();
+  const { isNearAirport, loading: proximityLoading } = useAirportProximity();
 
   useEffect(() => {
     if (userId) {
