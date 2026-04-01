@@ -68,6 +68,10 @@ const MessagesPage = () => {
   const handleSend = () => {
     if (!input.trim() || !userId) return;
 
+    if (!isNearAirport) {
+      toast({ title: "Outside Airport Area", description: "You must be within 2 miles of an airport to send messages." });
+      return;
+    }
     if (isBlocked(userId)) {
       toast({ title: "User is blocked", description: "Unblock this user to send messages." });
       return;
