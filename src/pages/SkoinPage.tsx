@@ -22,7 +22,9 @@ const SkoinPage = () => {
   const handlePurchase = async (coins: number) => {
     setPurchasing(coins);
     try {
+      const { data: { session } } = await supabase.auth.getSession();
       const { data, error } = await supabase.functions.invoke("create-skoin-checkout", {
+        headers: { Authorization: `Bearer ${session?.access_token}` },
         body: { coins },
       });
       if (error) throw error;
