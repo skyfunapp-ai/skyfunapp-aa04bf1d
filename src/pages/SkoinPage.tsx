@@ -30,7 +30,14 @@ const SkoinPage = () => {
         window.location.href = data.url;
       }
     } catch (err: any) {
-      toast({ title: "Payment error", description: err.message || "Could not start checkout", variant: "destructive" });
+      const isAuthError = err.message?.toLowerCase().includes("not authenticated") || err.message?.toLowerCase().includes("authorization");
+      toast({ 
+        title: "Payment Error", 
+        description: isAuthError 
+          ? "Please Log In to Purchase Skoin" 
+          : (err.message || "Could not start checkout"), 
+        variant: "destructive" 
+      });
     } finally {
       setPurchasing(null);
     }
