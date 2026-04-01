@@ -6,9 +6,12 @@ import { useProfile } from "@/hooks/useProfile";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { Button } from "@/components/ui/button";
 
 const SkoinPage = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { profile, loading } = useProfile();
   const { toast } = useToast();
   const [purchasing, setPurchasing] = useState<number | null>(null);
