@@ -57,8 +57,54 @@ serve(async (req) => {
       throw new Error("Invalid coin amount");
     }
 
-    // Use admin client to atomically increment the balance
-    // First get current balance
+    // Idempotency: check if this session has already been processed
+    const { data: existing } = await supabaseAdmin
+      .from("skoin_transactions")
+      .select("id")
+      .eq("stripe_session_id", session_id)
+      .maybeSingle();
+
+    if (existing) {
+      // Already processed — return success without double-crediting
+      const { data: profile } = await supabaseAdmin
+        .from("profiles")
+        .select("skoin_balance")
+        .eq("id", user.id)
+        .single();
+
+      return new Response(
+        JSON.stringify({ success: true, coins, newBalance: profile?.skoin_balance ?? 0, already_processed: true }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 200 }
+      );
+    }
+
+    // Record the transaction first (acts as idempotency lock)
+    const { error: insertError } = await supabaseAdmin
+      .from("skoin_transactions")
+      .insert({
+        user_id: user.id,
+        stripe_session_id: session_id,
+        coins,
+      });
+
+    if (insertError) {
+      // Unique constraint violation means another request already processed it
+      if (insertError.code === "23505") {
+        const { data: profile } = await supabaseAdmin
+          .from("profiles")
+          .select("skoin_balance")
+          .eq("id", user.id)
+          .single();
+
+        return new Response(
+          JSON.stringify({ success: true, coins, newBalance: profile?.skoin_balance ?? 0, already_processed: true }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 200 }
+        );
+      }
+      throw new Error("Could not record transaction");
+    }
+
+    // Now credit the balance
     const { data: profile, error: profileError } = await supabaseAdmin
       .from("profiles")
       .select("skoin_balance")
