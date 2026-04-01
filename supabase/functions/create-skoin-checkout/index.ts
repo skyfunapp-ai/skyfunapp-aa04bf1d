@@ -47,7 +47,7 @@ serve(async (req) => {
       payment_method_types: ["card", "paypal"],
       line_items: [{ price: entry.priceId, quantity: 1 }],
       mode: "payment",
-      success_url: `${req.headers.get("origin")}/skoin/success?coins=${entry.coins}`,
+      success_url: `${req.headers.get("origin")}/skoin/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${req.headers.get("origin")}/skoin`,
       metadata: { user_id: user.id, coins: String(entry.coins) },
     });
