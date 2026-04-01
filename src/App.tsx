@@ -31,9 +31,9 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <Routes>
-            <Route path="/" element={<Index />} />
+            <Route path="/" element={<AirportProximityGate><Index /></AirportProximityGate>} />
             <Route path="/dashboard" element={<AirportProximityGate><Dashboard /></AirportProximityGate>} />
-            <Route path="/create-account" element={<CreateAccountPage />} />
+            <Route path="/create-account" element={<AirportProximityGate><CreateAccountPage /></AirportProximityGate>} />
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/search" element={<AirportProximityGate><SearchPage /></AirportProximityGate>} />
