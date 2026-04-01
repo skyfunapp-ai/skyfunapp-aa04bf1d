@@ -104,6 +104,30 @@ export type Database = {
         }
         Relationships: []
       }
+      skoin_transactions: {
+        Row: {
+          coins: number
+          created_at: string
+          id: string
+          stripe_session_id: string
+          user_id: string
+        }
+        Insert: {
+          coins: number
+          created_at?: string
+          id?: string
+          stripe_session_id: string
+          user_id: string
+        }
+        Update: {
+          coins?: number
+          created_at?: string
+          id?: string
+          stripe_session_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
