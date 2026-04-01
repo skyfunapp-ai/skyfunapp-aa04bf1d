@@ -35,7 +35,7 @@ const MessagesPage = () => {
   }, [userId]);
 
   useEffect(() => {
-    if (!userId) return;
+    if (!userId || !isNearAirport) return;
     const otherUsers = appUsers.filter((u) => u.id !== userId && !isBlocked(u.id));
     if (otherUsers.length === 0) return;
 
@@ -53,7 +53,7 @@ const MessagesPage = () => {
     }, 8000 + Math.random() * 7000);
 
     return () => clearTimeout(timer);
-  }, [userId, blockedUserIds]);
+  }, [userId, blockedUserIds, isNearAirport]);
 
   const handleIncomingClick = useCallback(async () => {
     if (!incomingPopup) return;
@@ -91,14 +91,16 @@ const MessagesPage = () => {
       setMessages(updated);
     }, 500);
 
-    setTimeout(() => {
-      const current = messageStore[userId] || [];
-      const seen = current.map((m) => m.fromMe ? { ...m, status: "seen" as const } : m);
-      const reply = [...seen, { text: "Thanks for reaching out! ✈️", fromMe: false, timestamp: Date.now() }];
-      messageStore[userId] = reply;
-      readCountStore[userId] = reply.length;
-      setMessages(reply);
-    }, 1200);
+    if (isNearAirport) {
+      setTimeout(() => {
+        const current = messageStore[userId] || [];
+        const seen = current.map((m) => m.fromMe ? { ...m, status: "seen" as const } : m);
+        const reply = [...seen, { text: "Thanks for reaching out! ✈️", fromMe: false, timestamp: Date.now() }];
+        messageStore[userId] = reply;
+        readCountStore[userId] = reply.length;
+        setMessages(reply);
+      }, 1200);
+    }
   };
 
   if (selectedUser) {
