@@ -6,9 +6,12 @@ import { useProfile } from "@/hooks/useProfile";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { Button } from "@/components/ui/button";
 
 const SkoinPage = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { profile, loading } = useProfile();
   const { toast } = useToast();
   const [purchasing, setPurchasing] = useState<number | null>(null);
@@ -54,6 +57,16 @@ const SkoinPage = () => {
         <p className="text-lg text-muted-foreground mb-10">
           Balance: <span className="text-primary-foreground font-bold">{loading ? "..." : profile.skoinBalance}</span> Skoin
         </p>
+
+        {!user && (
+          <div className="mb-8 w-full max-w-xs flex flex-col items-center gap-3">
+            <p className="text-muted-foreground text-center">Log in or create an account to purchase Skoin</p>
+            <div className="flex gap-3 w-full">
+              <Button variant="gradient" className="flex-1" onClick={() => navigate("/")}>Log In</Button>
+              <Button variant="outline" className="flex-1" onClick={() => navigate("/create-account")}>Sign Up</Button>
+            </div>
+          </div>
+        )}
 
         <div className="space-y-8 w-full max-w-xs">
           {coinOptions.map((option) => (
