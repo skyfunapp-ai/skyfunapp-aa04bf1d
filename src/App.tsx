@@ -41,7 +41,7 @@ const App = () => (
             <Route path="/messages/:userId" element={<AirportProximityGate><MessagesPage /></AirportProximityGate>} />
             <Route path="/user/:userId" element={<AirportProximityGate><UserProfilePage /></AirportProximityGate>} />
             <Route path="/skoin" element={<SkoinPage />} />
-            <Route path="/skoin/payment" element={<SkoinPaymentPage />} />
+            
             <Route path="/skoin/success" element={<SkoinSuccessPage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/safety" element={<SafetyPage />} />
