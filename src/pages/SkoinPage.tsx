@@ -58,6 +58,16 @@ const SkoinPage = () => {
           Balance: <span className="text-primary-foreground font-bold">{loading ? "..." : profile.skoinBalance}</span> Skoin
         </p>
 
+        {!user && (
+          <div className="mb-8 w-full max-w-xs flex flex-col items-center gap-3">
+            <p className="text-muted-foreground text-center">Log in or create an account to purchase Skoin</p>
+            <div className="flex gap-3 w-full">
+              <Button variant="gradient" className="flex-1" onClick={() => navigate("/")}>Log In</Button>
+              <Button variant="outline" className="flex-1" onClick={() => navigate("/create-account")}>Sign Up</Button>
+            </div>
+          </div>
+        )}
+
         <div className="space-y-8 w-full max-w-xs">
           {coinOptions.map((option) => (
             <button
