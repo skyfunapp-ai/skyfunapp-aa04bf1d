@@ -31,15 +31,15 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <Routes>
-            <Route path="/" element={<AirportProximityGate><Index /></AirportProximityGate>} />
-            <Route path="/dashboard" element={<AirportProximityGate><Dashboard /></AirportProximityGate>} />
-            <Route path="/create-account" element={<AirportProximityGate><CreateAccountPage /></AirportProximityGate>} />
+            <Route path="/" element={<Index />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/create-account" element={<CreateAccountPage />} />
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
-            <Route path="/search" element={<AirportProximityGate><SearchPage /></AirportProximityGate>} />
-            <Route path="/messages" element={<AirportProximityGate><MessagesPage /></AirportProximityGate>} />
-            <Route path="/messages/:userId" element={<AirportProximityGate><MessagesPage /></AirportProximityGate>} />
-            <Route path="/user/:userId" element={<AirportProximityGate><UserProfilePage /></AirportProximityGate>} />
+            <Route path="/search" element={<SearchPage />} />
+            <Route path="/messages" element={<MessagesPage />} />
+            <Route path="/messages/:userId" element={<MessagesPage />} />
+            <Route path="/user/:userId" element={<UserProfilePage />} />
             <Route path="/skoin" element={<SkoinPage />} />
             
             <Route path="/skoin/success" element={<SkoinSuccessPage />} />
