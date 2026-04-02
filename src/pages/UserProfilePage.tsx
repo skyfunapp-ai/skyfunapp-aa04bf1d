@@ -8,14 +8,15 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import { useProfile, useConnections, useBlockedUsers } from "@/hooks/useProfile";
+import { useConnections, useBlockedUsers } from "@/hooks/useProfile";
+import { supabase } from "@/integrations/supabase/client";
 
 const UserProfilePage = () => {
   const { userId } = useParams();
   const navigate = useNavigate();
   const user = appUsers.find((u) => u.id === userId);
 
-  const { profile, updateProfile } = useProfile();
+  
   const { addConnection, isConnected } = useConnections();
   const { isBlocked, blockUser, unblockUser } = useBlockedUsers();
 
@@ -105,14 +106,26 @@ const UserProfilePage = () => {
               <button
                 onClick={async () => {
                   if (!isConnected(user.id)) {
-                    if (profile.skoinBalance <= 0) {
-                      toast({ title: "No Skoin remaining", description: "Purchase Skoin to connect with new users." });
-                      navigate("/skoin");
+                    try {
+                      const { data: { session } } = await supabase.auth.getSession();
+                      const { data, error } = await supabase.functions.invoke("deduct-skoin", {
+                        headers: { Authorization: `Bearer ${session?.access_token}` },
+                        body: { connected_user_id: user.id },
+                      });
+                      if (error) throw error;
+                      if (data?.error) {
+                        toast({ title: "No Skoin remaining", description: "Purchase Skoin to connect with new users." });
+                        navigate("/skoin");
+                        return;
+                      }
+                      if (!data?.already_connected) {
+                        await addConnection(user.id);
+                        toast({ title: `Connected with ${user.name}`, description: "1 Skoin used. You can now chat freely!" });
+                      }
+                    } catch (err: any) {
+                      toast({ title: "Error", description: err.message || "Could not connect", variant: "destructive" });
                       return;
                     }
-                    await updateProfile({ skoinBalance: profile.skoinBalance - 1 });
-                    await addConnection(user.id);
-                    toast({ title: `Connected with ${user.name}`, description: "1 Skoin used. You can now chat freely!" });
                   }
                   navigate(`/messages/${user.id}`);
                 }}

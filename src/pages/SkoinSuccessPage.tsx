@@ -11,6 +11,7 @@ const SkoinSuccessPage = () => {
   const sessionId = searchParams.get("session_id");
   const [status, setStatus] = useState<"verifying" | "success" | "error">("verifying");
   const [coins, setCoins] = useState(0);
+  const [newBalance, setNewBalance] = useState<number | null>(null);
   const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
@@ -22,12 +23,15 @@ const SkoinSuccessPage = () => {
 
     const verify = async () => {
       try {
+        const { data: { session } } = await supabase.auth.getSession();
         const { data, error } = await supabase.functions.invoke("verify-skoin-payment", {
+          headers: { Authorization: `Bearer ${session?.access_token}` },
           body: { session_id: sessionId },
         });
         if (error) throw error;
         if (data?.error) throw new Error(data.error);
         setCoins(data.coins);
+        setNewBalance(data.newBalance ?? null);
         setStatus("success");
       } catch (err: any) {
         setStatus("error");
@@ -56,12 +60,17 @@ const SkoinSuccessPage = () => {
             <CheckCircle size={64} className="text-green-500 mb-4" />
             <h1 className="text-3xl font-bold text-primary-foreground mb-2">Thank You!</h1>
             <p className="text-lg text-muted-foreground mb-2">Payment Successful</p>
-            <div className="flex items-center gap-2 mt-4 mb-8">
+            <div className="flex items-center gap-2 mt-4 mb-4">
               <Coins size={32} className="text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.5)]" />
               <span className="text-xl font-bold text-primary-foreground">
                 {coins} Gold Coin{coins > 1 ? "s" : ""} added to your balance
               </span>
             </div>
+            {newBalance !== null && (
+              <p className="text-lg text-muted-foreground mb-8">
+                New Balance: <span className="text-primary-foreground font-bold">{newBalance}</span> Skoin
+              </p>
+            )}
           </>
         )}
 
