@@ -54,6 +54,10 @@ const Dashboard = () => {
             )}
             <h2 className="text-2xl font-bold text-primary-foreground">{profile.name}</h2>
             <p className="text-primary-foreground mt-2">{profile.occupation}</p>
+            <div className="mt-2 inline-flex items-center gap-1.5 bg-accent/20 px-3 py-1 rounded-full">
+              <Coins size={16} className="text-accent" />
+              <span className="text-accent font-semibold">{profile.skoinBalance} Skoin</span>
+            </div>
             {profile.currentAirport && (
               <p className="text-primary-foreground/70 mt-1 flex items-center justify-center gap-1 text-sm">
                 <MapPin size={14} /> From: {profile.currentAirport}
