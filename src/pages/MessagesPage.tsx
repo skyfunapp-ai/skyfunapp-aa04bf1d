@@ -33,7 +33,7 @@ const MessagesPage = () => {
   }, [userId]);
 
   useEffect(() => {
-    if (!userId || !isNearAirport) return;
+    if (!userId) return;
     const otherUsers = appUsers.filter((u) => u.id !== userId && !isBlocked(u.id));
     if (otherUsers.length === 0) return;
 
