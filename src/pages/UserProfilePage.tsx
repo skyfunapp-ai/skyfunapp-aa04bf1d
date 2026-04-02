@@ -106,14 +106,26 @@ const UserProfilePage = () => {
               <button
                 onClick={async () => {
                   if (!isConnected(user.id)) {
-                    if (profile.skoinBalance <= 0) {
-                      toast({ title: "No Skoin remaining", description: "Purchase Skoin to connect with new users." });
-                      navigate("/skoin");
+                    try {
+                      const { data: { session } } = await supabase.auth.getSession();
+                      const { data, error } = await supabase.functions.invoke("deduct-skoin", {
+                        headers: { Authorization: `Bearer ${session?.access_token}` },
+                        body: { connected_user_id: user.id },
+                      });
+                      if (error) throw error;
+                      if (data?.error) {
+                        toast({ title: "No Skoin remaining", description: "Purchase Skoin to connect with new users." });
+                        navigate("/skoin");
+                        return;
+                      }
+                      if (!data?.already_connected) {
+                        await addConnection(user.id);
+                        toast({ title: `Connected with ${user.name}`, description: "1 Skoin used. You can now chat freely!" });
+                      }
+                    } catch (err: any) {
+                      toast({ title: "Error", description: err.message || "Could not connect", variant: "destructive" });
                       return;
                     }
-                    await updateProfile({ skoinBalance: profile.skoinBalance - 1 });
-                    await addConnection(user.id);
-                    toast({ title: `Connected with ${user.name}`, description: "1 Skoin used. You can now chat freely!" });
                   }
                   navigate(`/messages/${user.id}`);
                 }}
