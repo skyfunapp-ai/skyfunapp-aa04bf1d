@@ -43,6 +43,6 @@ export const profiles: Profile[] = [
     location: "Austin, TX",
     image: profile4,
     interests: ["Fitness", "Running", "Outdoors", "Dogs"],
-    distance: "8 miles away",
+    
   },
 ];
