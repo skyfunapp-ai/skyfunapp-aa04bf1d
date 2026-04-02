@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 export interface ProfileData {
   name: string;
@@ -25,34 +26,36 @@ const defaultProfile: ProfileData = {
 
 export const useProfile = () => {
   const { user } = useAuth();
-  const [profile, setProfile] = useState<ProfileData>(defaultProfile);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
 
-  const fetchProfile = useCallback(async () => {
-    if (!user) { setLoading(false); return; }
-    const { data } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", user.id)
-      .single();
+  const { data: profile = defaultProfile, isLoading: loading } = useQuery({
+    queryKey: ["profile", user?.id],
+    queryFn: async () => {
+      if (!user) return defaultProfile;
+      const { data } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .single();
 
-    if (data) {
-      setProfile({
-        name: data.name || "",
-        occupation: data.occupation || "",
-        hobbies: data.hobbies || [],
-        interestedIn: data.interested_in || [],
-        favoriteFood: data.favorite_food || [],
-        profilePhoto: data.profile_photo || undefined,
-        currentAirport: data.current_airport || undefined,
-        destinationAirport: data.destination_airport || undefined,
-        skoinBalance: data.skoin_balance,
-      });
-    }
-    setLoading(false);
-  }, [user]);
-
-  useEffect(() => { fetchProfile(); }, [fetchProfile]);
+      if (data) {
+        return {
+          name: data.name || "",
+          occupation: data.occupation || "",
+          hobbies: data.hobbies || [],
+          interestedIn: data.interested_in || [],
+          favoriteFood: data.favorite_food || [],
+          profilePhoto: data.profile_photo || undefined,
+          currentAirport: data.current_airport || undefined,
+          destinationAirport: data.destination_airport || undefined,
+          skoinBalance: data.skoin_balance,
+        } as ProfileData;
+      }
+      return defaultProfile;
+    },
+    enabled: !!user,
+    staleTime: 5 * 60 * 1000,
+  });
 
   const updateProfile = async (data: Partial<ProfileData>) => {
     if (!user) return;
@@ -65,14 +68,15 @@ export const useProfile = () => {
     if (data.profilePhoto !== undefined) dbData.profile_photo = data.profilePhoto;
     if (data.currentAirport !== undefined) dbData.current_airport = data.currentAirport;
     if (data.destinationAirport !== undefined) dbData.destination_airport = data.destinationAirport;
-    // skoin_balance is protected server-side — do not update from client
     dbData.updated_at = new Date().toISOString();
 
     await supabase.from("profiles").update(dbData).eq("id", user.id);
-    setProfile((prev) => ({ ...prev, ...data }));
+    queryClient.setQueryData(["profile", user.id], (prev: ProfileData) => ({ ...prev, ...data }));
   };
 
-  return { profile, loading, updateProfile, refetchProfile: fetchProfile };
+  const refetchProfile = () => queryClient.invalidateQueries({ queryKey: ["profile", user?.id] });
+
+  return { profile, loading, updateProfile, refetchProfile };
 };
 
 export const useConnections = () => {
