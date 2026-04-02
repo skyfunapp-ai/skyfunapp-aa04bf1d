@@ -10,6 +10,7 @@ import { useAirportProximity } from "@/hooks/useAirportProximity";
 const Dashboard = () => {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const { profile, loading, updateProfile } = useProfile();
+  const { nearestAirport, loading: proximityLoading } = useAirportProximity();
 
   const handleSaveProfile = (data: ProfileData) => {
     updateProfile(data);
