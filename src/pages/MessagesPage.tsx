@@ -166,14 +166,7 @@ const MessagesPage = () => {
             </div>
           </ScrollArea>
 
-          {!userBlocked && !isNearAirport && !proximityLoading && (
-            <div className="bg-card border border-border rounded-xl px-4 py-3 mb-2 text-center">
-              <p className="text-sm font-semibold text-destructive">Outside Airport Area</p>
-              <p className="text-xs text-muted-foreground mt-1">You must be within 2 miles of an airport to chat with other users.</p>
-            </div>
-          )}
-
-          {!userBlocked && isNearAirport && (
+          {!userBlocked && (
             <div className="flex items-center gap-2">
               <input
                 value={input}
