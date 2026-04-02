@@ -16,7 +16,7 @@ const UserProfilePage = () => {
   const navigate = useNavigate();
   const user = appUsers.find((u) => u.id === userId);
 
-  const { profile, updateProfile } = useProfile();
+  
   const { addConnection, isConnected } = useConnections();
   const { isBlocked, blockUser, unblockUser } = useBlockedUsers();
 
