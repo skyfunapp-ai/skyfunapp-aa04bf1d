@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,6 +21,13 @@ const EditProfileModal = ({ open, onOpenChange, profileData, onSave }: EditProfi
   const [newInterest, setNewInterest] = useState("");
   const [newFood, setNewFood] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Sync form data when modal opens or profile data changes
+  useEffect(() => {
+    if (open) {
+      setFormData(profileData);
+    }
+  }, [open, profileData]);
 
   const handleSave = () => {
     onSave(formData);
