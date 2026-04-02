@@ -8,7 +8,6 @@ import { MapPin, ArrowLeft, Send, X, Check, CheckCheck } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "@/hooks/use-toast";
 import { useProfile, useConnections, useBlockedUsers } from "@/hooks/useProfile";
-import { useAirportProximity } from "@/hooks/useAirportProximity";
 
 const messageStore: Record<string, { text: string; fromMe: boolean; timestamp: number; status?: "sent" | "delivered" | "seen" }[]> = {};
 const readCountStore: Record<string, number> = {};
@@ -25,7 +24,6 @@ const MessagesPage = () => {
   const { profile } = useProfile();
   const { connectedUserIds, addConnection } = useConnections();
   const { blockedUserIds, isBlocked } = useBlockedUsers();
-  const { isNearAirport, loading: proximityLoading } = useAirportProximity();
 
   useEffect(() => {
     if (userId) {
@@ -35,7 +33,7 @@ const MessagesPage = () => {
   }, [userId]);
 
   useEffect(() => {
-    if (!userId || !isNearAirport) return;
+    if (!userId) return;
     const otherUsers = appUsers.filter((u) => u.id !== userId && !isBlocked(u.id));
     if (otherUsers.length === 0) return;
 
@@ -53,7 +51,7 @@ const MessagesPage = () => {
     }, 8000 + Math.random() * 7000);
 
     return () => clearTimeout(timer);
-  }, [userId, blockedUserIds, isNearAirport]);
+  }, [userId, blockedUserIds]);
 
   const handleIncomingClick = useCallback(async () => {
     if (!incomingPopup) return;
@@ -68,10 +66,6 @@ const MessagesPage = () => {
   const handleSend = () => {
     if (!input.trim() || !userId) return;
 
-    if (!isNearAirport) {
-      toast({ title: "Outside Airport Area", description: "You must be within 2 miles of an airport to send messages." });
-      return;
-    }
     if (isBlocked(userId)) {
       toast({ title: "User is blocked", description: "Unblock this user to send messages." });
       return;
@@ -91,16 +85,14 @@ const MessagesPage = () => {
       setMessages(updated);
     }, 500);
 
-    if (isNearAirport) {
-      setTimeout(() => {
-        const current = messageStore[userId] || [];
-        const seen = current.map((m) => m.fromMe ? { ...m, status: "seen" as const } : m);
-        const reply = [...seen, { text: "Thanks for reaching out! ✈️", fromMe: false, timestamp: Date.now() }];
-        messageStore[userId] = reply;
-        readCountStore[userId] = reply.length;
-        setMessages(reply);
-      }, 1200);
-    }
+    setTimeout(() => {
+      const current = messageStore[userId] || [];
+      const seen = current.map((m) => m.fromMe ? { ...m, status: "seen" as const } : m);
+      const reply = [...seen, { text: "Thanks for reaching out! ✈️", fromMe: false, timestamp: Date.now() }];
+      messageStore[userId] = reply;
+      readCountStore[userId] = reply.length;
+      setMessages(reply);
+    }, 1200);
   };
 
   if (selectedUser) {
@@ -174,14 +166,7 @@ const MessagesPage = () => {
             </div>
           </ScrollArea>
 
-          {!userBlocked && !isNearAirport && !proximityLoading && (
-            <div className="bg-card border border-border rounded-xl px-4 py-3 mb-2 text-center">
-              <p className="text-sm font-semibold text-destructive">Outside Airport Area</p>
-              <p className="text-xs text-muted-foreground mt-1">You must be within 2 miles of an airport to chat with other users.</p>
-            </div>
-          )}
-
-          {!userBlocked && isNearAirport && (
+          {!userBlocked && (
             <div className="flex items-center gap-2">
               <input
                 value={input}

@@ -1,14 +1,16 @@
 import { useState } from "react";
-import { MapPin, Coins } from "lucide-react";
+import { MapPin, Coins, Plane } from "lucide-react";
 import HeaderMinimal from "@/components/HeaderMinimal";
 import BottomNav from "@/components/BottomNav";
 import EditProfileModal from "@/components/EditProfileModal";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useProfile, type ProfileData } from "@/hooks/useProfile";
+import { useAirportProximity } from "@/hooks/useAirportProximity";
 
 const Dashboard = () => {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const { profile, loading, updateProfile } = useProfile();
+  const { nearestAirport, loading: proximityLoading } = useAirportProximity();
 
   const handleSaveProfile = (data: ProfileData) => {
     updateProfile(data);
@@ -58,6 +60,11 @@ const Dashboard = () => {
               <Coins size={16} className="text-accent" />
               <span className="text-accent font-semibold">{profile.skoinBalance} Skoin</span>
             </div>
+            {nearestAirport && (
+              <p className="text-primary-foreground/70 mt-1 flex items-center justify-center gap-1 text-sm">
+                <Plane size={14} /> Nearest: {nearestAirport}
+              </p>
+            )}
             {profile.currentAirport && (
               <p className="text-primary-foreground/70 mt-1 flex items-center justify-center gap-1 text-sm">
                 <MapPin size={14} /> From: {profile.currentAirport}
