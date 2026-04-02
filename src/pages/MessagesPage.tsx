@@ -51,7 +51,7 @@ const MessagesPage = () => {
     }, 8000 + Math.random() * 7000);
 
     return () => clearTimeout(timer);
-  }, [userId, blockedUserIds, isNearAirport]);
+  }, [userId, blockedUserIds]);
 
   const handleIncomingClick = useCallback(async () => {
     if (!incomingPopup) return;
