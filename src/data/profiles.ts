@@ -23,7 +23,7 @@ export const profiles: Profile[] = [
     location: "New York, NY",
     image: profile2,
     interests: ["Cooking", "Music", "Tech", "Reading"],
-    distance: "5 miles away",
+    
   },
   {
     id: "3",
