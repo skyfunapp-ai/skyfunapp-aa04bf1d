@@ -35,7 +35,8 @@ const SkoinPage = () => {
         window.location.href = data.url;
       }
     } catch (err: any) {
-      const isAuthError = err.message?.toLowerCase().includes("not authenticated") || err.message?.toLowerCase().includes("authorization");
+      const msg = err.message?.toLowerCase() || "";
+      const isAuthError = !user || msg.includes("not authenticated") || msg.includes("authorization") || msg.includes("non-2xx");
       toast({ 
         title: "Payment Error", 
         description: isAuthError 
