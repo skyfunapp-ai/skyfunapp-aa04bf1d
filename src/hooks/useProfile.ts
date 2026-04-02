@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import type { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 
 export interface ProfileData {
   name: string;
@@ -75,6 +76,31 @@ export const useProfile = () => {
   };
 
   const refetchProfile = () => queryClient.invalidateQueries({ queryKey: ["profile", user?.id] });
+
+  // Real-time subscription for balance changes
+  useEffect(() => {
+    if (!user) return;
+    const channel = supabase
+      .channel(`profile-${user.id}`)
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "profiles", filter: `id=eq.${user.id}` },
+        (payload: RealtimePostgresChangesPayload<{ [key: string]: unknown }>) => {
+          const newRow = payload.new as Record<string, unknown>;
+          if (newRow) {
+            queryClient.setQueryData(["profile", user.id], (prev: ProfileData) => ({
+              ...prev,
+              skoinBalance: newRow.skoin_balance as number,
+              name: (newRow.name as string) || prev?.name || "",
+              occupation: (newRow.occupation as string) || prev?.occupation || "",
+            }));
+          }
+        }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, [user, queryClient]);
 
   return { profile, loading, updateProfile, refetchProfile };
 };
