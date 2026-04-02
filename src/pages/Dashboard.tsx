@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MapPin } from "lucide-react";
+import { MapPin, Coins } from "lucide-react";
 import HeaderMinimal from "@/components/HeaderMinimal";
 import BottomNav from "@/components/BottomNav";
 import EditProfileModal from "@/components/EditProfileModal";
