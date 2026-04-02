@@ -6,5 +6,5 @@ export interface Profile {
   location: string;
   image: string;
   interests: string[];
-  distance: string;
+  
 }

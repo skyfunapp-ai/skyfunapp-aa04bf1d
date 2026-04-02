@@ -85,7 +85,7 @@ const ProfileCard = ({ profile, onSwipe, isTop }: ProfileCardProps) => {
               </h2>
               <div className="flex items-center gap-1.5 mt-1 opacity-90">
                 <MapPin size={16} />
-                <span className="text-sm">{profile.distance}</span>
+                <span className="text-sm">{profile.location}</span>
               </div>
             </div>
           </div>

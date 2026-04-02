@@ -13,7 +13,7 @@ export const profiles: Profile[] = [
     location: "San Francisco, CA",
     image: profile1,
     interests: ["Photography", "Hiking", "Travel", "Coffee"],
-    distance: "2 miles away",
+    
   },
   {
     id: "2",
@@ -23,7 +23,7 @@ export const profiles: Profile[] = [
     location: "New York, NY",
     image: profile2,
     interests: ["Cooking", "Music", "Tech", "Reading"],
-    distance: "5 miles away",
+    
   },
   {
     id: "3",
@@ -33,7 +33,7 @@ export const profiles: Profile[] = [
     location: "Los Angeles, CA",
     image: profile3,
     interests: ["Art", "Yoga", "Nature", "Movies"],
-    distance: "3 miles away",
+    
   },
   {
     id: "4",
@@ -43,6 +43,6 @@ export const profiles: Profile[] = [
     location: "Austin, TX",
     image: profile4,
     interests: ["Fitness", "Running", "Outdoors", "Dogs"],
-    distance: "8 miles away",
+    
   },
 ];

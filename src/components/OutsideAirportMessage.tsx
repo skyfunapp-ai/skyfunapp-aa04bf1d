@@ -36,14 +36,13 @@ const OutsideAirportMessage = ({ loading, error, nearestAirport, distanceMiles }
               </>
             )}
         </p>
-        {nearestAirport && distanceMiles !== null && (
+        {nearestAirport && (
           <div className="bg-card/80 backdrop-blur rounded-xl p-4 border border-border/50 space-y-1">
             <div className="flex items-center justify-center gap-2 text-sm text-card-foreground font-medium">
               <Plane size={14} className="text-primary" />
               Nearest Airport
             </div>
             <p className="text-sm font-semibold text-card-foreground">{nearestAirport}</p>
-            <p className="text-xs text-muted-foreground">{distanceMiles} miles away</p>
           </div>
         )}
       </div>
