@@ -65,7 +65,7 @@ export const useProfile = () => {
     if (data.profilePhoto !== undefined) dbData.profile_photo = data.profilePhoto;
     if (data.currentAirport !== undefined) dbData.current_airport = data.currentAirport;
     if (data.destinationAirport !== undefined) dbData.destination_airport = data.destinationAirport;
-    if (data.skoinBalance !== undefined) dbData.skoin_balance = data.skoinBalance;
+    // skoin_balance is protected server-side — do not update from client
     dbData.updated_at = new Date().toISOString();
 
     await supabase.from("profiles").update(dbData).eq("id", user.id);
