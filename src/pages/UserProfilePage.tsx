@@ -8,7 +8,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import { useProfile, useConnections, useBlockedUsers } from "@/hooks/useProfile";
+import { useConnections, useBlockedUsers } from "@/hooks/useProfile";
 import { supabase } from "@/integrations/supabase/client";
 
 const UserProfilePage = () => {
