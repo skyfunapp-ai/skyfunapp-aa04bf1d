@@ -8,7 +8,6 @@ import { MapPin, ArrowLeft, Send, X, Check, CheckCheck } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "@/hooks/use-toast";
 import { useProfile, useConnections, useBlockedUsers } from "@/hooks/useProfile";
-import { useAirportProximity } from "@/hooks/useAirportProximity";
 
 const messageStore: Record<string, { text: string; fromMe: boolean; timestamp: number; status?: "sent" | "delivered" | "seen" }[]> = {};
 const readCountStore: Record<string, number> = {};

@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { MapPin, Coins } from "lucide-react";
+import { MapPin, Coins, Plane } from "lucide-react";
 import HeaderMinimal from "@/components/HeaderMinimal";
 import BottomNav from "@/components/BottomNav";
 import EditProfileModal from "@/components/EditProfileModal";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useProfile, type ProfileData } from "@/hooks/useProfile";
+import { useAirportProximity } from "@/hooks/useAirportProximity";
 
 const Dashboard = () => {
   const [isEditOpen, setIsEditOpen] = useState(false);
