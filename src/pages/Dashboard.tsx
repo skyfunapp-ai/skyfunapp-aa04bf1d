@@ -60,6 +60,11 @@ const Dashboard = () => {
               <Coins size={16} className="text-accent" />
               <span className="text-accent font-semibold">{profile.skoinBalance} Skoin</span>
             </div>
+            {nearestAirport && (
+              <p className="text-primary-foreground/70 mt-1 flex items-center justify-center gap-1 text-sm">
+                <Plane size={14} /> Nearest: {nearestAirport}
+              </p>
+            )}
             {profile.currentAirport && (
               <p className="text-primary-foreground/70 mt-1 flex items-center justify-center gap-1 text-sm">
                 <MapPin size={14} /> From: {profile.currentAirport}
