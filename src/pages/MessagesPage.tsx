@@ -85,16 +85,14 @@ const MessagesPage = () => {
       setMessages(updated);
     }, 500);
 
-    if (isNearAirport) {
-      setTimeout(() => {
-        const current = messageStore[userId] || [];
-        const seen = current.map((m) => m.fromMe ? { ...m, status: "seen" as const } : m);
-        const reply = [...seen, { text: "Thanks for reaching out! ✈️", fromMe: false, timestamp: Date.now() }];
-        messageStore[userId] = reply;
-        readCountStore[userId] = reply.length;
-        setMessages(reply);
-      }, 1200);
-    }
+    setTimeout(() => {
+      const current = messageStore[userId] || [];
+      const seen = current.map((m) => m.fromMe ? { ...m, status: "seen" as const } : m);
+      const reply = [...seen, { text: "Thanks for reaching out! ✈️", fromMe: false, timestamp: Date.now() }];
+      messageStore[userId] = reply;
+      readCountStore[userId] = reply.length;
+      setMessages(reply);
+    }, 1200);
   };
 
   if (selectedUser) {
