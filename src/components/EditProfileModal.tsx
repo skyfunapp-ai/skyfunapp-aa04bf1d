@@ -22,6 +22,13 @@ const EditProfileModal = ({ open, onOpenChange, profileData, onSave }: EditProfi
   const [newFood, setNewFood] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Sync form data when modal opens or profile data changes
+  useEffect(() => {
+    if (open) {
+      setFormData(profileData);
+    }
+  }, [open, profileData]);
+
   const handleSave = () => {
     onSave(formData);
     onOpenChange(false);
