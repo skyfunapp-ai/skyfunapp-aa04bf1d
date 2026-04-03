@@ -121,6 +121,10 @@ const Index = () => {
           Forgot Password?
         </button>
 
+        <Button onClick={handleLogin} disabled={submitting} variant="gradient" className="mt-4 w-full max-w-sm h-12 text-lg">
+          {submitting ? "Logging In..." : "Log In"}
+        </Button>
+
         {/* Social Links */}
         <div className="mt-8 sm:mt-12 flex flex-col items-center space-y-3 sm:space-y-4">
           <p className="text-base sm:text-xl text-muted-foreground">Follow us</p>
