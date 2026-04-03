@@ -1,9 +1,8 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import HeaderMinimal from "@/components/HeaderMinimal";
 import BottomNav from "@/components/BottomNav";
-import { appUsers } from "@/data/flights";
-import { MapPin, ArrowLeft, MessageCircle, ShieldAlert, ShieldCheck } from "lucide-react";
+import { MapPin, ArrowLeft, MessageCircle, ShieldAlert, ShieldCheck, Loader2 } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -11,16 +10,56 @@ import { toast } from "@/hooks/use-toast";
 import { useConnections, useBlockedUsers } from "@/hooks/useProfile";
 import { supabase } from "@/integrations/supabase/client";
 
+interface DbUser {
+  id: string;
+  name: string;
+  occupation: string;
+  profilePhoto?: string;
+  hobbies: string[];
+  interestedIn: string[];
+  favoriteFood: string[];
+  currentAirport?: string;
+  destinationAirport?: string;
+}
+
 const UserProfilePage = () => {
   const { userId } = useParams();
   const navigate = useNavigate();
-  const user = appUsers.find((u) => u.id === userId);
+  const [user, setUser] = useState<DbUser | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  
   const { addConnection, isConnected } = useConnections();
   const { isBlocked, blockUser, unblockUser } = useBlockedUsers();
 
   const blocked = userId ? isBlocked(userId) : false;
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      if (!userId) return;
+      setLoading(true);
+      const { data } = await supabase
+        .from("profiles")
+        .select("id, name, occupation, profile_photo, hobbies, interested_in, favorite_food, current_airport, destination_airport")
+        .eq("id", userId)
+        .single();
+
+      if (data) {
+        setUser({
+          id: data.id,
+          name: data.name || "",
+          occupation: data.occupation || "",
+          profilePhoto: data.profile_photo || undefined,
+          hobbies: data.hobbies || [],
+          interestedIn: data.interested_in || [],
+          favoriteFood: data.favorite_food || [],
+          currentAirport: data.current_airport || undefined,
+          destinationAirport: data.destination_airport || undefined,
+        });
+      }
+      setLoading(false);
+    };
+    fetchUser();
+  }, [userId]);
 
   useEffect(() => {
     if (userId && blocked) {
@@ -39,6 +78,21 @@ const UserProfilePage = () => {
       setTimeout(() => navigate("/search", { replace: true }), 500);
     }
   };
+
+  const getInitials = (name: string) =>
+    name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col bg-background">
+        <HeaderMinimal />
+        <main className="flex-1 flex items-center justify-center pt-20 sm:pt-24 pb-20">
+          <Loader2 className="animate-spin text-muted-foreground" size={24} />
+        </main>
+        <BottomNav activePage="search" />
+      </div>
+    );
+  }
 
   if (!user) {
     return (
@@ -68,31 +122,62 @@ const UserProfilePage = () => {
 
           <div className="flex flex-col items-center">
             <Avatar className="w-28 h-28 mb-4">
-              <AvatarImage src={user.photo} alt={user.name} />
-              <AvatarFallback className="text-2xl font-bold">{user.avatar}</AvatarFallback>
+              <AvatarImage src={user.profilePhoto} alt={user.name} />
+              <AvatarFallback className="text-2xl font-bold">{getInitials(user.name)}</AvatarFallback>
             </Avatar>
 
             <h1 className="text-2xl font-bold text-primary-foreground">{user.name}</h1>
 
-            <div className="flex items-center gap-1.5 mt-1 text-muted-foreground">
-              <MapPin size={14} />
-              <span className="text-sm">{user.location}</span>
-            </div>
+            {user.occupation && (
+              <p className="text-primary-foreground/80 mt-1">{user.occupation}</p>
+            )}
 
-            <div className="flex items-center gap-2 mt-2">
-              <div
-                className={`w-3 h-3 rounded-full ${
-                  user.status === "online"
-                    ? "bg-green-500"
-                    : user.status === "away"
-                    ? "bg-yellow-500"
-                    : "bg-muted-foreground/40"
-                }`}
-              />
-              <span className="text-sm text-muted-foreground capitalize">{user.status}</span>
-            </div>
+            {user.currentAirport && (
+              <div className="flex items-center gap-1.5 mt-1 text-muted-foreground">
+                <MapPin size={14} />
+                <span className="text-sm">From: {user.currentAirport}</span>
+              </div>
+            )}
 
-            <p className="text-primary-foreground/80 mt-4 text-center">{user.bio}</p>
+            {user.destinationAirport && (
+              <div className="flex items-center gap-1.5 mt-1 text-muted-foreground">
+                <MapPin size={14} />
+                <span className="text-sm">To: {user.destinationAirport}</span>
+              </div>
+            )}
+
+            {user.hobbies.length > 0 && (
+              <div className="mt-4 text-center">
+                <p className="text-primary-foreground font-semibold text-sm">Hobbies</p>
+                <div className="flex flex-wrap justify-center gap-2 mt-1">
+                  {user.hobbies.map((h, i) => (
+                    <span key={i} className="text-primary-foreground/80 text-sm">{h}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {user.interestedIn.length > 0 && (
+              <div className="mt-3 text-center">
+                <p className="text-primary-foreground font-semibold text-sm">Interested In</p>
+                <div className="flex flex-wrap justify-center gap-2 mt-1">
+                  {user.interestedIn.map((item, i) => (
+                    <span key={i} className="text-primary-foreground/80 text-sm">{item}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {user.favoriteFood.length > 0 && (
+              <div className="mt-3 text-center">
+                <p className="text-primary-foreground font-semibold text-sm">Favorite Food</p>
+                <div className="flex flex-wrap justify-center gap-2 mt-1">
+                  {user.favoriteFood.map((f, i) => (
+                    <span key={i} className="text-primary-foreground/80 text-sm">{f}</span>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <div className="flex items-center gap-3 mt-6 bg-card/80 backdrop-blur rounded-xl px-5 py-3 border border-border/50">
               {blocked ? <ShieldAlert size={18} className="text-destructive" /> : <ShieldCheck size={18} className="text-green-500" />}
