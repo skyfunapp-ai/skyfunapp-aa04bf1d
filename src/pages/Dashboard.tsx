@@ -18,7 +18,7 @@ const Dashboard = () => {
 
   const handleEditClick = () => setIsEditOpen(true);
 
-  const isProfileEmpty = !profile.name && !profile.occupation;
+  const isProfileEmpty = !loading && !profile.name && !profile.occupation;
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-background">

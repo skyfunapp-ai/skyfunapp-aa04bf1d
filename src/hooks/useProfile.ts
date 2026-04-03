@@ -55,7 +55,8 @@ export const useProfile = () => {
       return defaultProfile;
     },
     enabled: !!user,
-    staleTime: 5 * 60 * 1000,
+    staleTime: Infinity,
+    gcTime: Infinity,
   });
 
   const updateProfile = async (data: Partial<ProfileData>) => {
