@@ -60,7 +60,7 @@ export const useProfile = () => {
   });
 
   const updateProfile = async (data: Partial<ProfileData>) => {
-    if (!user) return;
+    if (!user) return { error: "Not authenticated" };
     const dbData: Record<string, unknown> = {};
     if (data.name !== undefined) dbData.name = data.name;
     if (data.occupation !== undefined) dbData.occupation = data.occupation;
@@ -72,8 +72,10 @@ export const useProfile = () => {
     if (data.destinationAirport !== undefined) dbData.destination_airport = data.destinationAirport;
     dbData.updated_at = new Date().toISOString();
 
-    await supabase.from("profiles").update(dbData).eq("id", user.id);
+    const { error } = await supabase.from("profiles").update(dbData).eq("id", user.id);
+    if (error) return { error: error.message };
     queryClient.setQueryData(["profile", user.id], (prev: ProfileData) => ({ ...prev, ...data }));
+    return { error: null };
   };
 
   const refetchProfile = () => queryClient.invalidateQueries({ queryKey: ["profile", user?.id] });
