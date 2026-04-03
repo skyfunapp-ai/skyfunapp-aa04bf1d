@@ -5,15 +5,19 @@ import BottomNav from "@/components/BottomNav";
 import EditProfileModal from "@/components/EditProfileModal";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useProfile, type ProfileData } from "@/hooks/useProfile";
-import { useAirportProximity } from "@/hooks/useAirportProximity";
+import { toast } from "@/hooks/use-toast";
 
 const Dashboard = () => {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const { profile, loading, updateProfile } = useProfile();
-  const { nearestAirport, loading: proximityLoading } = useAirportProximity();
 
-  const handleSaveProfile = (data: ProfileData) => {
-    updateProfile(data);
+  const handleSaveProfile = async (data: ProfileData) => {
+    const result = await updateProfile(data);
+    if (result?.error) {
+      toast({ title: "Error saving profile", description: result.error, variant: "destructive" });
+    } else {
+      toast({ title: "Profile saved successfully" });
+    }
   };
 
   const handleEditClick = () => setIsEditOpen(true);
