@@ -2,28 +2,81 @@ import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import HeaderMinimal from "@/components/HeaderMinimal";
 import BottomNav from "@/components/BottomNav";
-import { appUsers } from "@/data/flights";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { MapPin, ArrowLeft, Send, X, Check, CheckCheck } from "lucide-react";
+import { ArrowLeft, Send, X, Check, CheckCheck, Loader2 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "@/hooks/use-toast";
 import { useProfile, useConnections, useBlockedUsers } from "@/hooks/useProfile";
+import { supabase } from "@/integrations/supabase/client";
+
+interface DbUser {
+  id: string;
+  name: string;
+  profilePhoto?: string;
+}
 
 const messageStore: Record<string, { text: string; fromMe: boolean; timestamp: number; status?: "sent" | "delivered" | "seen" }[]> = {};
 const readCountStore: Record<string, number> = {};
+const userCache: Record<string, DbUser> = {};
 
 const MessagesPage = () => {
   const { userId } = useParams();
   const navigate = useNavigate();
   const [messages, setMessages] = useState<{ text: string; fromMe: boolean; timestamp: number; status?: "sent" | "delivered" | "seen" }[]>([]);
   const [input, setInput] = useState("");
-  const [incomingPopup, setIncomingPopup] = useState<{ userId: string; name: string; photo: string; avatar: string; message: string } | null>(null);
-
-  const selectedUser = userId ? appUsers.find((u) => u.id === userId) : null;
+  const [selectedUser, setSelectedUser] = useState<DbUser | null>(null);
+  const [chatUsers, setChatUsers] = useState<DbUser[]>([]);
+  const [loadingUsers, setLoadingUsers] = useState(true);
 
   const { profile } = useProfile();
   const { connectedUserIds, addConnection } = useConnections();
   const { blockedUserIds, isBlocked } = useBlockedUsers();
+
+  // Fetch the selected user's profile from DB
+  useEffect(() => {
+    if (!userId) { setSelectedUser(null); return; }
+    if (userCache[userId]) {
+      setSelectedUser(userCache[userId]);
+      return;
+    }
+    const fetchUser = async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("id, name, profile_photo")
+        .eq("id", userId)
+        .single();
+      if (data) {
+        const u: DbUser = { id: data.id, name: data.name || "", profilePhoto: data.profile_photo || undefined };
+        userCache[userId] = u;
+        setSelectedUser(u);
+      }
+    };
+    fetchUser();
+  }, [userId]);
+
+  // Fetch connected users for the chat list
+  useEffect(() => {
+    const fetchConnectedUsers = async () => {
+      setLoadingUsers(true);
+      const ids = connectedUserIds.filter((id) => !isBlocked(id));
+      if (ids.length === 0) { setChatUsers([]); setLoadingUsers(false); return; }
+      const { data } = await supabase
+        .from("profiles")
+        .select("id, name, profile_photo")
+        .in("id", ids);
+      if (data) {
+        const users = data.map((p) => ({
+          id: p.id,
+          name: p.name || "",
+          profilePhoto: p.profile_photo || undefined,
+        }));
+        users.forEach((u) => { userCache[u.id] = u; });
+        setChatUsers(users);
+      }
+      setLoadingUsers(false);
+    };
+    if (!userId) fetchConnectedUsers();
+  }, [userId, connectedUserIds, blockedUserIds]);
 
   useEffect(() => {
     if (userId) {
@@ -32,36 +85,8 @@ const MessagesPage = () => {
     }
   }, [userId]);
 
-  useEffect(() => {
-    if (!userId) return;
-    const otherUsers = appUsers.filter((u) => u.id !== userId && !isBlocked(u.id));
-    if (otherUsers.length === 0) return;
-
-    const timer = setTimeout(() => {
-      const randomUser = otherUsers[Math.floor(Math.random() * otherUsers.length)];
-      setIncomingPopup({
-        userId: randomUser.id,
-        name: randomUser.name,
-        photo: randomUser.photo,
-        avatar: randomUser.avatar,
-        message: "Hey! Are you at the airport? ✈️",
-      });
-      const existing = messageStore[randomUser.id] || [];
-      messageStore[randomUser.id] = [...existing, { text: "Hey! Are you at the airport? ✈️", fromMe: false, timestamp: Date.now() }];
-    }, 8000 + Math.random() * 7000);
-
-    return () => clearTimeout(timer);
-  }, [userId, blockedUserIds]);
-
-  const handleIncomingClick = useCallback(async () => {
-    if (!incomingPopup) return;
-    const targetId = incomingPopup.userId;
-    if (!connectedUserIds.includes(targetId)) {
-      await addConnection(targetId);
-    }
-    setIncomingPopup(null);
-    navigate(`/messages/${targetId}`);
-  }, [incomingPopup, navigate, connectedUserIds, addConnection]);
+  const getInitials = (name: string) =>
+    name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
 
   const handleSend = () => {
     if (!input.trim() || !userId) return;
@@ -95,33 +120,12 @@ const MessagesPage = () => {
     }, 1200);
   };
 
-  if (selectedUser) {
+  if (userId && selectedUser) {
     const userBlocked = isBlocked(selectedUser.id);
 
     return (
       <div className="min-h-screen flex flex-col bg-background">
         <HeaderMinimal />
-
-        {incomingPopup && (
-          <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 animate-in slide-in-from-top-4 fade-in duration-300">
-            <div
-              onClick={handleIncomingClick}
-              className="flex items-center gap-3 bg-card border border-border rounded-2xl px-4 py-3 shadow-lg cursor-pointer hover:bg-card/90 transition-colors max-w-xs"
-            >
-              <Avatar className="w-10 h-10 shrink-0">
-                <AvatarImage src={incomingPopup.photo} alt={incomingPopup.name} />
-                <AvatarFallback className="text-sm font-bold">{incomingPopup.avatar}</AvatarFallback>
-              </Avatar>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-card-foreground truncate">{incomingPopup.name}</p>
-                <p className="text-xs text-muted-foreground truncate">{incomingPopup.message}</p>
-              </div>
-              <button onClick={(e) => { e.stopPropagation(); setIncomingPopup(null); }} className="text-muted-foreground hover:text-card-foreground p-1">
-                <X size={14} />
-              </button>
-            </div>
-          </div>
-        )}
 
         <main className="flex-1 flex flex-col pt-20 sm:pt-24 pb-20 px-4">
           <div className="flex items-center gap-3 mb-4">
@@ -129,12 +133,11 @@ const MessagesPage = () => {
               <ArrowLeft size={20} />
             </button>
             <Avatar className="w-9 h-9">
-              <AvatarImage src={selectedUser.photo} alt={selectedUser.name} />
-              <AvatarFallback className="text-xs font-bold">{selectedUser.avatar}</AvatarFallback>
+              <AvatarImage src={selectedUser.profilePhoto} alt={selectedUser.name} />
+              <AvatarFallback className="text-xs font-bold">{getInitials(selectedUser.name)}</AvatarFallback>
             </Avatar>
             <div>
               <p className="text-sm font-semibold text-primary-foreground">{selectedUser.name}</p>
-              <p className="text-xs text-muted-foreground capitalize">{selectedUser.status}</p>
             </div>
           </div>
 
@@ -189,8 +192,7 @@ const MessagesPage = () => {
     );
   }
 
-  const chatUsers = appUsers.filter((u) => connectedUserIds.includes(u.id) && !isBlocked(u.id));
-
+  // Chat list view
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <HeaderMinimal />
@@ -199,41 +201,45 @@ const MessagesPage = () => {
         <h2 className="text-lg font-bold text-primary-foreground mb-4">Messages</h2>
 
         <ScrollArea className="flex-1">
-          {chatUsers.length === 0 ? (
+          {loadingUsers ? (
+            <div className="flex justify-center py-8">
+              <Loader2 className="animate-spin text-muted-foreground" size={24} />
+            </div>
+          ) : chatUsers.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16">
               <p className="text-muted-foreground text-sm text-center">No conversations yet.</p>
               <p className="text-muted-foreground text-xs text-center mt-1">Connect with users from the Search page to start chatting.</p>
             </div>
           ) : (
             <div className="space-y-2">
-              {chatUsers.map((user) => {
-                const lastMessages = messageStore[user.id];
+              {chatUsers.map((u) => {
+                const lastMessages = messageStore[u.id];
                 const lastMsg = lastMessages?.[lastMessages.length - 1];
                 const totalCount = lastMessages?.length || 0;
-                const readCount = readCountStore[user.id] || 0;
+                const readCount = readCountStore[u.id] || 0;
                 const unreadCount = Math.max(0, totalCount - readCount);
                 return (
                   <div
-                    key={user.id}
-                    onClick={() => navigate(`/messages/${user.id}`)}
+                    key={u.id}
+                    onClick={() => navigate(`/messages/${u.id}`)}
                     className="flex items-center gap-3 bg-card/80 backdrop-blur rounded-xl px-4 py-3 border border-border/50 cursor-pointer hover:bg-card/95 transition-colors"
                   >
                     <div className="relative shrink-0">
                       <Avatar className="w-10 h-10">
-                        <AvatarImage src={user.photo} alt={user.name} />
-                        <AvatarFallback className="text-sm font-bold">{user.avatar}</AvatarFallback>
+                        <AvatarImage src={u.profilePhoto} alt={u.name} />
+                        <AvatarFallback className="text-sm font-bold">{getInitials(u.name)}</AvatarFallback>
                       </Avatar>
                       {unreadCount > 0 && (
                         <span className="absolute -top-1 -right-1 bg-accent text-accent-foreground text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center">{unreadCount}</span>
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className={`text-sm truncate ${unreadCount > 0 ? "font-bold text-card-foreground" : "font-semibold text-card-foreground"}`}>{user.name}</p>
+                      <p className={`text-sm truncate ${unreadCount > 0 ? "font-bold text-card-foreground" : "font-semibold text-card-foreground"}`}>{u.name}</p>
                       <p className={`text-xs truncate ${unreadCount > 0 ? "text-card-foreground font-medium" : "text-muted-foreground"}`}>
                         {lastMsg ? (lastMsg.fromMe ? `You: ${lastMsg.text}` : lastMsg.text) : "Tap to chat"}
                       </p>
                     </div>
-                    <div className={`w-3 h-3 rounded-full shrink-0 ${user.status === "online" ? "bg-green-500" : user.status === "away" ? "bg-yellow-500" : "bg-muted-foreground/40"}`} />
+                    <div className="w-3 h-3 rounded-full shrink-0 bg-green-500" />
                   </div>
                 );
               })}
