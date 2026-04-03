@@ -61,7 +61,6 @@ export type Database = {
           created_at: string
           current_airport: string | null
           destination_airport: string | null
-          email: string | null
           favorite_food: string[] | null
           hobbies: string[] | null
           id: string
@@ -76,7 +75,6 @@ export type Database = {
           created_at?: string
           current_airport?: string | null
           destination_airport?: string | null
-          email?: string | null
           favorite_food?: string[] | null
           hobbies?: string[] | null
           id: string
@@ -91,7 +89,6 @@ export type Database = {
           created_at?: string
           current_airport?: string | null
           destination_airport?: string | null
-          email?: string | null
           favorite_food?: string[] | null
           hobbies?: string[] | null
           id?: string
