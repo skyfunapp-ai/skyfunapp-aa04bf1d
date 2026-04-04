@@ -32,6 +32,7 @@ const MessagesPage = () => {
   const { profile } = useProfile();
   const { connectedUserIds, addConnection } = useConnections();
   const { blockedUserIds, isBlocked } = useBlockedUsers();
+  const { addMessageNotification } = useNotifications();
 
   // Fetch the selected user's profile from DB
   useEffect(() => {
