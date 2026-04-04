@@ -1,4 +1,5 @@
-import { PlaneTakeoff, Pencil, Menu } from "lucide-react";
+import { Pencil, Menu } from "lucide-react";
+import skyfunLogo from "@/assets/skyfunapp-logo.png";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -45,7 +46,7 @@ const HeaderMinimal = ({ onEditClick, showEdit = false }: HeaderMinimalProps) =>
     <header className="fixed top-0 left-0 right-0 z-40 bg-background/80 backdrop-blur-lg border-b border-border">
       <div className="w-full px-4 h-16 sm:h-24 flex items-center justify-between">
         <div className="flex items-center gap-2 sm:gap-3">
-          <PlaneTakeoff className="text-primary-foreground -rotate-12 drop-shadow-[0_0_10px_rgba(255,255,255,0.5)] w-7 h-7 sm:w-12 sm:h-12" />
+          <img src={skyfunLogo} alt="SkyFunApp" className="w-8 h-8 sm:w-12 sm:h-12 rounded-lg drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]" />
           <span className="text-xl sm:text-3xl font-bold italic text-primary-foreground drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">SkyFunApp</span>
         </div>
         <div className="flex items-center gap-2">
