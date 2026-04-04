@@ -82,11 +82,7 @@ const SearchPage = () => {
 
   const handleUserClick = (userId: string) => {
     if (isBlocked(userId)) return;
-    if (isConnected(userId)) {
-      navigate(`/messages/${userId}`);
-    } else {
-      navigate(`/user/${userId}`);
-    }
+    navigate(`/user/${userId}`);
   };
 
   const getInitials = (name: string) =>
