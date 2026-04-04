@@ -130,7 +130,7 @@ const MessagesPage = () => {
 
         <main className="flex-1 flex flex-col pt-20 sm:pt-24 pb-20 px-4">
           <div className="flex items-center gap-3 mb-4">
-            <button onClick={() => navigate("/messages")} className="text-primary-foreground/70 hover:text-primary-foreground transition-colors">
+            <button onClick={() => navigate("/search")} className="text-primary-foreground/70 hover:text-primary-foreground transition-colors">
               <ArrowLeft size={20} />
             </button>
             <Avatar className="w-9 h-9">
