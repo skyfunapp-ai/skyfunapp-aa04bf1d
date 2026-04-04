@@ -1,4 +1,5 @@
-import { PlaneTakeoff, Pencil, Menu } from "lucide-react";
+import { Pencil, Menu } from "lucide-react";
+import skyfunLogo from "@/assets/skyfunapp-logo.png";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import {
