@@ -43,6 +43,12 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
 
     setNotifications((prev) => [notification, ...prev]);
 
+    try {
+      const audio = new Audio("/notification.wav");
+      audio.volume = 0.5;
+      audio.play().catch(() => {});
+    } catch {}
+
     toast(`💬 ${fromUserName}`, {
       description: message.length > 50 ? message.slice(0, 50) + "…" : message,
       duration: 4000,
