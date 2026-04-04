@@ -8,6 +8,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "@/hooks/use-toast";
 import { useProfile, useConnections, useBlockedUsers } from "@/hooks/useProfile";
 import { supabase } from "@/integrations/supabase/client";
+import { useNotifications } from "@/contexts/NotificationContext";
 
 interface DbUser {
   id: string;
@@ -31,6 +32,7 @@ const MessagesPage = () => {
   const { profile } = useProfile();
   const { connectedUserIds, addConnection } = useConnections();
   const { blockedUserIds, isBlocked } = useBlockedUsers();
+  const { addMessageNotification } = useNotifications();
 
   // Fetch the selected user's profile from DB
   useEffect(() => {
@@ -113,10 +115,14 @@ const MessagesPage = () => {
     setTimeout(() => {
       const current = messageStore[userId] || [];
       const seen = current.map((m) => m.fromMe ? { ...m, status: "seen" as const } : m);
-      const reply = [...seen, { text: "Thanks for reaching out! ✈️", fromMe: false, timestamp: Date.now() }];
+      const replyText = "Thanks for reaching out! ✈️";
+      const reply = [...seen, { text: replyText, fromMe: false, timestamp: Date.now() }];
       messageStore[userId] = reply;
       readCountStore[userId] = reply.length;
       setMessages(reply);
+
+      const senderName = selectedUser?.name || "Someone";
+      addMessageNotification(userId, senderName, replyText);
     }, 1200);
   };
 
