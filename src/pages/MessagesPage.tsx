@@ -115,14 +115,9 @@ const MessagesPage = () => {
     setTimeout(() => {
       const current = messageStore[userId] || [];
       const seen = current.map((m) => m.fromMe ? { ...m, status: "seen" as const } : m);
-      const replyText = "Thanks for reaching out! ✈️";
-      const reply = [...seen, { text: replyText, fromMe: false, timestamp: Date.now() }];
-      messageStore[userId] = reply;
-      readCountStore[userId] = reply.length;
-      setMessages(reply);
-
-      const senderName = selectedUser?.name || "Someone";
-      addMessageNotification(userId, senderName, replyText);
+      messageStore[userId] = seen;
+      readCountStore[userId] = seen.length;
+      setMessages(seen);
     }, 1200);
   };
 
