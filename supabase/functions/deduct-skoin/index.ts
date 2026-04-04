@@ -46,27 +46,31 @@ serve(async (req) => {
       );
     }
 
-    // Check balance
-    const { data: profile } = await supabaseAdmin
-      .from("profiles")
-      .select("skoin_balance")
-      .eq("id", user.id)
-      .single();
+    const isUnlimitedUser = user.email === "skyfunapp@gmail.com";
 
-    if (!profile || profile.skoin_balance < 1) {
-      return new Response(
-        JSON.stringify({ error: "Insufficient Skoin balance" }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 400 }
-      );
+    if (!isUnlimitedUser) {
+      // Check balance
+      const { data: profile } = await supabaseAdmin
+        .from("profiles")
+        .select("skoin_balance")
+        .eq("id", user.id)
+        .single();
+
+      if (!profile || profile.skoin_balance < 1) {
+        return new Response(
+          JSON.stringify({ error: "Insufficient Skoin balance" }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 400 }
+        );
+      }
+
+      // Deduct 1 Skoin
+      const { error: updateError } = await supabaseAdmin
+        .from("profiles")
+        .update({ skoin_balance: profile.skoin_balance - 1, updated_at: new Date().toISOString() })
+        .eq("id", user.id);
+
+      if (updateError) throw new Error("Could not deduct Skoin");
     }
-
-    // Deduct 1 Skoin
-    const { error: updateError } = await supabaseAdmin
-      .from("profiles")
-      .update({ skoin_balance: profile.skoin_balance - 1, updated_at: new Date().toISOString() })
-      .eq("id", user.id);
-
-    if (updateError) throw new Error("Could not deduct Skoin");
 
     // Create connection
     const { error: connError } = await supabaseAdmin
@@ -74,16 +78,38 @@ serve(async (req) => {
       .insert({ user_id: user.id, connected_user_id });
 
     if (connError) {
-      // Rollback balance if connection insert fails
-      await supabaseAdmin
-        .from("profiles")
-        .update({ skoin_balance: profile.skoin_balance, updated_at: new Date().toISOString() })
-        .eq("id", user.id);
+      if (!isUnlimitedUser) {
+        // Rollback balance if connection insert fails
+        const { data: currentProfile } = await supabaseAdmin
+          .from("profiles")
+          .select("skoin_balance")
+          .eq("id", user.id)
+          .single();
+        if (currentProfile) {
+          await supabaseAdmin
+            .from("profiles")
+            .update({ skoin_balance: currentProfile.skoin_balance + 1, updated_at: new Date().toISOString() })
+            .eq("id", user.id);
+        }
+      }
       throw new Error("Could not create connection");
     }
 
+    if (isUnlimitedUser) {
+      return new Response(
+        JSON.stringify({ success: true, newBalance: "unlimited" }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const { data: updatedProfile } = await supabaseAdmin
+      .from("profiles")
+      .select("skoin_balance")
+      .eq("id", user.id)
+      .single();
+
     return new Response(
-      JSON.stringify({ success: true, newBalance: profile.skoin_balance - 1 }),
+      JSON.stringify({ success: true, newBalance: updatedProfile?.skoin_balance }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error) {
