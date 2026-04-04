@@ -31,26 +31,27 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/create-account" element={<CreateAccountPage />} />
-            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-            <Route path="/reset-password" element={<ResetPasswordPage />} />
-            <Route path="/search" element={<SearchPage />} />
-            <Route path="/messages" element={<MessagesPage />} />
-            <Route path="/messages/:userId" element={<MessagesPage />} />
-            <Route path="/user/:userId" element={<UserProfilePage />} />
-            <Route path="/skoin" element={<SkoinPage />} />
-            
-            <Route path="/skoin/success" element={<SkoinSuccessPage />} />
-            <Route path="/about" element={<AboutPage />} />
-            <Route path="/safety" element={<SafetyPage />} />
-            <Route path="/help" element={<HelpPage />} />
-            <Route path="/privacy" element={<PrivacyPage />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <NotificationProvider>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/create-account" element={<CreateAccountPage />} />
+              <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+              <Route path="/reset-password" element={<ResetPasswordPage />} />
+              <Route path="/search" element={<SearchPage />} />
+              <Route path="/messages" element={<MessagesPage />} />
+              <Route path="/messages/:userId" element={<MessagesPage />} />
+              <Route path="/user/:userId" element={<UserProfilePage />} />
+              <Route path="/skoin" element={<SkoinPage />} />
+              <Route path="/skoin/success" element={<SkoinSuccessPage />} />
+              <Route path="/about" element={<AboutPage />} />
+              <Route path="/safety" element={<SafetyPage />} />
+              <Route path="/help" element={<HelpPage />} />
+              <Route path="/privacy" element={<PrivacyPage />} />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </NotificationProvider>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
