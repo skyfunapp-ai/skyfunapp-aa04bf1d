@@ -8,6 +8,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "@/hooks/use-toast";
 import { useProfile, useConnections, useBlockedUsers } from "@/hooks/useProfile";
 import { supabase } from "@/integrations/supabase/client";
+import { useNotifications } from "@/contexts/NotificationContext";
 
 interface DbUser {
   id: string;
