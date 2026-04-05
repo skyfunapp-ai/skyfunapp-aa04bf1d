@@ -30,6 +30,14 @@ const MessagesPage = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const touchStartX = useRef(0);
+
+  const handleSwipe = (e: React.TouchEvent, type: "start" | "end") => {
+    if (userId) return; // No swipe in chat view
+    if (type === "start") { touchStartX.current = e.touches[0].clientX; return; }
+    const diff = e.changedTouches[0].clientX - touchStartX.current;
+    if (diff > 60) navigate("/search");
+  };
 
   const { profile } = useProfile();
   const { connectedUserIds } = useConnections();
