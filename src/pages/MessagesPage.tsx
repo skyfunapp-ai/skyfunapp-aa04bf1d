@@ -1,14 +1,16 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import HeaderMinimal from "@/components/HeaderMinimal";
 import BottomNav from "@/components/BottomNav";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { ArrowLeft, Send, X, Check, CheckCheck, Loader2 } from "lucide-react";
+import { ArrowLeft, Send, Camera, Paperclip, Check, CheckCheck, Loader2, X } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "@/hooks/use-toast";
 import { useProfile, useConnections, useBlockedUsers } from "@/hooks/useProfile";
 import { supabase } from "@/integrations/supabase/client";
 import { useNotifications } from "@/contexts/NotificationContext";
+import ChatProfileModal from "@/components/ChatProfileModal";
+import { messageStore, readCountStore, userCache } from "@/data/messageStore";
 
 interface DbUser {
   id: string;
@@ -16,25 +18,24 @@ interface DbUser {
   profilePhoto?: string;
 }
 
-const messageStore: Record<string, { text: string; fromMe: boolean; timestamp: number; status?: "sent" | "delivered" | "seen" }[]> = {};
-const readCountStore: Record<string, number> = {};
-const userCache: Record<string, DbUser> = {};
-
 const MessagesPage = () => {
   const { userId } = useParams();
   const navigate = useNavigate();
-  const [messages, setMessages] = useState<{ text: string; fromMe: boolean; timestamp: number; status?: "sent" | "delivered" | "seen" }[]>([]);
+  const [messages, setMessages] = useState<{ text: string; fromMe: boolean; timestamp: number; status?: "sent" | "delivered" | "seen"; image?: string }[]>([]);
   const [input, setInput] = useState("");
   const [selectedUser, setSelectedUser] = useState<DbUser | null>(null);
   const [chatUsers, setChatUsers] = useState<DbUser[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(true);
+  const [showProfile, setShowProfile] = useState(false);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
 
   const { profile } = useProfile();
   const { connectedUserIds, addConnection } = useConnections();
   const { blockedUserIds, isBlocked } = useBlockedUsers();
   const { addMessageNotification } = useNotifications();
 
-  // Fetch the selected user's profile from DB
   useEffect(() => {
     if (!userId) { setSelectedUser(null); return; }
     if (userCache[userId]) {
@@ -56,7 +57,6 @@ const MessagesPage = () => {
     fetchUser();
   }, [userId]);
 
-  // Fetch connected users for the chat list
   useEffect(() => {
     const fetchConnectedUsers = async () => {
       setLoadingUsers(true);
@@ -90,19 +90,18 @@ const MessagesPage = () => {
   const getInitials = (name: string) =>
     name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
 
-  const handleSend = () => {
-    if (!input.trim() || !userId) return;
-
+  const sendMessageContent = (text: string, image?: string) => {
+    if (!userId) return;
     if (isBlocked(userId)) {
       toast({ title: "User is blocked", description: "Unblock this user to send messages." });
       return;
     }
 
-    const newMessages = [...messages, { text: input.trim(), fromMe: true, timestamp: Date.now(), status: "sent" as const }];
+    const newMsg = { text, fromMe: true, timestamp: Date.now(), status: "sent" as const, image };
+    const newMessages = [...messages, newMsg];
     messageStore[userId] = newMessages;
     readCountStore[userId] = newMessages.length;
     setMessages(newMessages);
-    setInput("");
 
     setTimeout(() => {
       const current = messageStore[userId] || [];
@@ -121,6 +120,31 @@ const MessagesPage = () => {
     }, 1200);
   };
 
+  const handleSend = () => {
+    if (previewImage) {
+      sendMessageContent(input.trim(), previewImage);
+      setInput("");
+      setPreviewImage(null);
+      return;
+    }
+    if (!input.trim()) return;
+    sendMessageContent(input.trim());
+    setInput("");
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast({ title: "Only images are supported", description: "Please select an image file." });
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => setPreviewImage(reader.result as string);
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  };
+
   if (userId && selectedUser) {
     const userBlocked = isBlocked(selectedUser.id);
 
@@ -128,18 +152,22 @@ const MessagesPage = () => {
       <div className="min-h-screen flex flex-col bg-background">
         <HeaderMinimal />
 
+        {showProfile && (
+          <ChatProfileModal userId={selectedUser.id} onClose={() => setShowProfile(false)} />
+        )}
+
         <main className="flex-1 flex flex-col pt-20 sm:pt-24 pb-20 px-4">
           <div className="flex items-center gap-3 mb-4">
             <button onClick={() => navigate("/search")} className="text-primary-foreground/70 hover:text-primary-foreground transition-colors">
               <ArrowLeft size={20} />
             </button>
-            <Avatar className="w-9 h-9">
-              <AvatarImage src={selectedUser.profilePhoto} alt={selectedUser.name} />
-              <AvatarFallback className="text-xs font-bold">{getInitials(selectedUser.name)}</AvatarFallback>
-            </Avatar>
-            <div>
+            <button onClick={() => setShowProfile(true)} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+              <Avatar className="w-9 h-9">
+                <AvatarImage src={selectedUser.profilePhoto} alt={selectedUser.name} />
+                <AvatarFallback className="text-xs font-bold">{getInitials(selectedUser.name)}</AvatarFallback>
+              </Avatar>
               <p className="text-sm font-semibold text-primary-foreground">{selectedUser.name}</p>
-            </div>
+            </button>
           </div>
 
           <ScrollArea className="flex-1 mb-4">
@@ -153,7 +181,10 @@ const MessagesPage = () => {
               {messages.map((msg, i) => (
                 <div key={i} className={`flex flex-col ${msg.fromMe ? "items-end" : "items-start"}`}>
                   <div className={`max-w-[75%] px-4 py-2 rounded-2xl text-sm ${msg.fromMe ? "bg-accent text-accent-foreground rounded-br-sm" : "bg-card text-card-foreground border border-border/50 rounded-bl-sm"}`}>
-                    {msg.text}
+                    {msg.image && (
+                      <img src={msg.image} alt="Shared" className="rounded-lg mb-1 max-w-full max-h-48 object-cover" />
+                    )}
+                    {msg.text && <span>{msg.text}</span>}
                   </div>
                   {msg.timestamp && (
                     <div className={`flex items-center gap-1 mt-0.5 px-1 ${msg.fromMe ? "flex-row-reverse" : ""}`}>
@@ -171,17 +202,35 @@ const MessagesPage = () => {
           </ScrollArea>
 
           {!userBlocked && (
-            <div className="flex items-center gap-2">
-              <input
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleSend()}
-                placeholder="Type a message..."
-                className="flex-1 bg-card text-card-foreground border border-border rounded-full px-4 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent"
-              />
-              <button onClick={handleSend} className="p-2.5 bg-accent text-accent-foreground rounded-full hover:opacity-90 transition-opacity">
-                <Send size={18} />
-              </button>
+            <div>
+              {previewImage && (
+                <div className="relative inline-block mb-2">
+                  <img src={previewImage} alt="Preview" className="h-20 rounded-lg border border-border/50" />
+                  <button onClick={() => setPreviewImage(null)} className="absolute -top-2 -right-2 p-0.5 bg-destructive text-destructive-foreground rounded-full">
+                    <X size={14} />
+                  </button>
+                </div>
+              )}
+              <div className="flex items-center gap-2">
+                <button onClick={() => cameraInputRef.current?.click()} className="p-2.5 text-muted-foreground hover:text-primary-foreground transition-colors">
+                  <Camera size={20} />
+                </button>
+                <button onClick={() => fileInputRef.current?.click()} className="p-2.5 text-muted-foreground hover:text-primary-foreground transition-colors">
+                  <Paperclip size={20} />
+                </button>
+                <input
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleSend()}
+                  placeholder="Type a message..."
+                  className="flex-1 bg-card text-card-foreground border border-border rounded-full px-4 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent"
+                />
+                <button onClick={handleSend} className="p-2.5 bg-accent text-accent-foreground rounded-full hover:opacity-90 transition-opacity">
+                  <Send size={18} />
+                </button>
+              </div>
+              <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={handleFileSelect} />
+              <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileSelect} />
             </div>
           )}
 
@@ -193,7 +242,6 @@ const MessagesPage = () => {
     );
   }
 
-  // Chat list view
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <HeaderMinimal />
@@ -237,7 +285,7 @@ const MessagesPage = () => {
                     <div className="flex-1 min-w-0">
                       <p className={`text-sm truncate ${unreadCount > 0 ? "font-bold text-card-foreground" : "font-semibold text-card-foreground"}`}>{u.name}</p>
                       <p className={`text-xs truncate ${unreadCount > 0 ? "text-card-foreground font-medium" : "text-muted-foreground"}`}>
-                        {lastMsg ? (lastMsg.fromMe ? `You: ${lastMsg.text}` : lastMsg.text) : "Tap to chat"}
+                        {lastMsg ? (lastMsg.image ? (lastMsg.fromMe ? "You: 📷 Photo" : "📷 Photo") : lastMsg.fromMe ? `You: ${lastMsg.text}` : lastMsg.text) : "Tap to chat"}
                       </p>
                     </div>
                     <div className="w-3 h-3 rounded-full shrink-0 bg-green-500" />

@@ -11,9 +11,7 @@ import AirportCombobox from "@/components/AirportCombobox";
 import { useConnections, useBlockedUsers } from "@/hooks/useProfile";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-
-// Import the message store to check for existing conversations
-const messageStore: Record<string, { text: string; fromMe: boolean; timestamp: number }[]> = (window as any).__skyMessageStore || {};
+import { messageStore } from "@/data/messageStore";
 
 
 interface SearchUser {
