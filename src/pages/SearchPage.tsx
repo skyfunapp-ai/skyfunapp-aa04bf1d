@@ -11,7 +11,7 @@ import AirportCombobox from "@/components/AirportCombobox";
 import { useConnections, useBlockedUsers } from "@/hooks/useProfile";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { messageStore } from "@/data/messageStore";
+import { useConversations } from "@/hooks/useMessages";
 
 
 interface SearchUser {
