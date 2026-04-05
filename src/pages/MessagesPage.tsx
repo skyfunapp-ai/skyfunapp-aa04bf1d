@@ -8,9 +8,9 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "@/hooks/use-toast";
 import { useProfile, useConnections, useBlockedUsers } from "@/hooks/useProfile";
 import { supabase } from "@/integrations/supabase/client";
-import { useNotifications } from "@/contexts/NotificationContext";
 import ChatProfileModal from "@/components/ChatProfileModal";
-import { messageStore, readCountStore, userCache } from "@/data/messageStore";
+import { useMessages, useConversations } from "@/hooks/useMessages";
+import { userCache } from "@/data/messageStore";
 
 interface DbUser {
   id: string;
@@ -21,7 +21,6 @@ interface DbUser {
 const MessagesPage = () => {
   const { userId } = useParams();
   const navigate = useNavigate();
-  const [messages, setMessages] = useState<{ text: string; fromMe: boolean; timestamp: number; status?: "sent" | "delivered" | "seen"; image?: string }[]>([]);
   const [input, setInput] = useState("");
   const [selectedUser, setSelectedUser] = useState<DbUser | null>(null);
   const [chatUsers, setChatUsers] = useState<DbUser[]>([]);
@@ -30,11 +29,28 @@ const MessagesPage = () => {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const touchStartX = useRef(0);
+
+  const handleSwipe = (e: React.TouchEvent, type: "start" | "end") => {
+    if (userId) return; // No swipe in chat view
+    if (type === "start") { touchStartX.current = e.touches[0].clientX; return; }
+    const diff = e.changedTouches[0].clientX - touchStartX.current;
+    if (diff > 60) navigate("/search");
+  };
 
   const { profile } = useProfile();
-  const { connectedUserIds, addConnection } = useConnections();
+  const { connectedUserIds } = useConnections();
   const { blockedUserIds, isBlocked } = useBlockedUsers();
-  const { addMessageNotification } = useNotifications();
+  const { messages, loading: messagesLoading, sendMessage } = useMessages(userId);
+  const { conversations } = useConversations();
+
+  // Auto-scroll on new messages
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [messages]);
 
   useEffect(() => {
     if (!userId) { setSelectedUser(null); return; }
@@ -60,12 +76,18 @@ const MessagesPage = () => {
   useEffect(() => {
     const fetchConnectedUsers = async () => {
       setLoadingUsers(true);
-      const ids = connectedUserIds.filter((id) => !isBlocked(id));
-      if (ids.length === 0) { setChatUsers([]); setLoadingUsers(false); return; }
+      // Combine connected users with users who have conversations
+      const conversationUserIds = conversations.map((c) => c.userId);
+      const allUserIds = [...new Set([
+        ...connectedUserIds.filter((id) => !isBlocked(id)),
+        ...conversationUserIds.filter((id) => !isBlocked(id)),
+      ])];
+      
+      if (allUserIds.length === 0) { setChatUsers([]); setLoadingUsers(false); return; }
       const { data } = await supabase
         .from("profiles")
         .select("id, name, profile_photo")
-        .in("id", ids);
+        .in("id", allUserIds);
       if (data) {
         const users = data.map((p) => ({
           id: p.id,
@@ -78,57 +100,24 @@ const MessagesPage = () => {
       setLoadingUsers(false);
     };
     if (!userId) fetchConnectedUsers();
-  }, [userId, connectedUserIds, blockedUserIds]);
-
-  useEffect(() => {
-    if (userId) {
-      setMessages(messageStore[userId] || []);
-      readCountStore[userId] = (messageStore[userId] || []).length;
-    }
-  }, [userId]);
+  }, [userId, connectedUserIds, blockedUserIds, conversations]);
 
   const getInitials = (name: string) =>
     name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
 
-  const sendMessageContent = (text: string, image?: string) => {
-    if (!userId) return;
-    if (isBlocked(userId)) {
-      toast({ title: "User is blocked", description: "Unblock this user to send messages." });
-      return;
-    }
-
-    const newMsg = { text, fromMe: true, timestamp: Date.now(), status: "sent" as const, image };
-    const newMessages = [...messages, newMsg];
-    messageStore[userId] = newMessages;
-    readCountStore[userId] = newMessages.length;
-    setMessages(newMessages);
-
-    setTimeout(() => {
-      const current = messageStore[userId] || [];
-      const updated = current.map((m, i) => i === current.length - 1 && m.fromMe ? { ...m, status: "delivered" as const } : m);
-      messageStore[userId] = updated;
-      readCountStore[userId] = updated.length;
-      setMessages(updated);
-    }, 500);
-
-    setTimeout(() => {
-      const current = messageStore[userId] || [];
-      const seen = current.map((m) => m.fromMe ? { ...m, status: "seen" as const } : m);
-      messageStore[userId] = seen;
-      readCountStore[userId] = seen.length;
-      setMessages(seen);
-    }, 1200);
-  };
-
-  const handleSend = () => {
+  const handleSend = async () => {
     if (previewImage) {
-      sendMessageContent(input.trim(), previewImage);
+      await sendMessage(input.trim(), previewImage);
       setInput("");
       setPreviewImage(null);
       return;
     }
     if (!input.trim()) return;
-    sendMessageContent(input.trim());
+    if (isBlocked(userId || "")) {
+      toast({ title: "User is blocked", description: "Unblock this user to send messages." });
+      return;
+    }
+    await sendMessage(input.trim());
     setInput("");
   };
 
@@ -170,32 +159,35 @@ const MessagesPage = () => {
             </button>
           </div>
 
-          <ScrollArea className="flex-1 mb-4">
+          <ScrollArea className="flex-1 mb-4" ref={scrollRef}>
             <div className="space-y-3 min-h-[200px]">
-              {messages.length === 0 && !userBlocked && (
+              {messagesLoading && (
+                <div className="flex justify-center py-8">
+                  <Loader2 className="animate-spin text-muted-foreground" size={24} />
+                </div>
+              )}
+              {!messagesLoading && messages.length === 0 && !userBlocked && (
                 <p className="text-center text-muted-foreground text-sm mt-12">Say hello to {selectedUser.name}!</p>
               )}
               {userBlocked && (
                 <p className="text-center text-destructive text-sm mt-12">You have blocked this user. Unblock from their profile to chat.</p>
               )}
-              {messages.map((msg, i) => (
-                <div key={i} className={`flex flex-col ${msg.fromMe ? "items-end" : "items-start"}`}>
+              {messages.map((msg) => (
+                <div key={msg.id} className={`flex flex-col ${msg.fromMe ? "items-end" : "items-start"}`}>
                   <div className={`max-w-[75%] px-4 py-2 rounded-2xl text-sm ${msg.fromMe ? "bg-accent text-accent-foreground rounded-br-sm" : "bg-card text-card-foreground border border-border/50 rounded-bl-sm"}`}>
                     {msg.image && (
                       <img src={msg.image} alt="Shared" className="rounded-lg mb-1 max-w-full max-h-48 object-cover" />
                     )}
                     {msg.text && <span>{msg.text}</span>}
                   </div>
-                  {msg.timestamp && (
-                    <div className={`flex items-center gap-1 mt-0.5 px-1 ${msg.fromMe ? "flex-row-reverse" : ""}`}>
-                      <span className="text-[10px] text-muted-foreground">{new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                      {msg.fromMe && (
-                        <span className="flex items-center">
-                          {msg.status === "seen" ? <CheckCheck size={12} className="text-accent" /> : msg.status === "delivered" ? <CheckCheck size={12} className="text-muted-foreground" /> : <Check size={12} className="text-muted-foreground" />}
-                        </span>
-                      )}
-                    </div>
-                  )}
+                  <div className={`flex items-center gap-1 mt-0.5 px-1 ${msg.fromMe ? "flex-row-reverse" : ""}`}>
+                    <span className="text-[10px] text-muted-foreground">{new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                    {msg.fromMe && (
+                      <span className="flex items-center">
+                        {msg.status === "seen" ? <CheckCheck size={12} className="text-accent" /> : msg.status === "delivered" ? <CheckCheck size={12} className="text-muted-foreground" /> : <Check size={12} className="text-muted-foreground" />}
+                      </span>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
@@ -243,7 +235,7 @@ const MessagesPage = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col bg-background" onTouchStart={(e) => handleSwipe(e, "start")} onTouchEnd={(e) => handleSwipe(e, "end")}>
       <HeaderMinimal />
 
       <main className="flex-1 flex flex-col pt-20 sm:pt-24 pb-20 px-4">
@@ -262,11 +254,9 @@ const MessagesPage = () => {
           ) : (
             <div className="space-y-2">
               {chatUsers.map((u) => {
-                const lastMessages = messageStore[u.id];
-                const lastMsg = lastMessages?.[lastMessages.length - 1];
-                const totalCount = lastMessages?.length || 0;
-                const readCount = readCountStore[u.id] || 0;
-                const unreadCount = Math.max(0, totalCount - readCount);
+                const conv = conversations.find((c) => c.userId === u.id);
+                const lastMsg = conv?.lastMessage;
+                const unreadCount = conv?.unreadCount || 0;
                 return (
                   <div
                     key={u.id}

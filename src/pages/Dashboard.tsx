@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { MapPin, Coins, Plane } from "lucide-react";
 import HeaderMinimal from "@/components/HeaderMinimal";
 import BottomNav from "@/components/BottomNav";
@@ -10,6 +11,14 @@ import { toast } from "@/hooks/use-toast";
 const Dashboard = () => {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const { profile, loading, updateProfile } = useProfile();
+  const navigate = useNavigate();
+  const touchStartX = useRef(0);
+
+  const handleSwipe = (e: React.TouchEvent, type: "start" | "end") => {
+    if (type === "start") { touchStartX.current = e.touches[0].clientX; return; }
+    const diff = e.changedTouches[0].clientX - touchStartX.current;
+    if (diff < -60) navigate("/search");
+  };
 
   const handleSaveProfile = async (data: ProfileData) => {
     const result = await updateProfile(data);
@@ -31,7 +40,7 @@ const Dashboard = () => {
   );
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col bg-background" onTouchStart={(e) => handleSwipe(e, "start")} onTouchEnd={(e) => handleSwipe(e, "end")}>
       <HeaderMinimal onEditClick={handleEditClick} showEdit={true} />
       
       <main className="flex-1 flex flex-col items-center pt-20 sm:pt-24 pb-20">

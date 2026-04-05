@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import HeaderMinimal from "@/components/HeaderMinimal";
 import BottomNav from "@/components/BottomNav";
@@ -11,7 +11,7 @@ import AirportCombobox from "@/components/AirportCombobox";
 import { useConnections, useBlockedUsers } from "@/hooks/useProfile";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { messageStore } from "@/data/messageStore";
+import { useConversations } from "@/hooks/useMessages";
 
 
 interface SearchUser {
@@ -29,12 +29,21 @@ const SearchPage = () => {
   const [loadingUsers, setLoadingUsers] = useState(true);
   const navigate = useNavigate();
   const { user } = useAuth();
+  const touchStartX = useRef(0);
+
+  const handleSwipe = (e: React.TouchEvent, type: "start" | "end") => {
+    if (type === "start") { touchStartX.current = e.touches[0].clientX; return; }
+    const diff = e.changedTouches[0].clientX - touchStartX.current;
+    if (diff > 60) navigate("/dashboard");
+    else if (diff < -60) navigate("/messages");
+  };
 
   const fromCode = fromAirport !== "All Airports" ? fromAirport.split(" - ")[0] : null;
   const toCode = toAirport !== "All Airports" ? toAirport.split(" - ")[0] : null;
 
   const { isConnected } = useConnections();
   const { blockedUserIds, unblockUser, isBlocked } = useBlockedUsers();
+  const { conversations } = useConversations();
 
   // Fetch real profiles from database
   useEffect(() => {
@@ -84,9 +93,9 @@ const SearchPage = () => {
 
   const handleUserClick = (clickedUserId: string) => {
     if (isBlocked(clickedUserId)) return;
-    // If messages already exist with this user, go directly to chat
-    const hasMessages = messageStore[clickedUserId] && messageStore[clickedUserId].length > 0;
-    if (hasMessages) {
+    // If a conversation exists in the DB, go directly to chat
+    const hasConversation = conversations.some((c) => c.userId === clickedUserId);
+    if (hasConversation) {
       navigate(`/messages/${clickedUserId}`);
     } else {
       navigate(`/user/${clickedUserId}`);
@@ -97,7 +106,7 @@ const SearchPage = () => {
     name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col bg-background" onTouchStart={(e) => handleSwipe(e, "start")} onTouchEnd={(e) => handleSwipe(e, "end")}>
       <HeaderMinimal />
 
       <main className="flex-1 flex flex-col pt-20 sm:pt-24 pb-20 px-4">
