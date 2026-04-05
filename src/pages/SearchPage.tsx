@@ -106,7 +106,7 @@ const SearchPage = () => {
     name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col bg-background" onTouchStart={(e) => handleSwipe(e, "start")} onTouchEnd={(e) => handleSwipe(e, "end")}>
       <HeaderMinimal />
 
       <main className="flex-1 flex flex-col pt-20 sm:pt-24 pb-20 px-4">
