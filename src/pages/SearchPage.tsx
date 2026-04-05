@@ -80,9 +80,15 @@ const SearchPage = () => {
     toast({ title: `${userName} unblocked` });
   };
 
-  const handleUserClick = (userId: string) => {
-    if (isBlocked(userId)) return;
-    navigate(`/user/${userId}`);
+  const handleUserClick = (clickedUserId: string) => {
+    if (isBlocked(clickedUserId)) return;
+    // If messages already exist with this user, go directly to chat
+    const hasMessages = messageStore[clickedUserId] && messageStore[clickedUserId].length > 0;
+    if (hasMessages) {
+      navigate(`/messages/${clickedUserId}`);
+    } else {
+      navigate(`/user/${clickedUserId}`);
+    }
   };
 
   const getInitials = (name: string) =>
