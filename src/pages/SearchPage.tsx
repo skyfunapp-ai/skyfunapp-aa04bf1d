@@ -29,6 +29,14 @@ const SearchPage = () => {
   const [loadingUsers, setLoadingUsers] = useState(true);
   const navigate = useNavigate();
   const { user } = useAuth();
+  const touchStartX = useRef(0);
+
+  const handleSwipe = (e: React.TouchEvent, type: "start" | "end") => {
+    if (type === "start") { touchStartX.current = e.touches[0].clientX; return; }
+    const diff = e.changedTouches[0].clientX - touchStartX.current;
+    if (diff > 60) navigate("/dashboard");
+    else if (diff < -60) navigate("/messages");
+  };
 
   const fromCode = fromAirport !== "All Airports" ? fromAirport.split(" - ")[0] : null;
   const toCode = toAirport !== "All Airports" ? toAirport.split(" - ")[0] : null;
