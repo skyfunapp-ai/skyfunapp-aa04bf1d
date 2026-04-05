@@ -35,6 +35,7 @@ const SearchPage = () => {
 
   const { isConnected } = useConnections();
   const { blockedUserIds, unblockUser, isBlocked } = useBlockedUsers();
+  const { conversations } = useConversations();
 
   // Fetch real profiles from database
   useEffect(() => {
