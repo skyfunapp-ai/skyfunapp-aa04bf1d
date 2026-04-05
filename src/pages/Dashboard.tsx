@@ -11,6 +11,14 @@ import { toast } from "@/hooks/use-toast";
 const Dashboard = () => {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const { profile, loading, updateProfile } = useProfile();
+  const navigate = useNavigate();
+  const touchStartX = useRef(0);
+
+  const handleSwipe = (e: React.TouchEvent, type: "start" | "end") => {
+    if (type === "start") { touchStartX.current = e.touches[0].clientX; return; }
+    const diff = e.changedTouches[0].clientX - touchStartX.current;
+    if (diff < -60) navigate("/search");
+  };
 
   const handleSaveProfile = async (data: ProfileData) => {
     const result = await updateProfile(data);
