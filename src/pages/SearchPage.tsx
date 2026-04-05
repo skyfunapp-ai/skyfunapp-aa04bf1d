@@ -85,9 +85,9 @@ const SearchPage = () => {
 
   const handleUserClick = (clickedUserId: string) => {
     if (isBlocked(clickedUserId)) return;
-    // If messages already exist with this user, go directly to chat
-    const hasMessages = messageStore[clickedUserId] && messageStore[clickedUserId].length > 0;
-    if (hasMessages) {
+    // If a conversation exists in the DB, go directly to chat
+    const hasConversation = conversations.some((c) => c.userId === clickedUserId);
+    if (hasConversation) {
       navigate(`/messages/${clickedUserId}`);
     } else {
       navigate(`/user/${clickedUserId}`);
