@@ -110,38 +110,6 @@ export const useMessages = (otherUserId?: string) => {
     return () => { supabase.removeChannel(channel); };
   }, [user, otherUserId, mapRow]);
 
-  // Global listener for incoming messages (notifications)
-  useEffect(() => {
-    if (!user) return;
-
-    const channel = supabase
-      .channel(`global-messages-${user.id}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "messages",
-          filter: `receiver_id=eq.${user.id}`,
-        },
-        async (payload) => {
-          const row = payload.new as any;
-          // Don't notify if we're currently viewing this conversation
-          if (row.sender_id === otherUserId) return;
-
-          const cached = userCache[row.sender_id];
-          const senderName = cached?.name || "Someone";
-          addMessageNotification(
-            row.sender_id,
-            senderName,
-            row.text || "📷 Photo"
-          );
-        }
-      )
-      .subscribe();
-
-    return () => { supabase.removeChannel(channel); };
-  }, [user, otherUserId, addMessageNotification]);
 
   const sendMessage = useCallback(async (text: string, image?: string) => {
     if (!user || !otherUserId) return;
