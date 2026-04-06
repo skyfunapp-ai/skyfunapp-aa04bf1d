@@ -18,7 +18,7 @@ export const useMessages = (otherUserId?: string) => {
   const { user } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
-  const { addMessageNotification } = useNotifications();
+  
 
   const mapRow = useCallback((row: any): Message => ({
     id: row.id,
