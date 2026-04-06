@@ -1,5 +1,8 @@
-import { createContext, useContext, useState, useCallback, ReactNode } from "react";
+import { createContext, useContext, useState, useCallback, useEffect, ReactNode } from "react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { userCache } from "@/data/messageStore";
 
 interface Notification {
   id: string;
@@ -29,6 +32,7 @@ const NotificationContext = createContext<NotificationContextType>({
 export const useNotifications = () => useContext(NotificationContext);
 
 export const NotificationProvider = ({ children }: { children: ReactNode }) => {
+  const { user } = useAuth();
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
   const addMessageNotification = useCallback((fromUserId: string, fromUserName: string, message: string) => {
@@ -54,6 +58,47 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
       duration: 4000,
     });
   }, []);
+
+  // Global real-time listener for all incoming messages
+  useEffect(() => {
+    if (!user) return;
+
+    const channel = supabase
+      .channel(`global-notif-${user.id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "messages",
+          filter: `receiver_id=eq.${user.id}`,
+        },
+        async (payload) => {
+          const row = payload.new as any;
+
+          // Look up sender name
+          let senderName = userCache[row.sender_id]?.name;
+          if (!senderName) {
+            const { data } = await supabase
+              .from("profiles")
+              .select("name")
+              .eq("id", row.sender_id)
+              .single();
+            senderName = data?.name || "Someone";
+            if (data) userCache[row.sender_id] = { id: row.sender_id, name: data.name || "", profilePhoto: undefined };
+          }
+
+          addMessageNotification(
+            row.sender_id,
+            senderName,
+            row.text || "📷 Photo"
+          );
+        }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, [user, addMessageNotification]);
 
   const clearUnread = useCallback(() => {
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
