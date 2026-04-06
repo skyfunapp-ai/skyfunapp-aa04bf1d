@@ -36,6 +36,8 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
   const { user } = useAuth();
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
+  const navigate = useNavigate();
+
   const addMessageNotification = useCallback((fromUserId: string, fromUserName: string, message: string) => {
     const notification: Notification = {
       id: `${Date.now()}-${fromUserId}`,
@@ -57,8 +59,12 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
     toast(`💬 ${fromUserName}`, {
       description: message.length > 50 ? message.slice(0, 50) + "…" : message,
       duration: 4000,
+      action: {
+        label: "Open",
+        onClick: () => navigate(`/messages/${fromUserId}`),
+      },
     });
-  }, []);
+  }, [navigate]);
 
   // Global real-time listener for all incoming messages
   useEffect(() => {
