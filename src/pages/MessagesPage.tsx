@@ -231,7 +231,7 @@ const MessagesPage = () => {
         </main>
 
         <BottomNav activePage="messages" />
-      </div>
+      </motion.div>
     );
   }
 
