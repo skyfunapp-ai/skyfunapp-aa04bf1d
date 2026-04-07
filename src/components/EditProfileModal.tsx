@@ -110,9 +110,10 @@ const EditProfileModal = ({ open, onOpenChange, profileData, onSave }: EditProfi
               size="sm"
               onClick={() => fileInputRef.current?.click()}
               className="flex items-center gap-2"
+              disabled={uploadingPhoto}
             >
-              <Camera size={16} />
-              Browse Photo
+              {uploadingPhoto ? <Loader2 size={16} className="animate-spin" /> : <Camera size={16} />}
+              {uploadingPhoto ? "Uploading..." : "Browse Photo"}
             </Button>
           </div>
 
