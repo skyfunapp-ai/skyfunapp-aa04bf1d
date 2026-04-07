@@ -28,6 +28,7 @@ const MessagesPage = () => {
   const [loadingUsers, setLoadingUsers] = useState(true);
   const [showProfile, setShowProfile] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [showEmoji, setShowEmoji] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
