@@ -4,7 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import HeaderMinimal from "@/components/HeaderMinimal";
 import BottomNav from "@/components/BottomNav";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { ArrowLeft, Send, Camera, Paperclip, Check, CheckCheck, Loader2, X } from "lucide-react";
+import { ArrowLeft, Send, Camera, Paperclip, Check, CheckCheck, Loader2, X, Smile } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "@/hooks/use-toast";
 import { useProfile, useConnections, useBlockedUsers } from "@/hooks/useProfile";
