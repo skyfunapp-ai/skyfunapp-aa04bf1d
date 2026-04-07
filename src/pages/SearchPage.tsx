@@ -196,7 +196,7 @@ const SearchPage = () => {
       </main>
 
       <BottomNav activePage="search" />
-    </div>
+    </motion.div>
   );
 };
 
