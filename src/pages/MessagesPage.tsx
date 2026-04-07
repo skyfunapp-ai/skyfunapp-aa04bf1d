@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import ChatProfileModal from "@/components/ChatProfileModal";
 import { useMessages, useConversations } from "@/hooks/useMessages";
 import { userCache } from "@/data/messageStore";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface DbUser {
   id: string;
