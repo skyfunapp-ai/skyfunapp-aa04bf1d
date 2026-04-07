@@ -139,7 +139,7 @@ const MessagesPage = () => {
     const userBlocked = isBlocked(selectedUser.id);
 
     return (
-      <div className="min-h-screen flex flex-col bg-background">
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }} className="min-h-screen flex flex-col bg-background">
         <HeaderMinimal />
 
         {showProfile && (
