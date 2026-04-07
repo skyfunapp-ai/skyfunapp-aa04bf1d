@@ -208,21 +208,35 @@ const MessagesPage = () => {
                   </button>
                 </div>
               )}
-              <div className="flex items-center gap-2">
-                <button onClick={() => cameraInputRef.current?.click()} className="p-2.5 text-muted-foreground hover:text-primary-foreground transition-colors">
+              {showEmoji && (
+                <div className="flex flex-wrap gap-1 mb-2 p-2 bg-card border border-border rounded-xl max-h-32 overflow-y-auto">
+                  {["😀","😂","😍","🥰","😎","🤩","😢","😡","👍","👎","❤️","🔥","🎉","✈️","🌍","💬","🙏","👋","😊","🤔","😅","🥺","💀","🫡","✨","💯","🙌","😭","🤣","😘"].map((emoji) => (
+                    <button key={emoji} type="button" onClick={() => { setInput((prev) => prev + emoji); setShowEmoji(false); }} className="text-xl p-1 hover:bg-muted rounded">
+                      {emoji}
+                    </button>
+                  ))}
+                </div>
+              )}
+              <div className="flex items-end gap-2">
+                <button onClick={() => cameraInputRef.current?.click()} className="p-2.5 text-muted-foreground hover:text-primary-foreground transition-colors shrink-0">
                   <Camera size={20} />
                 </button>
-                <button onClick={() => fileInputRef.current?.click()} className="p-2.5 text-muted-foreground hover:text-primary-foreground transition-colors">
+                <button onClick={() => fileInputRef.current?.click()} className="p-2.5 text-muted-foreground hover:text-primary-foreground transition-colors shrink-0">
                   <Paperclip size={20} />
                 </button>
-                <input
+                <button onClick={() => setShowEmoji(!showEmoji)} className="p-2.5 text-muted-foreground hover:text-primary-foreground transition-colors shrink-0">
+                  <Smile size={20} />
+                </button>
+                <textarea
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleSend()}
                   placeholder="Type a message..."
-                  className="flex-1 bg-card text-card-foreground border border-border rounded-full px-4 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent"
+                  rows={1}
+                  className="flex-1 bg-card text-card-foreground border border-border rounded-2xl px-4 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent resize-none max-h-24 overflow-y-auto"
+                  style={{ minHeight: '40px' }}
+                  onInput={(e) => { const t = e.target as HTMLTextAreaElement; t.style.height = 'auto'; t.style.height = Math.min(t.scrollHeight, 96) + 'px'; }}
                 />
-                <button onClick={handleSend} className="p-2.5 bg-accent text-accent-foreground rounded-full hover:opacity-90 transition-opacity">
+                <button onClick={handleSend} className="p-2.5 bg-accent text-accent-foreground rounded-full hover:opacity-90 transition-opacity shrink-0">
                   <Send size={18} />
                 </button>
               </div>
