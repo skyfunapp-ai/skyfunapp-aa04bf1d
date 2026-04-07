@@ -188,16 +188,21 @@ const MessagesPage = () => {
         )}
 
         <div className="fixed top-14 sm:top-16 left-0 right-0 z-30 bg-background border-b border-border/30 shadow-md px-4 py-2.5">
-          <div className="flex items-center">
+          <div className="flex items-center gap-3">
             <button onClick={() => navigate("/search")} className="text-primary-foreground/70 hover:text-primary-foreground transition-colors shrink-0">
               <ArrowLeft size={20} />
             </button>
-            <button onClick={() => setShowProfile(true)} className="flex-1 flex items-center justify-center gap-2 hover:opacity-80 transition-opacity -ml-5">
+            <button onClick={() => setShowProfile(true)} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
               <Avatar className="w-8 h-8">
                 <AvatarImage src={selectedUser.profilePhoto} alt={selectedUser.name} />
                 <AvatarFallback className="text-xs font-bold">{getInitials(selectedUser.name)}</AvatarFallback>
               </Avatar>
-              <p className="text-sm font-semibold text-primary-foreground">{selectedUser.name}</p>
+              <div className="flex flex-col items-start">
+                <p className="text-sm font-semibold text-primary-foreground">{selectedUser.name}</p>
+                {isOtherTyping && (
+                  <p className="text-[10px] text-accent animate-pulse">typing...</p>
+                )}
+              </div>
             </button>
           </div>
         </div>
