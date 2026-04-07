@@ -57,6 +57,41 @@ const MessagesPage = () => {
     }
   }, [messages]);
 
+  // Typing indicator via Supabase broadcast
+  useEffect(() => {
+    if (!user || !userId) return;
+
+    const channelName = [user.id, userId].sort().join("-");
+    const channel = supabase
+      .channel(`typing-${channelName}`)
+      .on("broadcast", { event: "typing" }, (payload: any) => {
+        if (payload.payload?.userId === userId) {
+          setIsOtherTyping(true);
+          clearTimeout(typingTimeoutRef.current);
+          typingTimeoutRef.current = setTimeout(() => setIsOtherTyping(false), 2500);
+        }
+      })
+      .subscribe();
+
+    typingChannelRef.current = channel;
+
+    return () => {
+      clearTimeout(typingTimeoutRef.current);
+      supabase.removeChannel(channel);
+      typingChannelRef.current = null;
+    };
+  }, [user, userId]);
+
+  const broadcastTyping = useCallback(() => {
+    if (typingChannelRef.current && user) {
+      typingChannelRef.current.send({
+        type: "broadcast",
+        event: "typing",
+        payload: { userId: user.id },
+      });
+    }
+  }, [user]);
+
   useEffect(() => {
     if (!userId) { setSelectedUser(null); return; }
     if (userCache[userId]) {
