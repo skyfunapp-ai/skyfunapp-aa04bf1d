@@ -3,10 +3,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { X, Camera } from "lucide-react";
+import { X, Camera, Loader2 } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import AirportCombobox from "@/components/AirportCombobox";
 import { type ProfileData } from "@/hooks/useProfile";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface EditProfileModalProps {
   open: boolean;
@@ -20,9 +22,10 @@ const EditProfileModal = ({ open, onOpenChange, profileData, onSave }: EditProfi
   const [newHobby, setNewHobby] = useState("");
   const [newInterest, setNewInterest] = useState("");
   const [newFood, setNewFood] = useState("");
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { user } = useAuth();
 
-  // Sync form data when modal opens or profile data changes
   useEffect(() => {
     if (open) {
       setFormData(profileData);
@@ -34,28 +37,31 @@ const EditProfileModal = ({ open, onOpenChange, profileData, onSave }: EditProfi
     onOpenChange(false);
   };
 
-  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      // Create a high-quality object URL instead of base64 for better quality
-      const img = new Image();
-      const objectUrl = URL.createObjectURL(file);
-      img.onload = () => {
-        const canvas = document.createElement("canvas");
-        canvas.width = img.naturalWidth;
-        canvas.height = img.naturalHeight;
-        const ctx = canvas.getContext("2d");
-        if (ctx) {
-          ctx.drawImage(img, 0, 0);
-          // Use maximum quality PNG for lossless, or high-quality JPEG
-          const mimeType = file.type === "image/png" ? "image/png" : "image/jpeg";
-          const quality = 1.0;
-          const dataUrl = canvas.toDataURL(mimeType, quality);
-          setFormData(prev => ({ ...prev, profilePhoto: dataUrl }));
-        }
-        URL.revokeObjectURL(objectUrl);
-      };
-      img.src = objectUrl;
+    if (!file || !user) return;
+    
+    setUploadingPhoto(true);
+    try {
+      const ext = file.name.split('.').pop() || 'jpg';
+      const filePath = `${user.id}/avatar.${ext}`;
+      
+      const { error } = await supabase.storage
+        .from('profile-photos')
+        .upload(filePath, file, { upsert: true, cacheControl: '3600' });
+      
+      if (error) throw error;
+      
+      const { data: urlData } = supabase.storage
+        .from('profile-photos')
+        .getPublicUrl(filePath);
+      
+      const photoUrl = `${urlData.publicUrl}?t=${Date.now()}`;
+      setFormData(prev => ({ ...prev, profilePhoto: photoUrl }));
+    } catch (err) {
+      console.error('Photo upload failed:', err);
+    } finally {
+      setUploadingPhoto(false);
     }
   };
 
@@ -104,9 +110,10 @@ const EditProfileModal = ({ open, onOpenChange, profileData, onSave }: EditProfi
               size="sm"
               onClick={() => fileInputRef.current?.click()}
               className="flex items-center gap-2"
+              disabled={uploadingPhoto}
             >
-              <Camera size={16} />
-              Browse Photo
+              {uploadingPhoto ? <Loader2 size={16} className="animate-spin" /> : <Camera size={16} />}
+              {uploadingPhoto ? "Uploading..." : "Browse Photo"}
             </Button>
           </div>
 
