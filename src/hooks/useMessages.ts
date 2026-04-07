@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { userCache } from "@/data/messageStore";
@@ -114,6 +114,20 @@ export const useMessages = (otherUserId?: string) => {
   const sendMessage = useCallback(async (text: string, image?: string) => {
     if (!user || !otherUserId) return;
 
+    // Optimistic insert for instant UI feedback
+    const optimisticId = `opt-${Date.now()}`;
+    const optimisticMsg: Message = {
+      id: optimisticId,
+      text: text || null,
+      image: image || null,
+      fromMe: true,
+      status: "sent",
+      timestamp: Date.now(),
+      senderId: user.id,
+      receiverId: otherUserId,
+    };
+    setMessages((prev) => [...prev, optimisticMsg]);
+
     const { data, error } = await supabase
       .from("messages")
       .insert({
@@ -128,35 +142,38 @@ export const useMessages = (otherUserId?: string) => {
 
     if (error) {
       console.error("Failed to send message:", error);
+      // Remove optimistic message on failure
+      setMessages((prev) => prev.filter((m) => m.id !== optimisticId));
       return;
     }
 
-    // Trigger email notification for offline user
-    try {
-      const senderName = userCache[user.id]?.name || "A SkyFunApp user";
-      await supabase.functions.invoke("notify-message", {
-        body: {
-          receiverId: otherUserId,
-          senderName,
-          messageText: text || null,
-        },
-      });
-    } catch (e) {
-      // Non-blocking - email is best effort
-      console.log("Email notification skipped:", e);
+    // Replace optimistic message with real one
+    if (data) {
+      setMessages((prev) =>
+        prev.map((m) => (m.id === optimisticId ? mapRow(data) : m))
+      );
     }
 
+    // Trigger email notification (non-blocking)
+    try {
+      const senderName = userCache[user.id]?.name || "A SkyFunApp user";
+      supabase.functions.invoke("notify-message", {
+        body: { receiverId: otherUserId, senderName, messageText: text || null },
+      }).catch(() => {});
+    } catch {}
+
     // Update status to delivered after a short delay
-    setTimeout(async () => {
-      if (data) {
-        await supabase
+    if (data) {
+      setTimeout(() => {
+        supabase
           .from("messages")
           .update({ status: "delivered" })
           .eq("id", data.id)
-          .eq("sender_id", user.id);
-      }
-    }, 500);
-  }, [user, otherUserId]);
+          .eq("sender_id", user.id)
+          .then(() => {});
+      }, 500);
+    }
+  }, [user, otherUserId, mapRow]);
 
   return { messages, loading, sendMessage, refetch: fetchMessages };
 };
@@ -221,20 +238,27 @@ export const useConversations = () => {
 
   useEffect(() => { fetchConversations(); }, [fetchConversations]);
 
-  // Real-time updates for conversation list
+  // Debounced real-time updates for conversation list
   useEffect(() => {
     if (!user) return;
+    let debounceTimer: ReturnType<typeof setTimeout>;
 
     const channel = supabase
       .channel(`conversations-${user.id}`)
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "messages" },
-        () => { fetchConversations(); }
+        () => {
+          clearTimeout(debounceTimer);
+          debounceTimer = setTimeout(() => fetchConversations(), 500);
+        }
       )
       .subscribe();
 
-    return () => { supabase.removeChannel(channel); };
+    return () => {
+      clearTimeout(debounceTimer);
+      supabase.removeChannel(channel);
+    };
   }, [user, fetchConversations]);
 
   return { conversations, loading, refetch: fetchConversations };

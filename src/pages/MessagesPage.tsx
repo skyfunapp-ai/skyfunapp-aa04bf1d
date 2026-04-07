@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
+import { motion } from "framer-motion";
 import { useParams, useNavigate } from "react-router-dom";
 import HeaderMinimal from "@/components/HeaderMinimal";
 import BottomNav from "@/components/BottomNav";
@@ -138,7 +139,7 @@ const MessagesPage = () => {
     const userBlocked = isBlocked(selectedUser.id);
 
     return (
-      <div className="min-h-screen flex flex-col bg-background">
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }} className="min-h-screen flex flex-col bg-background">
         <HeaderMinimal />
 
         {showProfile && (
@@ -230,12 +231,12 @@ const MessagesPage = () => {
         </main>
 
         <BottomNav activePage="messages" />
-      </div>
+      </motion.div>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-background" onTouchStart={(e) => handleSwipe(e, "start")} onTouchEnd={(e) => handleSwipe(e, "end")}>
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }} className="min-h-screen flex flex-col bg-background" onTouchStart={(e) => handleSwipe(e, "start")} onTouchEnd={(e) => handleSwipe(e, "end")}>
       <HeaderMinimal />
 
       <main className="flex-1 flex flex-col pt-20 sm:pt-24 pb-20 px-4">
@@ -288,7 +289,7 @@ const MessagesPage = () => {
       </main>
 
       <BottomNav activePage="messages" />
-    </div>
+    </motion.div>
   );
 };
 

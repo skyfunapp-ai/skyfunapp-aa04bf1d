@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { MapPin, Coins, Plane } from "lucide-react";
+import { motion } from "framer-motion";
 import HeaderMinimal from "@/components/HeaderMinimal";
 import BottomNav from "@/components/BottomNav";
 import EditProfileModal from "@/components/EditProfileModal";
@@ -40,7 +41,7 @@ const Dashboard = () => {
   );
 
   return (
-    <div className="min-h-screen flex flex-col bg-background" onTouchStart={(e) => handleSwipe(e, "start")} onTouchEnd={(e) => handleSwipe(e, "end")}>
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }} className="min-h-screen flex flex-col bg-background" onTouchStart={(e) => handleSwipe(e, "start")} onTouchEnd={(e) => handleSwipe(e, "end")}>
       <HeaderMinimal onEditClick={handleEditClick} showEdit={true} />
       
       <main className="flex-1 flex flex-col items-center pt-20 sm:pt-24 pb-20">
@@ -128,7 +129,7 @@ const Dashboard = () => {
         profileData={profile}
         onSave={handleSaveProfile}
       />
-    </div>
+    </motion.div>
   );
 };
 
