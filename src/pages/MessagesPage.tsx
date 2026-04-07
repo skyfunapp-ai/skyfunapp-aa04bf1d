@@ -50,6 +50,7 @@ const MessagesPage = () => {
   const { blockedUserIds, isBlocked } = useBlockedUsers();
   const { messages, loading: messagesLoading, sendMessage } = useMessages(userId);
   const { conversations } = useConversations();
+  const { user } = useAuth();
 
   // Auto-scroll on new messages
   useEffect(() => {
