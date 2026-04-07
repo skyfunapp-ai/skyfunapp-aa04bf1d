@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { motion } from "framer-motion";
 import { useParams, useNavigate } from "react-router-dom";
 import HeaderMinimal from "@/components/HeaderMinimal";
@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import ChatProfileModal from "@/components/ChatProfileModal";
 import { useMessages, useConversations } from "@/hooks/useMessages";
 import { userCache } from "@/data/messageStore";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface DbUser {
   id: string;
@@ -29,10 +30,13 @@ const MessagesPage = () => {
   const [showProfile, setShowProfile] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [showEmoji, setShowEmoji] = useState(false);
+  const [isOtherTyping, setIsOtherTyping] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const touchStartX = useRef(0);
+  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
+  const typingChannelRef = useRef<any>(null);
 
   const handleSwipe = (e: React.TouchEvent, type: "start" | "end") => {
     if (userId) return; // No swipe in chat view
@@ -46,6 +50,7 @@ const MessagesPage = () => {
   const { blockedUserIds, isBlocked } = useBlockedUsers();
   const { messages, loading: messagesLoading, sendMessage } = useMessages(userId);
   const { conversations } = useConversations();
+  const { user } = useAuth();
 
   // Auto-scroll on new messages
   useEffect(() => {
@@ -53,6 +58,41 @@ const MessagesPage = () => {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages]);
+
+  // Typing indicator via Supabase broadcast
+  useEffect(() => {
+    if (!user || !userId) return;
+
+    const channelName = [user.id, userId].sort().join("-");
+    const channel = supabase
+      .channel(`typing-${channelName}`)
+      .on("broadcast", { event: "typing" }, (payload: any) => {
+        if (payload.payload?.userId === userId) {
+          setIsOtherTyping(true);
+          clearTimeout(typingTimeoutRef.current);
+          typingTimeoutRef.current = setTimeout(() => setIsOtherTyping(false), 2500);
+        }
+      })
+      .subscribe();
+
+    typingChannelRef.current = channel;
+
+    return () => {
+      clearTimeout(typingTimeoutRef.current);
+      supabase.removeChannel(channel);
+      typingChannelRef.current = null;
+    };
+  }, [user, userId]);
+
+  const broadcastTyping = useCallback(() => {
+    if (typingChannelRef.current && user) {
+      typingChannelRef.current.send({
+        type: "broadcast",
+        event: "typing",
+        payload: { userId: user.id },
+      });
+    }
+  }, [user]);
 
   useEffect(() => {
     if (!userId) { setSelectedUser(null); return; }
@@ -148,16 +188,21 @@ const MessagesPage = () => {
         )}
 
         <div className="fixed top-14 sm:top-16 left-0 right-0 z-30 bg-background border-b border-border/30 shadow-md px-4 py-2.5">
-          <div className="flex items-center">
+          <div className="flex items-center gap-3">
             <button onClick={() => navigate("/search")} className="text-primary-foreground/70 hover:text-primary-foreground transition-colors shrink-0">
               <ArrowLeft size={20} />
             </button>
-            <button onClick={() => setShowProfile(true)} className="flex-1 flex items-center justify-center gap-2 hover:opacity-80 transition-opacity -ml-5">
+            <button onClick={() => setShowProfile(true)} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
               <Avatar className="w-8 h-8">
                 <AvatarImage src={selectedUser.profilePhoto} alt={selectedUser.name} />
                 <AvatarFallback className="text-xs font-bold">{getInitials(selectedUser.name)}</AvatarFallback>
               </Avatar>
-              <p className="text-sm font-semibold text-primary-foreground">{selectedUser.name}</p>
+              <div className="flex flex-col items-start">
+                <p className="text-sm font-semibold text-primary-foreground">{selectedUser.name}</p>
+                {isOtherTyping && (
+                  <p className="text-[10px] text-accent animate-pulse">typing...</p>
+                )}
+              </div>
             </button>
           </div>
         </div>
@@ -195,6 +240,17 @@ const MessagesPage = () => {
                   </div>
                 </div>
               ))}
+              {isOtherTyping && (
+                <div className="flex items-start">
+                  <div className="bg-card border border-border/50 rounded-2xl rounded-bl-sm px-4 py-2">
+                    <div className="flex gap-1">
+                      <span className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                      <span className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                      <span className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </ScrollArea>
 
@@ -229,7 +285,7 @@ const MessagesPage = () => {
                 </button>
                 <textarea
                   value={input}
-                  onChange={(e) => setInput(e.target.value)}
+                  onChange={(e) => { setInput(e.target.value); broadcastTyping(); }}
                   placeholder="Type a message..."
                   rows={1}
                   className="flex-1 bg-card text-card-foreground border border-border rounded-2xl px-4 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent resize-none max-h-24 overflow-y-auto"
