@@ -129,7 +129,7 @@ const Dashboard = () => {
         profileData={profile}
         onSave={handleSaveProfile}
       />
-    </div>
+    </motion.div>
   );
 };
 
