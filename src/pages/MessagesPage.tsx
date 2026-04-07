@@ -29,10 +29,13 @@ const MessagesPage = () => {
   const [showProfile, setShowProfile] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [showEmoji, setShowEmoji] = useState(false);
+  const [isOtherTyping, setIsOtherTyping] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const touchStartX = useRef(0);
+  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
+  const typingChannelRef = useRef<any>(null);
 
   const handleSwipe = (e: React.TouchEvent, type: "start" | "end") => {
     if (userId) return; // No swipe in chat view
