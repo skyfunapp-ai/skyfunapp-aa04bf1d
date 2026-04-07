@@ -252,6 +252,7 @@ const MessagesPage = () => {
                 </div>
               )}
             </div>
+          </ScrollArea>
 
           {!userBlocked && (
             <div>
