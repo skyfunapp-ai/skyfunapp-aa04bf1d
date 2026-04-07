@@ -238,20 +238,27 @@ export const useConversations = () => {
 
   useEffect(() => { fetchConversations(); }, [fetchConversations]);
 
-  // Real-time updates for conversation list
+  // Debounced real-time updates for conversation list
   useEffect(() => {
     if (!user) return;
+    let debounceTimer: ReturnType<typeof setTimeout>;
 
     const channel = supabase
       .channel(`conversations-${user.id}`)
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "messages" },
-        () => { fetchConversations(); }
+        () => {
+          clearTimeout(debounceTimer);
+          debounceTimer = setTimeout(() => fetchConversations(), 500);
+        }
       )
       .subscribe();
 
-    return () => { supabase.removeChannel(channel); };
+    return () => {
+      clearTimeout(debounceTimer);
+      supabase.removeChannel(channel);
+    };
   }, [user, fetchConversations]);
 
   return { conversations, loading, refetch: fetchConversations };
