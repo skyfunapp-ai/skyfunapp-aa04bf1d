@@ -25,6 +25,32 @@ import ResetPasswordPage from "./pages/ResetPasswordPage";
 import PrivacyPage from "./pages/PrivacyPage";
 const queryClient = new QueryClient();
 
+const AnimatedRoutes = () => {
+  const location = useLocation();
+  return (
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        <Route path="/" element={<Index />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/create-account" element={<CreateAccountPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
+        <Route path="/search" element={<SearchPage />} />
+        <Route path="/messages" element={<MessagesPage />} />
+        <Route path="/messages/:userId" element={<MessagesPage />} />
+        <Route path="/user/:userId" element={<UserProfilePage />} />
+        <Route path="/skoin" element={<SkoinPage />} />
+        <Route path="/skoin/success" element={<SkoinSuccessPage />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/safety" element={<SafetyPage />} />
+        <Route path="/help" element={<HelpPage />} />
+        <Route path="/privacy" element={<PrivacyPage />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </AnimatePresence>
+  );
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -33,25 +59,7 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <NotificationProvider>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/create-account" element={<CreateAccountPage />} />
-              <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-              <Route path="/reset-password" element={<ResetPasswordPage />} />
-              <Route path="/search" element={<SearchPage />} />
-              <Route path="/messages" element={<MessagesPage />} />
-              <Route path="/messages/:userId" element={<MessagesPage />} />
-              <Route path="/user/:userId" element={<UserProfilePage />} />
-              <Route path="/skoin" element={<SkoinPage />} />
-              <Route path="/skoin/success" element={<SkoinSuccessPage />} />
-              <Route path="/about" element={<AboutPage />} />
-              <Route path="/safety" element={<SafetyPage />} />
-              <Route path="/help" element={<HelpPage />} />
-              <Route path="/privacy" element={<PrivacyPage />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+            <AnimatedRoutes />
           </NotificationProvider>
         </AuthProvider>
       </BrowserRouter>
