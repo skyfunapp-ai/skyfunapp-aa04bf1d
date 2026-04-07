@@ -146,19 +146,22 @@ const MessagesPage = () => {
           <ChatProfileModal userId={selectedUser.id} onClose={() => setShowProfile(false)} />
         )}
 
-        <main className="flex-1 flex flex-col pt-20 sm:pt-24 pb-20 px-4">
-          <div className="flex items-center gap-3 mb-4">
-            <button onClick={() => navigate("/search")} className="text-primary-foreground/70 hover:text-primary-foreground transition-colors">
+        <div className="fixed top-14 sm:top-16 left-0 right-0 z-30 bg-background border-b border-border/30 px-4 py-2.5">
+          <div className="flex items-center">
+            <button onClick={() => navigate("/search")} className="text-primary-foreground/70 hover:text-primary-foreground transition-colors shrink-0">
               <ArrowLeft size={20} />
             </button>
-            <button onClick={() => setShowProfile(true)} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-              <Avatar className="w-9 h-9">
+            <button onClick={() => setShowProfile(true)} className="flex-1 flex items-center justify-center gap-2 hover:opacity-80 transition-opacity -ml-5">
+              <Avatar className="w-8 h-8">
                 <AvatarImage src={selectedUser.profilePhoto} alt={selectedUser.name} />
                 <AvatarFallback className="text-xs font-bold">{getInitials(selectedUser.name)}</AvatarFallback>
               </Avatar>
               <p className="text-sm font-semibold text-primary-foreground">{selectedUser.name}</p>
             </button>
           </div>
+        </div>
+
+        <main className="flex-1 flex flex-col pt-32 sm:pt-36 pb-20 px-4">
 
           <ScrollArea className="flex-1 mb-4" ref={scrollRef}>
             <div className="space-y-3 min-h-[200px]">
