@@ -51,6 +51,11 @@ const CreateAccountPage = () => {
       return;
     }
 
+    if (!agreedToTerms) {
+      toast({ title: "Terms required", description: "You must agree to the Terms of Service and Privacy Policy.", variant: "destructive" });
+      return;
+    }
+
     setLoading(true);
     const { error } = await signUp(email.trim(), password);
     setLoading(false);
