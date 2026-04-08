@@ -15,7 +15,7 @@ const CreateAccountPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [dateOfBirth, setDateOfBirth] = useState("");
+  const [ageConfirmed, setAgeConfirmed] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -25,20 +25,8 @@ const CreateAccountPage = () => {
       return;
     }
 
-    if (!dateOfBirth) {
-      toast({ title: "Date of birth required", description: "Please enter your date of birth.", variant: "destructive" });
-      return;
-    }
-
-    const dob = new Date(dateOfBirth);
-    const today = new Date();
-    let age = today.getFullYear() - dob.getFullYear();
-    const monthDiff = today.getMonth() - dob.getMonth();
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
-      age--;
-    }
-    if (age < 18) {
-      toast({ title: "Age requirement", description: "You must be at least 18 years old to create an account.", variant: "destructive" });
+    if (!ageConfirmed) {
+      toast({ title: "Age requirement", description: "You must confirm you are at least 18 years old.", variant: "destructive" });
       return;
     }
 
@@ -88,17 +76,16 @@ const CreateAccountPage = () => {
               className="h-10 sm:h-12 text-base sm:text-lg"
             />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="dob" className="text-primary-foreground text-base sm:text-lg">Date of Birth</Label>
-            <Input
-              id="dob"
-              type="date"
-              value={dateOfBirth}
-              onChange={(e) => setDateOfBirth(e.target.value)}
-              className="h-10 sm:h-12 text-base sm:text-lg"
-              max={new Date().toISOString().split("T")[0]}
+          <div className="flex items-start space-x-2">
+            <Checkbox
+              id="age"
+              checked={ageConfirmed}
+              onCheckedChange={(checked) => setAgeConfirmed(checked === true)}
+              className="mt-1"
             />
-            <p className="text-xs text-muted-foreground">You must be at least 18 years old</p>
+            <label htmlFor="age" className="text-sm text-primary-foreground/80 leading-snug cursor-pointer">
+              I confirm that I am at least 18 years old
+            </label>
           </div>
           <div className="space-y-2">
             <Label htmlFor="new-password" className="text-primary-foreground text-base sm:text-lg">Password (8+ characters)</Label>
