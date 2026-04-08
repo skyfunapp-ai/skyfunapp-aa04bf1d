@@ -310,9 +310,9 @@ const MessagesPage = () => {
                   onFocus={scrollToBottom}
                   placeholder="Type a message..."
                   rows={1}
-                  className="flex-1 bg-card text-card-foreground border border-border rounded-2xl px-4 py-2.5 placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent resize-none max-h-24 overflow-y-auto"
+                  className="flex-1 bg-card text-card-foreground border border-border rounded-2xl px-4 py-2.5 placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent resize-none overflow-hidden"
                   style={{ minHeight: '40px', fontSize: '16px' }}
-                  onInput={(e) => { const t = e.target as HTMLTextAreaElement; t.style.height = 'auto'; t.style.height = Math.min(t.scrollHeight, 96) + 'px'; }}
+                  onInput={(e) => { const t = e.target as HTMLTextAreaElement; t.style.height = 'auto'; t.style.height = t.scrollHeight + 'px'; scrollToBottom(); }}
                 />
                 <button onClick={handleSend} className="p-2.5 bg-accent text-accent-foreground rounded-full hover:opacity-90 transition-opacity shrink-0">
                   <Send size={18} />
