@@ -16,7 +16,6 @@ const CreateAccountPage = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [ageConfirmed, setAgeConfirmed] = useState(false);
-  const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleCreateAccount = async () => {
@@ -40,10 +39,6 @@ const CreateAccountPage = () => {
       return;
     }
 
-    if (!agreedToTerms) {
-      toast({ title: "Terms required", description: "You must agree to the Terms of Service and Privacy Policy.", variant: "destructive" });
-      return;
-    }
 
     setLoading(true);
     const { error } = await signUp(email.trim(), password);
@@ -110,23 +105,6 @@ const CreateAccountPage = () => {
             />
           </div>
 
-          <div className="flex items-start space-x-2">
-            <Checkbox
-              id="terms"
-              checked={agreedToTerms}
-              onCheckedChange={(checked) => setAgreedToTerms(checked === true)}
-              className="mt-1"
-            />
-            <label htmlFor="terms" className="text-sm text-primary-foreground/80 leading-snug cursor-pointer">
-              I agree to the{" "}
-              <span onClick={(e) => { e.preventDefault(); navigate("/terms"); }} className="underline text-accent hover:text-accent/80">
-                Terms of Service
-              </span>{" "}and{" "}
-              <span onClick={(e) => { e.preventDefault(); navigate("/privacy"); }} className="underline text-accent hover:text-accent/80">
-                Privacy Policy
-              </span>
-            </label>
-          </div>
 
           <Button onClick={handleCreateAccount} className="w-full h-12 text-lg" variant="gradient" disabled={loading}>
             {loading ? "Creating..." : "Create Account"}
