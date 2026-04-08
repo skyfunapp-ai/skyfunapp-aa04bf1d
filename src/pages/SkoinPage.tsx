@@ -55,8 +55,11 @@ const SkoinPage = () => {
 
       <main className="flex-1 flex flex-col items-center justify-center pt-20 sm:pt-24 pb-20 px-4">
         <h1 className="text-4xl font-bold text-primary-foreground mb-2">Skoin</h1>
-        <p className="text-lg text-muted-foreground mb-10">
+        <p className="text-lg text-muted-foreground mb-4">
           Balance: <span className="text-primary-foreground font-bold">{loading ? "..." : profile.skoinBalance}</span> Skoin
+        </p>
+        <p className="text-sm text-muted-foreground text-center max-w-xs mb-10">
+          Skoin is SkyFunApp's virtual currency that serves as a connection fee. When you want to message someone for the first time, 1 Skoin is deducted from your balance — after that, all future messages with that person are free. New users start with 5 free Skoins, and additional Skoins can be purchased in tiers.
         </p>
 
         {!user && (
