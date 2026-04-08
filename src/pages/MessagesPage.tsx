@@ -229,7 +229,7 @@ const MessagesPage = () => {
         </div>
 
         <div className="flex-1 flex flex-col pt-28 sm:pt-32 pb-16 overflow-hidden">
-          <div className="flex-1 overflow-y-auto px-4" ref={scrollRef}>
+          <div className="flex-1 overflow-y-auto px-4 scroll-smooth" ref={scrollRef}>
             <div className="space-y-3 min-h-[200px]">
               {messagesLoading && (
                 <div className="flex justify-center py-8">
