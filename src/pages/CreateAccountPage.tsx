@@ -132,8 +132,11 @@ const CreateAccountPage = () => {
             />
             <label htmlFor="terms" className="text-sm text-primary-foreground/80 leading-snug cursor-pointer">
               I agree to the{" "}
+              <span onClick={(e) => { e.preventDefault(); navigate("/terms"); }} className="underline text-accent hover:text-accent/80">
+                Terms of Service
+              </span>{" "}and{" "}
               <span onClick={(e) => { e.preventDefault(); navigate("/privacy"); }} className="underline text-accent hover:text-accent/80">
-                Terms of Service & Privacy Policy
+                Privacy Policy
               </span>
             </label>
           </div>
