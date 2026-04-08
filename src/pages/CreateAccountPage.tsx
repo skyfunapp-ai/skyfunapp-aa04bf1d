@@ -23,6 +23,23 @@ const CreateAccountPage = () => {
       return;
     }
 
+    if (!dateOfBirth) {
+      toast({ title: "Date of birth required", description: "Please enter your date of birth.", variant: "destructive" });
+      return;
+    }
+
+    const dob = new Date(dateOfBirth);
+    const today = new Date();
+    let age = today.getFullYear() - dob.getFullYear();
+    const monthDiff = today.getMonth() - dob.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+      age--;
+    }
+    if (age < 18) {
+      toast({ title: "Age requirement", description: "You must be at least 18 years old to create an account.", variant: "destructive" });
+      return;
+    }
+
     if (password.length < 8) {
       toast({ title: "Password too short", description: "Password must be at least 8 characters.", variant: "destructive" });
       return;
