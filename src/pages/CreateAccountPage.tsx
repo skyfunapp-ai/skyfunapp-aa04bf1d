@@ -123,6 +123,21 @@ const CreateAccountPage = () => {
             />
           </div>
 
+          <div className="flex items-start space-x-2">
+            <Checkbox
+              id="terms"
+              checked={agreedToTerms}
+              onCheckedChange={(checked) => setAgreedToTerms(checked === true)}
+              className="mt-1"
+            />
+            <label htmlFor="terms" className="text-sm text-primary-foreground/80 leading-snug cursor-pointer">
+              I agree to the{" "}
+              <span onClick={(e) => { e.preventDefault(); navigate("/privacy"); }} className="underline text-accent hover:text-accent/80">
+                Terms of Service & Privacy Policy
+              </span>
+            </label>
+          </div>
+
           <Button onClick={handleCreateAccount} className="w-full h-12 text-lg" variant="gradient" disabled={loading}>
             {loading ? "Creating..." : "Create Account"}
           </Button>
