@@ -4,6 +4,7 @@ import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -15,6 +16,7 @@ const CreateAccountPage = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState("");
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleCreateAccount = async () => {
@@ -47,6 +49,11 @@ const CreateAccountPage = () => {
 
     if (password !== confirmPassword) {
       toast({ title: "Passwords don't match", description: "Please make sure your passwords match.", variant: "destructive" });
+      return;
+    }
+
+    if (!agreedToTerms) {
+      toast({ title: "Terms required", description: "You must agree to the Terms of Service and Privacy Policy.", variant: "destructive" });
       return;
     }
 
@@ -114,6 +121,21 @@ const CreateAccountPage = () => {
               onChange={(e) => setConfirmPassword(e.target.value)}
               className="h-10 sm:h-12 text-base sm:text-lg"
             />
+          </div>
+
+          <div className="flex items-start space-x-2">
+            <Checkbox
+              id="terms"
+              checked={agreedToTerms}
+              onCheckedChange={(checked) => setAgreedToTerms(checked === true)}
+              className="mt-1"
+            />
+            <label htmlFor="terms" className="text-sm text-primary-foreground/80 leading-snug cursor-pointer">
+              I agree to the{" "}
+              <span onClick={(e) => { e.preventDefault(); navigate("/privacy"); }} className="underline text-accent hover:text-accent/80">
+                Terms of Service & Privacy Policy
+              </span>
+            </label>
           </div>
 
           <Button onClick={handleCreateAccount} className="w-full h-12 text-lg" variant="gradient" disabled={loading}>
