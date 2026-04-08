@@ -76,17 +76,16 @@ const CreateAccountPage = () => {
               className="h-10 sm:h-12 text-base sm:text-lg"
             />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="dob" className="text-primary-foreground text-base sm:text-lg">Date of Birth</Label>
-            <Input
-              id="dob"
-              type="date"
-              value={dateOfBirth}
-              onChange={(e) => setDateOfBirth(e.target.value)}
-              className="h-10 sm:h-12 text-base sm:text-lg"
-              max={new Date().toISOString().split("T")[0]}
+          <div className="flex items-start space-x-2">
+            <Checkbox
+              id="age"
+              checked={ageConfirmed}
+              onCheckedChange={(checked) => setAgeConfirmed(checked === true)}
+              className="mt-1"
             />
-            <p className="text-xs text-muted-foreground">You must be at least 18 years old</p>
+            <label htmlFor="age" className="text-sm text-primary-foreground/80 leading-snug cursor-pointer">
+              I confirm that I am at least 18 years old
+            </label>
           </div>
           <div className="space-y-2">
             <Label htmlFor="new-password" className="text-primary-foreground text-base sm:text-lg">Password (8+ characters)</Label>
