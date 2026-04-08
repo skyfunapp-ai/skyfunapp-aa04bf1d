@@ -82,6 +82,18 @@ const CreateAccountPage = () => {
             />
           </div>
           <div className="space-y-2">
+            <Label htmlFor="dob" className="text-primary-foreground text-base sm:text-lg">Date of Birth</Label>
+            <Input
+              id="dob"
+              type="date"
+              value={dateOfBirth}
+              onChange={(e) => setDateOfBirth(e.target.value)}
+              className="h-10 sm:h-12 text-base sm:text-lg"
+              max={new Date().toISOString().split("T")[0]}
+            />
+            <p className="text-xs text-muted-foreground">You must be at least 18 years old</p>
+          </div>
+          <div className="space-y-2">
             <Label htmlFor="new-password" className="text-primary-foreground text-base sm:text-lg">Password (8+ characters)</Label>
             <Input
               id="new-password"
