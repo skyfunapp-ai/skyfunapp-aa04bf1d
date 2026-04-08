@@ -15,7 +15,7 @@ const CreateAccountPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [dateOfBirth, setDateOfBirth] = useState("");
+  const [ageConfirmed, setAgeConfirmed] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [loading, setLoading] = useState(false);
 
