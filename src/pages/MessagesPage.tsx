@@ -200,7 +200,7 @@ const MessagesPage = () => {
     const userBlocked = isBlocked(selectedUser.id);
 
     return (
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }} className="min-h-screen flex flex-col bg-background">
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }} className="h-[100dvh] flex flex-col bg-background overflow-hidden">
         <HeaderMinimal />
 
         {showProfile && (
@@ -228,9 +228,8 @@ const MessagesPage = () => {
           </div>
         </div>
 
-        <main className="flex-1 flex flex-col pt-32 sm:pt-36 pb-20 px-4">
-
-          <ScrollArea className="flex-1 mb-4" ref={scrollRef}>
+        <div className="flex-1 flex flex-col pt-28 sm:pt-32 pb-16 overflow-hidden">
+          <div className="flex-1 overflow-y-auto px-4" ref={scrollRef}>
             <div className="space-y-3 min-h-[200px]">
               {messagesLoading && (
                 <div className="flex justify-center py-8">
@@ -273,10 +272,10 @@ const MessagesPage = () => {
                 </div>
               )}
             </div>
-          </ScrollArea>
+          </div>
 
           {!userBlocked && (
-            <div>
+            <div className="shrink-0 px-4 pt-2">
               {previewImage && (
                 <div className="relative inline-block mb-2">
                   <img src={previewImage} alt="Preview" className="h-20 rounded-lg border border-border/50" />
@@ -311,8 +310,8 @@ const MessagesPage = () => {
                   placeholder="Type a message..."
                   rows={1}
                   className="flex-1 bg-card text-card-foreground border border-border rounded-2xl px-4 py-2.5 placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent resize-none overflow-hidden"
-                  style={{ minHeight: '40px', fontSize: '16px' }}
-                  onInput={(e) => { const t = e.target as HTMLTextAreaElement; t.style.height = 'auto'; t.style.height = t.scrollHeight + 'px'; scrollToBottom(); }}
+                  style={{ minHeight: '40px', maxHeight: '120px', fontSize: '16px' }}
+                  onInput={(e) => { const t = e.target as HTMLTextAreaElement; t.style.height = 'auto'; t.style.height = Math.min(t.scrollHeight, 120) + 'px'; scrollToBottom(); }}
                 />
                 <button onClick={handleSend} className="p-2.5 bg-accent text-accent-foreground rounded-full hover:opacity-90 transition-opacity shrink-0">
                   <Send size={18} />
@@ -320,11 +319,10 @@ const MessagesPage = () => {
               </div>
               <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={handleFileSelect} />
               <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileSelect} />
+              <p className="text-xs text-muted-foreground text-center mt-1">Skoin balance: {profile.skoinBalance}</p>
             </div>
           )}
-
-          <p className="text-xs text-muted-foreground text-center mt-2">Skoin balance: {profile.skoinBalance}</p>
-        </main>
+        </div>
 
         <BottomNav activePage="messages" />
       </motion.div>
