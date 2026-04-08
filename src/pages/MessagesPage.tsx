@@ -54,11 +54,11 @@ const MessagesPage = () => {
 
   // Auto-scroll on new messages
   const scrollToBottom = useCallback(() => {
-    setTimeout(() => {
+    requestAnimationFrame(() => {
       if (scrollRef.current) {
         scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
       }
-    }, 100);
+    });
   }, []);
 
   useEffect(() => {
