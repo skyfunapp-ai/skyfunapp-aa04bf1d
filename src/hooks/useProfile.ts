@@ -61,7 +61,7 @@ export const useProfile = () => {
 
   const updateProfile = async (data: Partial<ProfileData>) => {
     if (!user) return { error: "Not authenticated" };
-    const dbData: Record<string, unknown> = {};
+    const dbData: { name?: string; occupation?: string; hobbies?: string[]; interested_in?: string[]; favorite_food?: string[]; profile_photo?: string; current_airport?: string; destination_airport?: string; updated_at?: string } = {};
     if (data.name !== undefined) dbData.name = data.name;
     if (data.occupation !== undefined) dbData.occupation = data.occupation;
     if (data.hobbies !== undefined) dbData.hobbies = data.hobbies;

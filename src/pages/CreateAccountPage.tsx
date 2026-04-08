@@ -14,11 +14,29 @@ const CreateAccountPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [dateOfBirth, setDateOfBirth] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleCreateAccount = async () => {
     if (!email.trim()) {
       toast({ title: "Email required", description: "Please enter your email.", variant: "destructive" });
+      return;
+    }
+
+    if (!dateOfBirth) {
+      toast({ title: "Date of birth required", description: "Please enter your date of birth.", variant: "destructive" });
+      return;
+    }
+
+    const dob = new Date(dateOfBirth);
+    const today = new Date();
+    let age = today.getFullYear() - dob.getFullYear();
+    const monthDiff = today.getMonth() - dob.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+      age--;
+    }
+    if (age < 18) {
+      toast({ title: "Age requirement", description: "You must be at least 18 years old to create an account.", variant: "destructive" });
       return;
     }
 
@@ -62,6 +80,18 @@ const CreateAccountPage = () => {
               onChange={(e) => setEmail(e.target.value)}
               className="h-10 sm:h-12 text-base sm:text-lg"
             />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="dob" className="text-primary-foreground text-base sm:text-lg">Date of Birth</Label>
+            <Input
+              id="dob"
+              type="date"
+              value={dateOfBirth}
+              onChange={(e) => setDateOfBirth(e.target.value)}
+              className="h-10 sm:h-12 text-base sm:text-lg"
+              max={new Date().toISOString().split("T")[0]}
+            />
+            <p className="text-xs text-muted-foreground">You must be at least 18 years old</p>
           </div>
           <div className="space-y-2">
             <Label htmlFor="new-password" className="text-primary-foreground text-base sm:text-lg">Password (8+ characters)</Label>
