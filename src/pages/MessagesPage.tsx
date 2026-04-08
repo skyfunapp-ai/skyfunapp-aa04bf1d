@@ -53,11 +53,31 @@ const MessagesPage = () => {
   const { user } = useAuth();
 
   // Auto-scroll on new messages
+  const scrollToBottom = useCallback(() => {
+    setTimeout(() => {
+      if (scrollRef.current) {
+        scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      }
+    }, 100);
+  }, []);
+
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
-  }, [messages]);
+    scrollToBottom();
+  }, [messages, scrollToBottom]);
+
+  // Adjust layout when virtual keyboard opens/closes
+  useEffect(() => {
+    if (!userId) return;
+    const vv = window.visualViewport;
+    if (!vv) return;
+
+    const handleResize = () => {
+      scrollToBottom();
+    };
+
+    vv.addEventListener("resize", handleResize);
+    return () => vv.removeEventListener("resize", handleResize);
+  }, [userId, scrollToBottom]);
 
   // Typing indicator via Supabase broadcast
   useEffect(() => {
