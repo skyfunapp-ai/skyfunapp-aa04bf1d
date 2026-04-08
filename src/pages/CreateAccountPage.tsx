@@ -113,6 +113,12 @@ const CreateAccountPage = () => {
           <button onClick={() => navigate("/")} className="w-full text-center text-primary-foreground/70 hover:underline mt-2">
             Already have an account? Log In
           </button>
+
+          <p className="text-xs text-primary-foreground/60 text-center mt-2">
+            By creating an account, you agree to our{" "}
+            <span onClick={() => navigate("/terms")} className="underline text-accent hover:text-accent/80 cursor-pointer">Terms of Service</span>{" "}and{" "}
+            <span onClick={() => navigate("/privacy")} className="underline text-accent hover:text-accent/80 cursor-pointer">Privacy Policy</span>.
+          </p>
         </div>
       </main>
     </div>
