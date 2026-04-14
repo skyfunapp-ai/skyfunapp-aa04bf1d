@@ -78,8 +78,8 @@ const CreateAccountPage = () => {
               onCheckedChange={(checked) => setAgeConfirmed(checked === true)}
               className="mt-1"
             />
-            <label htmlFor="age" className="text-sm text-primary-foreground/80 leading-snug cursor-pointer">
-              I confirm that I am at least 18 years old
+<label htmlFor="age" className="text-sm text-primary-foreground/80 leading-snug cursor-pointer">
+              I confirm that I am at least 18 years old or older
             </label>
           </div>
           <div className="space-y-2">
