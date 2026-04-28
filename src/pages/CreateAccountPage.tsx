@@ -116,7 +116,8 @@ const CreateAccountPage = () => {
 
           <p className="text-xs text-primary-foreground/60 text-center mt-2">
             By creating an account, you agree to our{" "}
-            <span onClick={() => navigate("/terms")} className="underline text-accent hover:text-accent/80 cursor-pointer">Terms of Service</span>{" "}and{" "}
+            <span onClick={() => navigate("/terms")} className="underline text-accent hover:text-accent/80 cursor-pointer">Terms of Service</span>,{" "}
+            <span onClick={() => navigate("/refund")} className="underline text-accent hover:text-accent/80 cursor-pointer">Refund Policy</span>{" "}and{" "}
             <span onClick={() => navigate("/privacy")} className="underline text-accent hover:text-accent/80 cursor-pointer">Privacy Policy</span>.
           </p>
         </div>

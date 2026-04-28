@@ -24,6 +24,7 @@ import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import PrivacyPage from "./pages/PrivacyPage";
 import TermsPage from "./pages/TermsPage";
+import RefundPage from "./pages/RefundPage";
 const queryClient = new QueryClient();
 
 const AnimatedRoutes = () => {
@@ -47,6 +48,7 @@ const AnimatedRoutes = () => {
         <Route path="/help" element={<HelpPage />} />
         <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="/terms" element={<TermsPage />} />
+        <Route path="/refund" element={<RefundPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </AnimatePresence>
