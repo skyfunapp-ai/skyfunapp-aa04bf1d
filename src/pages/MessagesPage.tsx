@@ -66,7 +66,7 @@ const MessagesPage = () => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, scrollToBottom]);
+  }, [messages, isOtherTyping, previewImage, scrollToBottom]);
 
   // Adjust layout when virtual keyboard opens/closes
   useEffect(() => {
