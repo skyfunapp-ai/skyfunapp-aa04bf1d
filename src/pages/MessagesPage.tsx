@@ -31,6 +31,8 @@ const MessagesPage = () => {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [showEmoji, setShowEmoji] = useState(false);
   const [isOtherTyping, setIsOtherTyping] = useState(false);
+  const [autoScroll, setAutoScroll] = useState(true);
+  const [unreadBelow, setUnreadBelow] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
