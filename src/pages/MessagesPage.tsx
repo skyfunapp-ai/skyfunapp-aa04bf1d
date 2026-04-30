@@ -364,7 +364,7 @@ const MessagesPage = () => {
           </AnimatePresence>
 
           {!userBlocked && (
-            <div className="shrink-0 px-4 pt-2">
+            <div className="shrink-0 px-4 pt-2 pb-2 bg-background border-t border-border/30">
               {previewImage && (
                 <div className="relative inline-block mb-2">
                   <img src={previewImage} alt="Preview" className="h-20 rounded-lg border border-border/50" />
@@ -402,7 +402,7 @@ const MessagesPage = () => {
                       handleSend();
                     }
                   }}
-                  placeholder="Type a message... (Shift/Ctrl+Enter to send)"
+                  placeholder="Sky message..."
                   rows={1}
                   className="flex-1 bg-card text-card-foreground border border-border rounded-2xl px-4 py-2.5 placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent resize-none overflow-hidden"
                   style={{ minHeight: '40px', maxHeight: '120px', fontSize: '16px' }}
