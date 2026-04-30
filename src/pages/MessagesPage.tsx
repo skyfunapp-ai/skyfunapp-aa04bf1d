@@ -252,9 +252,20 @@ const MessagesPage = () => {
               </Avatar>
               <div className="flex flex-col items-start">
                 <p className="text-sm font-semibold text-primary-foreground">{selectedUser.name}</p>
-                {isOtherTyping && (
-                  <p className="text-[10px] text-accent animate-pulse">typing...</p>
-                )}
+                <AnimatePresence mode="wait">
+                  {isOtherTyping && (
+                    <motion.p
+                      key="typing-status"
+                      initial={{ opacity: 0, y: -2 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -2 }}
+                      transition={{ duration: 0.15 }}
+                      className="text-[10px] text-accent"
+                    >
+                      typing…
+                    </motion.p>
+                  )}
+                </AnimatePresence>
               </div>
             </button>
             <div className="w-8 shrink-0" />
