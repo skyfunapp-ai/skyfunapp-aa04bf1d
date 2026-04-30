@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useParams, useNavigate } from "react-router-dom";
 import HeaderMinimal from "@/components/HeaderMinimal";
 import BottomNav from "@/components/BottomNav";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { ArrowLeft, Send, Camera, Paperclip, Check, CheckCheck, Loader2, X, Smile } from "lucide-react";
+import { ArrowLeft, Send, Camera, Paperclip, Check, CheckCheck, Loader2, X, Smile, ArrowDown } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "@/hooks/use-toast";
 import { useProfile, useConnections, useBlockedUsers } from "@/hooks/useProfile";
@@ -31,6 +31,8 @@ const MessagesPage = () => {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [showEmoji, setShowEmoji] = useState(false);
   const [isOtherTyping, setIsOtherTyping] = useState(false);
+  const [autoScroll, setAutoScroll] = useState(true);
+  const [unreadBelow, setUnreadBelow] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -52,21 +54,49 @@ const MessagesPage = () => {
   const { conversations } = useConversations();
   const { user } = useAuth();
 
-  // Auto-scroll on new messages
-  const scrollToBottom = useCallback(() => {
+  // Auto-scroll on new messages (smooth)
+  const scrollToBottom = useCallback((force = false) => {
     requestAnimationFrame(() => {
-      if (scrollRef.current) {
-        scrollRef.current.scrollTo({
-          top: scrollRef.current.scrollHeight,
-          behavior: 'smooth',
-        });
-      }
+      if (!scrollRef.current) return;
+      if (!force && !autoScroll) return;
+      scrollRef.current.scrollTo({
+        top: scrollRef.current.scrollHeight,
+        behavior: 'smooth',
+      });
     });
+  }, [autoScroll]);
+
+  // Detect manual scroll: pause auto-scroll if user scrolls up; resume near bottom
+  const handleScroll = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const distanceFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
+    const nearBottom = distanceFromBottom < 80;
+    setAutoScroll(nearBottom);
+    if (nearBottom) setUnreadBelow(0);
   }, []);
 
+  // Track unread count when new messages arrive while scrolled up
+  const lastMessageCountRef = useRef(messages.length);
   useEffect(() => {
-    scrollToBottom();
-  }, [messages, isOtherTyping, previewImage, scrollToBottom]);
+    const newCount = messages.length - lastMessageCountRef.current;
+    if (newCount > 0 && !autoScroll) {
+      const onlyMine = messages.slice(-newCount).every((m) => m.fromMe);
+      if (!onlyMine) setUnreadBelow((c) => c + newCount);
+    }
+    lastMessageCountRef.current = messages.length;
+    if (autoScroll) scrollToBottom();
+  }, [messages, autoScroll, scrollToBottom]);
+
+  useEffect(() => {
+    if (autoScroll) scrollToBottom();
+  }, [isOtherTyping, previewImage, autoScroll, scrollToBottom]);
+
+  const jumpToLatest = useCallback(() => {
+    setAutoScroll(true);
+    setUnreadBelow(0);
+    scrollToBottom(true);
+  }, [scrollToBottom]);
 
   // Adjust layout when virtual keyboard opens/closes
   useEffect(() => {
@@ -222,17 +252,28 @@ const MessagesPage = () => {
               </Avatar>
               <div className="flex flex-col items-start">
                 <p className="text-sm font-semibold text-primary-foreground">{selectedUser.name}</p>
-                {isOtherTyping && (
-                  <p className="text-[10px] text-accent animate-pulse">typing...</p>
-                )}
+                <AnimatePresence mode="wait">
+                  {isOtherTyping && (
+                    <motion.p
+                      key="typing-status"
+                      initial={{ opacity: 0, y: -2 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -2 }}
+                      transition={{ duration: 0.15 }}
+                      className="text-[10px] text-accent"
+                    >
+                      typing…
+                    </motion.p>
+                  )}
+                </AnimatePresence>
               </div>
             </button>
             <div className="w-8 shrink-0" />
           </div>
         </div>
 
-        <div className="flex-1 flex flex-col pt-28 sm:pt-32 pb-16 overflow-hidden">
-          <div className="flex-1 overflow-y-auto px-4 scroll-smooth" ref={scrollRef}>
+        <div className="flex-1 flex flex-col pt-28 sm:pt-32 pb-16 overflow-hidden relative">
+          <div className="flex-1 overflow-y-auto px-4 scroll-smooth" ref={scrollRef} onScroll={handleScroll}>
             <div className="space-y-3 min-h-[200px]">
               {messagesLoading && (
                 <div className="flex justify-center py-8">
@@ -256,26 +297,71 @@ const MessagesPage = () => {
                   <div className={`flex items-center gap-1 mt-0.5 px-1 ${msg.fromMe ? "flex-row-reverse" : ""}`}>
                     <span className="text-[10px] text-muted-foreground">{new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                     {msg.fromMe && (
-                      <span className="flex items-center">
-                        {msg.status === "seen" ? <CheckCheck size={12} className="text-accent" /> : msg.status === "delivered" ? <CheckCheck size={12} className="text-muted-foreground" /> : <Check size={12} className="text-muted-foreground" />}
+                      <span className="flex items-center gap-0.5">
+                        {msg.status === "seen" ? (
+                          <>
+                            <CheckCheck size={12} className="text-accent" />
+                            <span className="text-[10px] text-accent">Seen</span>
+                          </>
+                        ) : msg.status === "delivered" ? (
+                          <>
+                            <CheckCheck size={12} className="text-muted-foreground" />
+                            <span className="text-[10px] text-muted-foreground">Delivered</span>
+                          </>
+                        ) : (
+                          <>
+                            <Check size={12} className="text-muted-foreground" />
+                            <span className="text-[10px] text-muted-foreground">Sent</span>
+                          </>
+                        )}
                       </span>
                     )}
                   </div>
                 </div>
               ))}
-              {isOtherTyping && (
-                <div className="flex items-start">
-                  <div className="bg-card border border-border/50 rounded-2xl rounded-bl-sm px-4 py-2">
-                    <div className="flex gap-1">
-                      <span className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                      <span className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                      <span className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+              <AnimatePresence>
+                {isOtherTyping && (
+                  <motion.div
+                    key="typing-bubble"
+                    initial={{ opacity: 0, y: 6, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 4, scale: 0.95 }}
+                    transition={{ duration: 0.18, ease: "easeOut" }}
+                    className="flex items-end gap-2"
+                  >
+                    <Avatar className="w-6 h-6">
+                      <AvatarImage src={selectedUser.profilePhoto} alt={selectedUser.name} />
+                      <AvatarFallback className="text-[10px] font-bold">{getInitials(selectedUser.name)}</AvatarFallback>
+                    </Avatar>
+                    <div className="bg-card border border-border/50 rounded-2xl rounded-bl-sm px-4 py-2.5 shadow-sm">
+                      <div className="flex gap-1 items-end h-3">
+                        <span className="w-1.5 h-1.5 bg-accent/80 rounded-full animate-bounce" style={{ animationDelay: '0ms', animationDuration: '1s' }} />
+                        <span className="w-1.5 h-1.5 bg-accent/80 rounded-full animate-bounce" style={{ animationDelay: '160ms', animationDuration: '1s' }} />
+                        <span className="w-1.5 h-1.5 bg-accent/80 rounded-full animate-bounce" style={{ animationDelay: '320ms', animationDuration: '1s' }} />
+                      </div>
                     </div>
-                  </div>
-                </div>
-              )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </div>
+
+          <AnimatePresence>
+            {!autoScroll && (
+              <motion.button
+                key="jump-latest"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                transition={{ duration: 0.15 }}
+                onClick={jumpToLatest}
+                className="absolute left-1/2 -translate-x-1/2 bottom-28 z-20 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-accent text-accent-foreground text-xs font-semibold shadow-lg hover:opacity-90 transition-opacity"
+              >
+                <ArrowDown size={14} />
+                {unreadBelow > 0 ? `${unreadBelow} new message${unreadBelow > 1 ? "s" : ""}` : "Jump to latest"}
+              </motion.button>
+            )}
+          </AnimatePresence>
 
           {!userBlocked && (
             <div className="shrink-0 px-4 pt-2">
@@ -309,7 +395,7 @@ const MessagesPage = () => {
                 <textarea
                   value={input}
                   onChange={(e) => { setInput(e.target.value); broadcastTyping(); }}
-                  onFocus={scrollToBottom}
+                  onFocus={() => scrollToBottom()}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && (e.ctrlKey || e.metaKey || e.shiftKey)) {
                       e.preventDefault();
