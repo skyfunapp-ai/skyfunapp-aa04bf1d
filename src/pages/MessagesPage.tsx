@@ -272,8 +272,8 @@ const MessagesPage = () => {
           </div>
         </div>
 
-        <div className="flex-1 flex flex-col pt-28 sm:pt-32 pb-16 overflow-hidden">
-          <div className="flex-1 overflow-y-auto px-4 scroll-smooth" ref={scrollRef}>
+        <div className="flex-1 flex flex-col pt-28 sm:pt-32 pb-16 overflow-hidden relative">
+          <div className="flex-1 overflow-y-auto px-4 scroll-smooth" ref={scrollRef} onScroll={handleScroll}>
             <div className="space-y-3 min-h-[200px]">
               {messagesLoading && (
                 <div className="flex justify-center py-8">
@@ -297,26 +297,71 @@ const MessagesPage = () => {
                   <div className={`flex items-center gap-1 mt-0.5 px-1 ${msg.fromMe ? "flex-row-reverse" : ""}`}>
                     <span className="text-[10px] text-muted-foreground">{new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                     {msg.fromMe && (
-                      <span className="flex items-center">
-                        {msg.status === "seen" ? <CheckCheck size={12} className="text-accent" /> : msg.status === "delivered" ? <CheckCheck size={12} className="text-muted-foreground" /> : <Check size={12} className="text-muted-foreground" />}
+                      <span className="flex items-center gap-0.5">
+                        {msg.status === "seen" ? (
+                          <>
+                            <CheckCheck size={12} className="text-accent" />
+                            <span className="text-[10px] text-accent">Seen</span>
+                          </>
+                        ) : msg.status === "delivered" ? (
+                          <>
+                            <CheckCheck size={12} className="text-muted-foreground" />
+                            <span className="text-[10px] text-muted-foreground">Delivered</span>
+                          </>
+                        ) : (
+                          <>
+                            <Check size={12} className="text-muted-foreground" />
+                            <span className="text-[10px] text-muted-foreground">Sent</span>
+                          </>
+                        )}
                       </span>
                     )}
                   </div>
                 </div>
               ))}
-              {isOtherTyping && (
-                <div className="flex items-start">
-                  <div className="bg-card border border-border/50 rounded-2xl rounded-bl-sm px-4 py-2">
-                    <div className="flex gap-1">
-                      <span className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                      <span className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                      <span className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+              <AnimatePresence>
+                {isOtherTyping && (
+                  <motion.div
+                    key="typing-bubble"
+                    initial={{ opacity: 0, y: 6, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 4, scale: 0.95 }}
+                    transition={{ duration: 0.18, ease: "easeOut" }}
+                    className="flex items-end gap-2"
+                  >
+                    <Avatar className="w-6 h-6">
+                      <AvatarImage src={selectedUser.profilePhoto} alt={selectedUser.name} />
+                      <AvatarFallback className="text-[10px] font-bold">{getInitials(selectedUser.name)}</AvatarFallback>
+                    </Avatar>
+                    <div className="bg-card border border-border/50 rounded-2xl rounded-bl-sm px-4 py-2.5 shadow-sm">
+                      <div className="flex gap-1 items-end h-3">
+                        <span className="w-1.5 h-1.5 bg-accent/80 rounded-full animate-bounce" style={{ animationDelay: '0ms', animationDuration: '1s' }} />
+                        <span className="w-1.5 h-1.5 bg-accent/80 rounded-full animate-bounce" style={{ animationDelay: '160ms', animationDuration: '1s' }} />
+                        <span className="w-1.5 h-1.5 bg-accent/80 rounded-full animate-bounce" style={{ animationDelay: '320ms', animationDuration: '1s' }} />
+                      </div>
                     </div>
-                  </div>
-                </div>
-              )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </div>
+
+          <AnimatePresence>
+            {!autoScroll && (
+              <motion.button
+                key="jump-latest"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                transition={{ duration: 0.15 }}
+                onClick={jumpToLatest}
+                className="absolute left-1/2 -translate-x-1/2 bottom-28 z-20 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-accent text-accent-foreground text-xs font-semibold shadow-lg hover:opacity-90 transition-opacity"
+              >
+                <ArrowDown size={14} />
+                {unreadBelow > 0 ? `${unreadBelow} new message${unreadBelow > 1 ? "s" : ""}` : "Jump to latest"}
+              </motion.button>
+            )}
+          </AnimatePresence>
 
           {!userBlocked && (
             <div className="shrink-0 px-4 pt-2">
