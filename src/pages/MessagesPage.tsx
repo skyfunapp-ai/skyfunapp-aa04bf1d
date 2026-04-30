@@ -66,7 +66,7 @@ const MessagesPage = () => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, scrollToBottom]);
+  }, [messages, isOtherTyping, previewImage, scrollToBottom]);
 
   // Adjust layout when virtual keyboard opens/closes
   useEffect(() => {
@@ -310,7 +310,13 @@ const MessagesPage = () => {
                   value={input}
                   onChange={(e) => { setInput(e.target.value); broadcastTyping(); }}
                   onFocus={scrollToBottom}
-                  placeholder="Type a message..."
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && (e.ctrlKey || e.metaKey || e.shiftKey)) {
+                      e.preventDefault();
+                      handleSend();
+                    }
+                  }}
+                  placeholder="Type a message... (Shift/Ctrl+Enter to send)"
                   rows={1}
                   className="flex-1 bg-card text-card-foreground border border-border rounded-2xl px-4 py-2.5 placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent resize-none overflow-hidden"
                   style={{ minHeight: '40px', maxHeight: '120px', fontSize: '16px' }}
