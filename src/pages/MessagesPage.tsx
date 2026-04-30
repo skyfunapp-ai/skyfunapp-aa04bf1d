@@ -339,7 +339,7 @@ const MessagesPage = () => {
                 <textarea
                   value={input}
                   onChange={(e) => { setInput(e.target.value); broadcastTyping(); }}
-                  onFocus={scrollToBottom}
+                  onFocus={() => scrollToBottom()}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && (e.ctrlKey || e.metaKey || e.shiftKey)) {
                       e.preventDefault();
