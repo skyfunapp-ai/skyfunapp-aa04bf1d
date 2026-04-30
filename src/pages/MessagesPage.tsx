@@ -54,21 +54,49 @@ const MessagesPage = () => {
   const { conversations } = useConversations();
   const { user } = useAuth();
 
-  // Auto-scroll on new messages
-  const scrollToBottom = useCallback(() => {
+  // Auto-scroll on new messages (smooth)
+  const scrollToBottom = useCallback((force = false) => {
     requestAnimationFrame(() => {
-      if (scrollRef.current) {
-        scrollRef.current.scrollTo({
-          top: scrollRef.current.scrollHeight,
-          behavior: 'smooth',
-        });
-      }
+      if (!scrollRef.current) return;
+      if (!force && !autoScroll) return;
+      scrollRef.current.scrollTo({
+        top: scrollRef.current.scrollHeight,
+        behavior: 'smooth',
+      });
     });
+  }, [autoScroll]);
+
+  // Detect manual scroll: pause auto-scroll if user scrolls up; resume near bottom
+  const handleScroll = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const distanceFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
+    const nearBottom = distanceFromBottom < 80;
+    setAutoScroll(nearBottom);
+    if (nearBottom) setUnreadBelow(0);
   }, []);
 
+  // Track unread count when new messages arrive while scrolled up
+  const lastMessageCountRef = useRef(messages.length);
   useEffect(() => {
-    scrollToBottom();
-  }, [messages, isOtherTyping, previewImage, scrollToBottom]);
+    const newCount = messages.length - lastMessageCountRef.current;
+    if (newCount > 0 && !autoScroll) {
+      const onlyMine = messages.slice(-newCount).every((m) => m.fromMe);
+      if (!onlyMine) setUnreadBelow((c) => c + newCount);
+    }
+    lastMessageCountRef.current = messages.length;
+    if (autoScroll) scrollToBottom();
+  }, [messages, autoScroll, scrollToBottom]);
+
+  useEffect(() => {
+    if (autoScroll) scrollToBottom();
+  }, [isOtherTyping, previewImage, autoScroll, scrollToBottom]);
+
+  const jumpToLatest = useCallback(() => {
+    setAutoScroll(true);
+    setUnreadBelow(0);
+    scrollToBottom(true);
+  }, [scrollToBottom]);
 
   // Adjust layout when virtual keyboard opens/closes
   useEffect(() => {
