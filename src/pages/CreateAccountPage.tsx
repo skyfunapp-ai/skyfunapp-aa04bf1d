@@ -59,6 +59,11 @@ const CreateAccountPage = () => {
       return;
     }
 
+    // Save referral code so it can be redeemed after first login
+    if (referralCode.trim()) {
+      localStorage.setItem(REF_PENDING_KEY, referralCode.trim().toUpperCase());
+    }
+
     toast({ title: "Account Created!", description: "Please check your email to verify your account, then log in." });
     navigate("/");
   };
