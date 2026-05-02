@@ -141,6 +141,14 @@ const ChatProfileModal = ({ userId, onClose }: ChatProfileModalProps) => {
                 </div>
               </div>
             )}
+
+            <div className="flex items-center gap-3 mt-5 bg-muted/40 rounded-xl px-4 py-2.5 border border-border/50">
+              {blocked ? <ShieldAlert size={16} className="text-destructive" /> : <ShieldCheck size={16} className="text-green-500" />}
+              <Label htmlFor="chat-block-toggle" className="text-sm text-card-foreground cursor-pointer">
+                {blocked ? "Blocked" : "Block User"}
+              </Label>
+              <Switch id="chat-block-toggle" checked={blocked} onCheckedChange={toggleBlock} />
+            </div>
           </div>
         ) : (
           <p className="text-center text-muted-foreground py-8">Profile not found</p>
