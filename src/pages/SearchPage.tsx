@@ -146,7 +146,7 @@ const SearchPage = () => {
                       className={`flex items-center gap-3 bg-card/80 backdrop-blur rounded-xl px-4 py-3 border border-border/50 transition-colors ${userBlocked ? "opacity-50" : "cursor-pointer hover:bg-card/95"}`}
                     >
                       <Avatar className="w-10 h-10 shrink-0">
-                        <AvatarImage src={u.profilePhoto} alt={u.name} />
+                        <AvatarImage src={u.profilePhoto} alt={u.name} loading="lazy" decoding="async" />
                         <AvatarFallback className="text-sm font-bold">{getInitials(u.name)}</AvatarFallback>
                       </Avatar>
                       <div className="flex-1 min-w-0">
