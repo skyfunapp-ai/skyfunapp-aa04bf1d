@@ -1,13 +1,21 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { MapPin, Coins, Plane } from "lucide-react";
 import { motion } from "framer-motion";
 import HeaderMinimal from "@/components/HeaderMinimal";
 import BottomNav from "@/components/BottomNav";
 import EditProfileModal from "@/components/EditProfileModal";
+import ShareBanner from "@/components/ShareBanner";
+import ReferralCard from "@/components/ReferralCard";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useProfile, type ProfileData } from "@/hooks/useProfile";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+
+const WELCOME_KEY = "skyfun_last_welcome_at";
+const WELCOME_HOURS = 12;
+const REF_PENDING_KEY = "skyfun_pending_ref_code";
 
 const Dashboard = () => {
   const [isEditOpen, setIsEditOpen] = useState(false);
