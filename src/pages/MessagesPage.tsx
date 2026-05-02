@@ -347,79 +347,80 @@ const MessagesPage = () => {
               </AnimatePresence>
             </div>
           </div>
+        </div>
 
-          <AnimatePresence>
-            {!autoScroll && (
-              <motion.button
-                key="jump-latest"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                transition={{ duration: 0.15 }}
-                onClick={jumpToLatest}
-                className="absolute left-1/2 -translate-x-1/2 bottom-28 z-20 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-accent text-accent-foreground text-xs font-semibold shadow-lg hover:opacity-90 transition-opacity"
-              >
-                <ArrowDown size={14} />
-                {unreadBelow > 0 ? `${unreadBelow} new message${unreadBelow > 1 ? "s" : ""}` : "Jump to latest"}
-              </motion.button>
-            )}
-          </AnimatePresence>
+        <AnimatePresence>
+          {!autoScroll && (
+            <motion.button
+              key="jump-latest"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              transition={{ duration: 0.15 }}
+              onClick={jumpToLatest}
+              className="fixed left-1/2 -translate-x-1/2 bottom-44 z-30 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-accent text-accent-foreground text-xs font-semibold shadow-lg hover:opacity-90 transition-opacity"
+            >
+              <ArrowDown size={14} />
+              {unreadBelow > 0 ? `${unreadBelow} new message${unreadBelow > 1 ? "s" : ""}` : "Jump to latest"}
+            </motion.button>
+          )}
+        </AnimatePresence>
 
-          {!userBlocked && (
-            <div className="shrink-0 px-4 pt-2 pb-2 bg-background border-t border-border/30">
-              {previewImage && (
-                <div className="relative inline-block mb-2">
-                  <img src={previewImage} alt="Preview" className="h-20 rounded-lg border border-border/50" />
-                  <button onClick={() => setPreviewImage(null)} className="absolute -top-2 -right-2 p-0.5 bg-destructive text-destructive-foreground rounded-full">
-                    <X size={14} />
-                  </button>
-                </div>
-              )}
-              {showEmoji && (
-                <div className="flex flex-wrap gap-1 mb-2 p-2 bg-card border border-border rounded-xl max-h-32 overflow-y-auto">
-                  {["😀","😂","😍","🥰","😎","🤩","😢","😡","👍","👎","❤️","🔥","🎉","✈️","🌍","💬","🙏","👋","😊","🤔","😅","🥺","💀","🫡","✨","💯","🙌","😭","🤣","😘"].map((emoji) => (
-                    <button key={emoji} type="button" onClick={() => { setInput((prev) => prev + emoji); setShowEmoji(false); }} className="text-xl p-1 hover:bg-muted rounded">
-                      {emoji}
-                    </button>
-                  ))}
-                </div>
-              )}
-              <div className="flex items-end gap-2">
-                <button onClick={() => cameraInputRef.current?.click()} className="p-2.5 text-muted-foreground hover:text-primary-foreground transition-colors shrink-0">
-                  <Camera size={20} />
-                </button>
-                <button onClick={() => fileInputRef.current?.click()} className="p-2.5 text-muted-foreground hover:text-primary-foreground transition-colors shrink-0">
-                  <Paperclip size={20} />
-                </button>
-                <button onClick={() => setShowEmoji(!showEmoji)} className="p-2.5 text-muted-foreground hover:text-primary-foreground transition-colors shrink-0">
-                  <Smile size={20} />
-                </button>
-                <textarea
-                  value={input}
-                  onChange={(e) => { setInput(e.target.value); broadcastTyping(); }}
-                  onFocus={() => scrollToBottom()}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && (e.ctrlKey || e.metaKey || e.shiftKey)) {
-                      e.preventDefault();
-                      handleSend();
-                    }
-                  }}
-                  placeholder="Sky message..."
-                  rows={1}
-                  className="flex-1 bg-card text-card-foreground border border-border rounded-2xl px-4 py-2.5 placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent resize-none overflow-hidden"
-                  style={{ minHeight: '40px', maxHeight: '120px', fontSize: '16px' }}
-                  onInput={(e) => { const t = e.target as HTMLTextAreaElement; t.style.height = 'auto'; t.style.height = Math.min(t.scrollHeight, 120) + 'px'; scrollToBottom(); }}
-                />
-                <button onClick={handleSend} className="p-2.5 bg-accent text-accent-foreground rounded-full hover:opacity-90 transition-opacity shrink-0">
-                  <Send size={18} />
+        {/* Steady bottom: input bar fixed above BottomNav */}
+        {!userBlocked && (
+          <div className="fixed left-0 right-0 bottom-16 z-30 px-4 pt-2 pb-2 bg-background border-t border-border/30">
+            {previewImage && (
+              <div className="relative inline-block mb-2">
+                <img src={previewImage} alt="Preview" className="h-20 rounded-lg border border-border/50" />
+                <button onClick={() => setPreviewImage(null)} className="absolute -top-2 -right-2 p-0.5 bg-destructive text-destructive-foreground rounded-full">
+                  <X size={14} />
                 </button>
               </div>
-              <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={handleFileSelect} />
-              <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileSelect} />
-              <p className="text-xs text-muted-foreground text-center mt-1">Skoin balance: {profile.skoinBalance}</p>
+            )}
+            {showEmoji && (
+              <div className="flex flex-wrap gap-1 mb-2 p-2 bg-card border border-border rounded-xl max-h-32 overflow-y-auto">
+                {["😀","😂","😍","🥰","😎","🤩","😢","😡","👍","👎","❤️","🔥","🎉","✈️","🌍","💬","🙏","👋","😊","🤔","😅","🥺","💀","🫡","✨","💯","🙌","😭","🤣","😘"].map((emoji) => (
+                  <button key={emoji} type="button" onClick={() => { setInput((prev) => prev + emoji); setShowEmoji(false); }} className="text-xl p-1 hover:bg-muted rounded">
+                    {emoji}
+                  </button>
+                ))}
+              </div>
+            )}
+            <div className="flex items-end gap-2">
+              <button onClick={() => cameraInputRef.current?.click()} className="p-2.5 text-muted-foreground hover:text-primary-foreground transition-colors shrink-0">
+                <Camera size={20} />
+              </button>
+              <button onClick={() => fileInputRef.current?.click()} className="p-2.5 text-muted-foreground hover:text-primary-foreground transition-colors shrink-0">
+                <Paperclip size={20} />
+              </button>
+              <button onClick={() => setShowEmoji(!showEmoji)} className="p-2.5 text-muted-foreground hover:text-primary-foreground transition-colors shrink-0">
+                <Smile size={20} />
+              </button>
+              <textarea
+                value={input}
+                onChange={(e) => { setInput(e.target.value); broadcastTyping(); }}
+                onFocus={() => scrollToBottom()}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && (e.ctrlKey || e.metaKey || e.shiftKey)) {
+                    e.preventDefault();
+                    handleSend();
+                  }
+                }}
+                placeholder="Sky message..."
+                rows={1}
+                className="flex-1 bg-card text-card-foreground border border-border rounded-2xl px-4 py-2.5 placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent resize-none overflow-hidden"
+                style={{ minHeight: '40px', maxHeight: '120px', fontSize: '16px' }}
+                onInput={(e) => { const t = e.target as HTMLTextAreaElement; t.style.height = 'auto'; t.style.height = Math.min(t.scrollHeight, 120) + 'px'; scrollToBottom(); }}
+              />
+              <button onClick={handleSend} className="p-2.5 bg-accent text-accent-foreground rounded-full hover:opacity-90 transition-opacity shrink-0">
+                <Send size={18} />
+              </button>
             </div>
-          )}
-        </div>
+            <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={handleFileSelect} />
+            <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileSelect} />
+            <p className="text-xs text-muted-foreground text-center mt-1">Skoin balance: {profile.skoinBalance}</p>
+          </div>
+        )}
 
         <BottomNav activePage="messages" />
       </motion.div>
