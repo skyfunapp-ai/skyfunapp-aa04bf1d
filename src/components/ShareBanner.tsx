@@ -13,8 +13,8 @@ interface ShareBannerProps {
 }
 
 const ShareBanner = ({
-  shareUrl = "https://skyfunapp.lovable.app",
-  message = "Meet fellow travelers at the airport with SkyFunApp! ✈️",
+  shareUrl = "https://skyfunapp.lovable.app/create-account",
+  message = "Meet fellow travelers at the airport with SkyFunApp! ✈️ Sign up here:",
 }: ShareBannerProps) => {
   const [visible, setVisible] = useState(false);
   const [copied, setCopied] = useState(false);
