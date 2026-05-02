@@ -1,19 +1,61 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { MapPin, Coins, Plane } from "lucide-react";
 import { motion } from "framer-motion";
 import HeaderMinimal from "@/components/HeaderMinimal";
 import BottomNav from "@/components/BottomNav";
 import EditProfileModal from "@/components/EditProfileModal";
+import ShareBanner from "@/components/ShareBanner";
+import ReferralCard from "@/components/ReferralCard";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useProfile, type ProfileData } from "@/hooks/useProfile";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+
+const WELCOME_KEY = "skyfun_last_welcome_at";
+const WELCOME_HOURS = 12;
+const REF_PENDING_KEY = "skyfun_pending_ref_code";
 
 const Dashboard = () => {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const { profile, loading, updateProfile } = useProfile();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const touchStartX = useRef(0);
+
+  // Welcome-back toast (max once per WELCOME_HOURS)
+  useEffect(() => {
+    if (!user) return;
+    const last = Number(localStorage.getItem(WELCOME_KEY) || 0);
+    const hours = (Date.now() - last) / (1000 * 60 * 60);
+    if (hours >= WELCOME_HOURS) {
+      localStorage.setItem(WELCOME_KEY, String(Date.now()));
+      setTimeout(() => {
+        toast({
+          title: "Welcome back ✈️",
+          description: "Share SkyFunApp with a friend and earn 5 Skoins each!",
+        });
+      }, 600);
+    }
+  }, [user]);
+
+  // Redeem pending referral code after sign-in
+  useEffect(() => {
+    if (!user) return;
+    const pending = sessionStorage.getItem(REF_PENDING_KEY) || localStorage.getItem(REF_PENDING_KEY);
+    if (!pending) return;
+    sessionStorage.removeItem(REF_PENDING_KEY);
+    localStorage.removeItem(REF_PENDING_KEY);
+    (async () => {
+      const { data, error } = await supabase.rpc("redeem_referral", { p_code: pending });
+      if (error) return;
+      const result = data as { success?: boolean; error?: string; reward?: number };
+      if (result?.success) {
+        toast({ title: "Referral applied! 🎉", description: `You earned ${result.reward} Skoins.` });
+      }
+    })();
+  }, [user]);
 
   const handleSwipe = (e: React.TouchEvent, type: "start" | "end") => {
     if (type === "start") { touchStartX.current = e.touches[0].clientX; return; }
@@ -44,7 +86,12 @@ const Dashboard = () => {
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }} className="min-h-screen flex flex-col bg-background" onTouchStart={(e) => handleSwipe(e, "start")} onTouchEnd={(e) => handleSwipe(e, "end")}>
       <HeaderMinimal onEditClick={handleEditClick} showEdit={true} />
       
-      <main className="flex-1 flex flex-col items-center pt-20 sm:pt-24 pb-20">
+      <main className="flex-1 flex flex-col pt-20 sm:pt-24 pb-20">
+        <div className="w-full max-w-md mx-auto">
+          <ShareBanner />
+          <ReferralCard />
+        </div>
+        <div className="flex-1 flex flex-col items-center w-full">
         {isProfileEmpty ? (
           <div className="flex-1 flex flex-col items-center justify-center text-center px-4">
             <p className="text-xl text-primary-foreground/70 mb-4">Your profile is empty</p>
@@ -119,6 +166,7 @@ const Dashboard = () => {
             </div>
           </div>
         )}
+        </div>
       </main>
       
       <BottomNav activePage="profile" />

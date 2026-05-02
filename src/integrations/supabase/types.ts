@@ -131,6 +131,48 @@ export type Database = {
         }
         Relationships: []
       }
+      referral_codes: {
+        Row: {
+          code: string
+          created_at: string
+          user_id: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          user_id: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      referrals: {
+        Row: {
+          created_at: string
+          id: string
+          referred_id: string
+          referrer_id: string
+          rewarded: boolean
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          referred_id: string
+          referrer_id: string
+          rewarded?: boolean
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          referred_id?: string
+          referrer_id?: string
+          rewarded?: boolean
+        }
+        Relationships: []
+      }
       skoin_transactions: {
         Row: {
           coins: number
@@ -160,7 +202,9 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_referral_code: { Args: never; Returns: string }
+      get_or_create_referral_code: { Args: never; Returns: string }
+      redeem_referral: { Args: { p_code: string }; Returns: Json }
     }
     Enums: {
       [_ in never]: never

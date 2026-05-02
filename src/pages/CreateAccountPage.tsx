@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,15 +8,25 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 
+const REF_PENDING_KEY = "skyfun_pending_ref_code";
+
 const CreateAccountPage = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const { signUp } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [ageConfirmed, setAgeConfirmed] = useState(false);
+  const [referralCode, setReferralCode] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // Pre-fill referral code from ?ref= URL param
+  useEffect(() => {
+    const ref = searchParams.get("ref");
+    if (ref) setReferralCode(ref.toUpperCase());
+  }, [searchParams]);
 
   const handleCreateAccount = async () => {
     if (!email.trim()) {
@@ -47,6 +57,11 @@ const CreateAccountPage = () => {
     if (error) {
       toast({ title: "Signup failed", description: error.message, variant: "destructive" });
       return;
+    }
+
+    // Save referral code so it can be redeemed after first login
+    if (referralCode.trim()) {
+      localStorage.setItem(REF_PENDING_KEY, referralCode.trim().toUpperCase());
     }
 
     toast({ title: "Account Created!", description: "Please check your email to verify your account, then log in." });
@@ -105,6 +120,20 @@ const CreateAccountPage = () => {
             />
           </div>
 
+          <div className="space-y-2">
+            <Label htmlFor="ref-code" className="text-primary-foreground text-base sm:text-lg">
+              Referral Code <span className="text-primary-foreground/50 text-sm">(optional — earn 5 Skoins)</span>
+            </Label>
+            <Input
+              id="ref-code"
+              type="text"
+              placeholder="Enter friend's code"
+              value={referralCode}
+              onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
+              className="h-10 sm:h-12 text-base sm:text-lg uppercase tracking-widest"
+              maxLength={12}
+            />
+          </div>
 
           <Button onClick={handleCreateAccount} className="w-full h-12 text-lg" variant="gradient" disabled={loading}>
             {loading ? "Creating..." : "Create Account"}
