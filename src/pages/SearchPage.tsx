@@ -14,6 +14,7 @@ import { useConnections, useBlockedUsers } from "@/hooks/useProfile";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useConversations } from "@/hooks/useMessages";
+import { getPresenceStatus, getPresenceDotClass } from "@/hooks/usePresence";
 
 
 interface SearchUser {
@@ -22,6 +23,7 @@ interface SearchUser {
   profilePhoto?: string;
   currentAirport?: string;
   destinationAirport?: string;
+  lastSeen?: string;
 }
 
 const SearchPage = () => {
@@ -51,7 +53,7 @@ const SearchPage = () => {
     queryFn: async (): Promise<SearchUser[]> => {
       const { data } = await supabase
         .from("profiles")
-        .select("id, name, profile_photo, current_airport, destination_airport")
+        .select("id, name, profile_photo, current_airport, destination_airport, last_seen")
         .not("name", "is", null)
         .neq("name", "")
         .limit(200);
@@ -61,6 +63,7 @@ const SearchPage = () => {
         profilePhoto: p.profile_photo || undefined,
         currentAirport: p.current_airport || undefined,
         destinationAirport: p.destination_airport || undefined,
+        lastSeen: (p as any).last_seen || undefined,
       }));
     },
     staleTime: 60_000,
@@ -176,7 +179,7 @@ const SearchPage = () => {
                           Unblock
                         </button>
                       ) : (
-                        <div className="w-3 h-3 rounded-full shrink-0 bg-green-500" />
+                        <div className={`w-3 h-3 rounded-full shrink-0 ${getPresenceDotClass(getPresenceStatus(u.lastSeen))}`} />
                       )}
                     </div>
                   );
