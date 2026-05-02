@@ -120,6 +120,20 @@ const CreateAccountPage = () => {
             />
           </div>
 
+          <div className="space-y-2">
+            <Label htmlFor="ref-code" className="text-primary-foreground text-base sm:text-lg">
+              Referral Code <span className="text-primary-foreground/50 text-sm">(optional — earn 5 Skoins)</span>
+            </Label>
+            <Input
+              id="ref-code"
+              type="text"
+              placeholder="Enter friend's code"
+              value={referralCode}
+              onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
+              className="h-10 sm:h-12 text-base sm:text-lg uppercase tracking-widest"
+              maxLength={12}
+            />
+          </div>
 
           <Button onClick={handleCreateAccount} className="w-full h-12 text-lg" variant="gradient" disabled={loading}>
             {loading ? "Creating..." : "Create Account"}
