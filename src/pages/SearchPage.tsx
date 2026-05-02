@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useQuery } from "@tanstack/react-query";
 import HeaderMinimal from "@/components/HeaderMinimal";
 import BottomNav from "@/components/BottomNav";
 import { Search, MapPin, ShieldOff, Plane, Navigation, Loader2 } from "lucide-react";
@@ -26,8 +27,6 @@ interface SearchUser {
 const SearchPage = () => {
   const [fromAirport, setFromAirport] = useState("All Airports");
   const [toAirport, setToAirport] = useState("All Airports");
-  const [dbUsers, setDbUsers] = useState<SearchUser[]>([]);
-  const [loadingUsers, setLoadingUsers] = useState(true);
   const navigate = useNavigate();
   const { user } = useAuth();
   const touchStartX = useRef(0);
@@ -46,31 +45,28 @@ const SearchPage = () => {
   const { blockedUserIds, unblockUser, isBlocked } = useBlockedUsers();
   const { conversations } = useConversations();
 
-  // Fetch real profiles from database
-  useEffect(() => {
-    const fetchUsers = async () => {
-      setLoadingUsers(true);
+  // Fetch real profiles from database (cached, stale-while-revalidate)
+  const { data: dbUsers = [], isLoading: loadingUsers } = useQuery({
+    queryKey: ["search-profiles"],
+    queryFn: async (): Promise<SearchUser[]> => {
       const { data } = await supabase
         .from("profiles")
         .select("id, name, profile_photo, current_airport, destination_airport")
         .not("name", "is", null)
-        .neq("name", "");
-
-      if (data) {
-        setDbUsers(
-          data.map((p) => ({
-            id: p.id,
-            name: p.name || "",
-            profilePhoto: p.profile_photo || undefined,
-            currentAirport: p.current_airport || undefined,
-            destinationAirport: p.destination_airport || undefined,
-          }))
-        );
-      }
-      setLoadingUsers(false);
-    };
-    fetchUsers();
-  }, []);
+        .neq("name", "")
+        .limit(200);
+      return (data || []).map((p) => ({
+        id: p.id,
+        name: p.name || "",
+        profilePhoto: p.profile_photo || undefined,
+        currentAirport: p.current_airport || undefined,
+        destinationAirport: p.destination_airport || undefined,
+      }));
+    },
+    staleTime: 60_000,
+    gcTime: 5 * 60_000,
+    refetchOnWindowFocus: false,
+  });
 
   // Extract airport code from stored value like "ATL - Atlanta"
   const getCode = (airport?: string) => airport?.split(" - ")[0] || null;
@@ -150,7 +146,7 @@ const SearchPage = () => {
                       className={`flex items-center gap-3 bg-card/80 backdrop-blur rounded-xl px-4 py-3 border border-border/50 transition-colors ${userBlocked ? "opacity-50" : "cursor-pointer hover:bg-card/95"}`}
                     >
                       <Avatar className="w-10 h-10 shrink-0">
-                        <AvatarImage src={u.profilePhoto} alt={u.name} />
+                        <AvatarImage src={u.profilePhoto} alt={u.name} loading="lazy" decoding="async" />
                         <AvatarFallback className="text-sm font-bold">{getInitials(u.name)}</AvatarFallback>
                       </Avatar>
                       <div className="flex-1 min-w-0">
