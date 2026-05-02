@@ -13,11 +13,13 @@ import ChatProfileModal from "@/components/ChatProfileModal";
 import { useMessages, useConversations } from "@/hooks/useMessages";
 import { userCache } from "@/data/messageStore";
 import { useAuth } from "@/contexts/AuthContext";
+import { getPresenceStatus, getPresenceDotClass } from "@/hooks/usePresence";
 
 interface DbUser {
   id: string;
   name: string;
   profilePhoto?: string;
+  lastSeen?: string;
 }
 
 const MessagesPage = () => {
