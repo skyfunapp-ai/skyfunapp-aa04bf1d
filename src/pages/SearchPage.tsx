@@ -27,8 +27,6 @@ interface SearchUser {
 const SearchPage = () => {
   const [fromAirport, setFromAirport] = useState("All Airports");
   const [toAirport, setToAirport] = useState("All Airports");
-  const [dbUsers, setDbUsers] = useState<SearchUser[]>([]);
-  const [loadingUsers, setLoadingUsers] = useState(true);
   const navigate = useNavigate();
   const { user } = useAuth();
   const touchStartX = useRef(0);
@@ -47,31 +45,28 @@ const SearchPage = () => {
   const { blockedUserIds, unblockUser, isBlocked } = useBlockedUsers();
   const { conversations } = useConversations();
 
-  // Fetch real profiles from database
-  useEffect(() => {
-    const fetchUsers = async () => {
-      setLoadingUsers(true);
+  // Fetch real profiles from database (cached, stale-while-revalidate)
+  const { data: dbUsers = [], isLoading: loadingUsers } = useQuery({
+    queryKey: ["search-profiles"],
+    queryFn: async (): Promise<SearchUser[]> => {
       const { data } = await supabase
         .from("profiles")
         .select("id, name, profile_photo, current_airport, destination_airport")
         .not("name", "is", null)
-        .neq("name", "");
-
-      if (data) {
-        setDbUsers(
-          data.map((p) => ({
-            id: p.id,
-            name: p.name || "",
-            profilePhoto: p.profile_photo || undefined,
-            currentAirport: p.current_airport || undefined,
-            destinationAirport: p.destination_airport || undefined,
-          }))
-        );
-      }
-      setLoadingUsers(false);
-    };
-    fetchUsers();
-  }, []);
+        .neq("name", "")
+        .limit(200);
+      return (data || []).map((p) => ({
+        id: p.id,
+        name: p.name || "",
+        profilePhoto: p.profile_photo || undefined,
+        currentAirport: p.current_airport || undefined,
+        destinationAirport: p.destination_airport || undefined,
+      }));
+    },
+    staleTime: 60_000,
+    gcTime: 5 * 60_000,
+    refetchOnWindowFocus: false,
+  });
 
   // Extract airport code from stored value like "ATL - Atlanta"
   const getCode = (airport?: string) => airport?.split(" - ")[0] || null;
