@@ -27,6 +27,22 @@ interface ChatProfileModalProps {
 const ChatProfileModal = ({ userId, onClose }: ChatProfileModalProps) => {
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+  const { isBlocked, blockUser, unblockUser } = useBlockedUsers();
+  const blocked = isBlocked(userId);
+
+  const toggleBlock = async () => {
+    if (!profile) return;
+    if (blocked) {
+      await unblockUser(userId);
+      toast({ title: `${profile.name} unblocked` });
+    } else {
+      await blockUser(userId);
+      toast({ title: `${profile.name} blocked` });
+      onClose();
+      setTimeout(() => navigate("/search", { replace: true }), 300);
+    }
+  };
 
   useEffect(() => {
     const fetch = async () => {
