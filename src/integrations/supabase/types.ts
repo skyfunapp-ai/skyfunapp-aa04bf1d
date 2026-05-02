@@ -95,7 +95,6 @@ export type Database = {
           hobbies: string[] | null
           id: string
           interested_in: string[] | null
-          last_seen: string
           name: string | null
           occupation: string | null
           profile_photo: string | null
@@ -110,7 +109,6 @@ export type Database = {
           hobbies?: string[] | null
           id: string
           interested_in?: string[] | null
-          last_seen?: string
           name?: string | null
           occupation?: string | null
           profile_photo?: string | null
@@ -125,7 +123,6 @@ export type Database = {
           hobbies?: string[] | null
           id?: string
           interested_in?: string[] | null
-          last_seen?: string
           name?: string | null
           occupation?: string | null
           profile_photo?: string | null

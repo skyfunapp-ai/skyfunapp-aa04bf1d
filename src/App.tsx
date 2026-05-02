@@ -6,7 +6,6 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { NotificationProvider } from "@/contexts/NotificationContext";
 import { AnimatePresence } from "framer-motion";
-import { usePresenceHeartbeat } from "@/hooks/usePresence";
 
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
@@ -30,7 +29,6 @@ const queryClient = new QueryClient();
 
 const AnimatedRoutes = () => {
   const location = useLocation();
-  usePresenceHeartbeat();
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
