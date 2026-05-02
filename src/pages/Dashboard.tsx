@@ -86,7 +86,12 @@ const Dashboard = () => {
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }} className="min-h-screen flex flex-col bg-background" onTouchStart={(e) => handleSwipe(e, "start")} onTouchEnd={(e) => handleSwipe(e, "end")}>
       <HeaderMinimal onEditClick={handleEditClick} showEdit={true} />
       
-      <main className="flex-1 flex flex-col items-center pt-20 sm:pt-24 pb-20">
+      <main className="flex-1 flex flex-col pt-20 sm:pt-24 pb-20">
+        <div className="w-full max-w-md mx-auto">
+          <ShareBanner />
+          <ReferralCard />
+        </div>
+        <div className="flex-1 flex flex-col items-center w-full">
         {isProfileEmpty ? (
           <div className="flex-1 flex flex-col items-center justify-center text-center px-4">
             <p className="text-xl text-primary-foreground/70 mb-4">Your profile is empty</p>
