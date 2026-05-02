@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
-import { X, MapPin, Loader2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { X, MapPin, Loader2, ShieldAlert, ShieldCheck } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
+import { useBlockedUsers } from "@/hooks/useProfile";
+import { toast } from "@/hooks/use-toast";
 
 interface ProfileData {
   name: string;
