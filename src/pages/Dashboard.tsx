@@ -166,6 +166,7 @@ const Dashboard = () => {
             </div>
           </div>
         )}
+        </div>
       </main>
       
       <BottomNav activePage="profile" />
