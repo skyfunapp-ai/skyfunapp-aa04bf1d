@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
-import { X, MapPin, Loader2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { X, MapPin, Loader2, ShieldAlert, ShieldCheck } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
+import { useBlockedUsers } from "@/hooks/useProfile";
+import { toast } from "@/hooks/use-toast";
 
 interface ProfileData {
   name: string;
@@ -22,6 +27,22 @@ interface ChatProfileModalProps {
 const ChatProfileModal = ({ userId, onClose }: ChatProfileModalProps) => {
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+  const { isBlocked, blockUser, unblockUser } = useBlockedUsers();
+  const blocked = isBlocked(userId);
+
+  const toggleBlock = async () => {
+    if (!profile) return;
+    if (blocked) {
+      await unblockUser(userId);
+      toast({ title: `${profile.name} unblocked` });
+    } else {
+      await blockUser(userId);
+      toast({ title: `${profile.name} blocked` });
+      onClose();
+      setTimeout(() => navigate("/search", { replace: true }), 300);
+    }
+  };
 
   useEffect(() => {
     const fetch = async () => {
@@ -120,6 +141,14 @@ const ChatProfileModal = ({ userId, onClose }: ChatProfileModalProps) => {
                 </div>
               </div>
             )}
+
+            <div className="flex items-center gap-3 mt-5 bg-muted/40 rounded-xl px-4 py-2.5 border border-border/50">
+              {blocked ? <ShieldAlert size={16} className="text-destructive" /> : <ShieldCheck size={16} className="text-green-500" />}
+              <Label htmlFor="chat-block-toggle" className="text-sm text-card-foreground cursor-pointer">
+                {blocked ? "Blocked" : "Block User"}
+              </Label>
+              <Switch id="chat-block-toggle" checked={blocked} onCheckedChange={toggleBlock} />
+            </div>
           </div>
         ) : (
           <p className="text-center text-muted-foreground py-8">Profile not found</p>
