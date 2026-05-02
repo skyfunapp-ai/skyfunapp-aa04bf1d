@@ -233,13 +233,14 @@ const MessagesPage = () => {
     const userBlocked = isBlocked(selectedUser.id);
 
     return (
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }} className="h-[100dvh] flex flex-col bg-background overflow-hidden">
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }} className="h-[100dvh] bg-background overflow-hidden">
         <HeaderMinimal />
 
         {showProfile && (
           <ChatProfileModal userId={selectedUser.id} onClose={() => setShowProfile(false)} />
         )}
 
+        {/* Steady top: user info bar */}
         <div className="fixed top-14 sm:top-16 left-0 right-0 z-30 bg-background border-b border-border/30 shadow-md px-4 py-2.5">
           <div className="flex items-center">
             <button onClick={() => navigate("/search")} className="text-primary-foreground/70 hover:text-primary-foreground transition-colors shrink-0 w-8">
@@ -272,9 +273,10 @@ const MessagesPage = () => {
           </div>
         </div>
 
-        <div className="flex-1 flex flex-col pt-28 sm:pt-32 pb-16 overflow-hidden relative">
-          <div className="flex-1 overflow-y-auto px-4 scroll-smooth" ref={scrollRef} onScroll={handleScroll}>
-            <div className="space-y-3 min-h-[200px]">
+        {/* Scrollable messages area between fixed top and fixed bottom */}
+        <div className="absolute left-0 right-0 top-28 sm:top-32 bottom-40 overflow-hidden">
+          <div className="h-full overflow-y-auto px-4 scroll-smooth" ref={scrollRef} onScroll={handleScroll}>
+            <div className="space-y-3 min-h-[200px] pb-2">
               {messagesLoading && (
                 <div className="flex justify-center py-8">
                   <Loader2 className="animate-spin text-muted-foreground" size={24} />
