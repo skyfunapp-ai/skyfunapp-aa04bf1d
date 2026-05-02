@@ -183,13 +183,14 @@ const MessagesPage = () => {
       if (allUserIds.length === 0) { setChatUsers([]); setLoadingUsers(false); return; }
       const { data } = await supabase
         .from("profiles")
-        .select("id, name, profile_photo")
+        .select("id, name, profile_photo, last_seen")
         .in("id", allUserIds);
       if (data) {
         const users = data.map((p) => ({
           id: p.id,
           name: p.name || "",
           profilePhoto: p.profile_photo || undefined,
+          lastSeen: (p as any).last_seen || undefined,
         }));
         users.forEach((u) => { userCache[u.id] = u; });
         setChatUsers(users);
@@ -473,7 +474,7 @@ const MessagesPage = () => {
                         {lastMsg ? (lastMsg.image ? (lastMsg.fromMe ? "You: 📷 Photo" : "📷 Photo") : lastMsg.fromMe ? `You: ${lastMsg.text}` : lastMsg.text) : "Tap to chat"}
                       </p>
                     </div>
-                    <div className="w-3 h-3 rounded-full shrink-0 bg-green-500" />
+                    <div className={`w-3 h-3 rounded-full shrink-0 ${getPresenceDotClass(getPresenceStatus(u.lastSeen))}`} />
                   </div>
                 );
               })}
