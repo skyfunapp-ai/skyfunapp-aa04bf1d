@@ -20,8 +20,42 @@ const REF_PENDING_KEY = "skyfun_pending_ref_code";
 const Dashboard = () => {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const { profile, loading, updateProfile } = useProfile();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const touchStartX = useRef(0);
+
+  // Welcome-back toast (max once per WELCOME_HOURS)
+  useEffect(() => {
+    if (!user) return;
+    const last = Number(localStorage.getItem(WELCOME_KEY) || 0);
+    const hours = (Date.now() - last) / (1000 * 60 * 60);
+    if (hours >= WELCOME_HOURS) {
+      localStorage.setItem(WELCOME_KEY, String(Date.now()));
+      setTimeout(() => {
+        toast({
+          title: "Welcome back ✈️",
+          description: "Share SkyFunApp with a friend and earn 5 Skoins each!",
+        });
+      }, 600);
+    }
+  }, [user]);
+
+  // Redeem pending referral code after sign-in
+  useEffect(() => {
+    if (!user) return;
+    const pending = sessionStorage.getItem(REF_PENDING_KEY) || localStorage.getItem(REF_PENDING_KEY);
+    if (!pending) return;
+    sessionStorage.removeItem(REF_PENDING_KEY);
+    localStorage.removeItem(REF_PENDING_KEY);
+    (async () => {
+      const { data, error } = await supabase.rpc("redeem_referral", { p_code: pending });
+      if (error) return;
+      const result = data as { success?: boolean; error?: string; reward?: number };
+      if (result?.success) {
+        toast({ title: "Referral applied! 🎉", description: `You earned ${result.reward} Skoins.` });
+      }
+    })();
+  }, [user]);
 
   const handleSwipe = (e: React.TouchEvent, type: "start" | "end") => {
     if (type === "start") { touchStartX.current = e.touches[0].clientX; return; }
