@@ -33,11 +33,21 @@ export const useProfile = () => {
     queryKey: ["profile", user?.id],
     queryFn: async () => {
       if (!user) return defaultProfile;
-      const { data } = await supabase
+      let { data } = await supabase
         .from("profiles")
         .select("*")
         .eq("id", user.id)
-        .single();
+        .maybeSingle();
+
+      // Ensure a profile row exists for this user (fallback if trigger missed)
+      if (!data) {
+        const { data: inserted } = await supabase
+          .from("profiles")
+          .insert({ id: user.id })
+          .select("*")
+          .maybeSingle();
+        data = inserted;
+      }
 
       if (data) {
         return {
