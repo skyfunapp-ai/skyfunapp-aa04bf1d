@@ -26,11 +26,27 @@ const EditProfileModal = ({ open, onOpenChange, profileData, onSave }: EditProfi
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { user } = useAuth();
 
+  const isInitialLoad = useRef(true);
+
   useEffect(() => {
     if (open) {
       setFormData(profileData);
+      isInitialLoad.current = true;
     }
   }, [open, profileData]);
+
+  // Autosave: debounce changes and persist automatically
+  useEffect(() => {
+    if (!open) return;
+    if (isInitialLoad.current) {
+      isInitialLoad.current = false;
+      return;
+    }
+    const timer = setTimeout(() => {
+      onSave(formData);
+    }, 600);
+    return () => clearTimeout(timer);
+  }, [formData, open, onSave]);
 
   const handleSave = () => {
     onSave(formData);
