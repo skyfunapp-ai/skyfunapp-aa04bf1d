@@ -67,6 +67,8 @@ const Dashboard = () => {
     const result = await updateProfile(data);
     if (result?.error) {
       toast({ title: "Error saving profile", description: result.error, variant: "destructive" });
+    } else {
+      toast({ title: "Profile saved successfully" });
     }
   };
 
