@@ -33,11 +33,21 @@ export const useProfile = () => {
     queryKey: ["profile", user?.id],
     queryFn: async () => {
       if (!user) return defaultProfile;
-      const { data } = await supabase
+      let { data } = await supabase
         .from("profiles")
         .select("*")
         .eq("id", user.id)
-        .single();
+        .maybeSingle();
+
+      // Ensure a profile row exists for this user (fallback if trigger missed)
+      if (!data) {
+        const { data: inserted } = await supabase
+          .from("profiles")
+          .insert({ id: user.id })
+          .select("*")
+          .maybeSingle();
+        data = inserted;
+      }
 
       if (data) {
         return {
@@ -72,7 +82,7 @@ export const useProfile = () => {
     if (data.destinationAirport !== undefined) dbData.destination_airport = data.destinationAirport;
     dbData.updated_at = new Date().toISOString();
 
-    const { error } = await supabase.from("profiles").update(dbData).eq("id", user.id);
+    const { error } = await supabase.from("profiles").upsert({ id: user.id, ...dbData }, { onConflict: "id" });
     if (error) return { error: error.message };
     queryClient.setQueryData(["profile", user.id], (prev: ProfileData) => ({ ...prev, ...data }));
     return { error: null };
