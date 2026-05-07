@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">skyfunapp</string>
+    <string name="title_activity_main">skyfunapp</string>
+    <string name="package_name">app.lovable.d793674b885d4f798c21aab29d83f935</string>
+    <string name="custom_url_scheme">app.lovable.d793674b885d4f798c21aab29d83f935</string>
+</resources>
