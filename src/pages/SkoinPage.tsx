@@ -12,7 +12,7 @@ import { useIAP, IAPPackage } from "@/hooks/useIAP";
 const SkoinPage = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { profile, loading } = useProfile();
+  const { profile, loading, refetchProfile } = useProfile();
   const { toast } = useToast();
   const [purchasing, setPurchasing] = useState<string | null>(null);
   const [restoring, setRestoring] = useState(false);
@@ -29,7 +29,8 @@ const SkoinPage = () => {
     setPurchasing(pkg.identifier);
     try {
       await purchase(pkg);
-      toast({ title: "Purchase successful", description: "Your Skoin balance will update shortly." });
+      await refetchProfile();
+      toast({ title: "Purchase successful", description: "Your Skoin balance has been updated." });
     } catch (err: any) {
       if (err?.userCancelled) return;
       toast({ title: "Purchase Error", description: err?.message || "Could not complete purchase", variant: "destructive" });
@@ -42,7 +43,8 @@ const SkoinPage = () => {
     setRestoring(true);
     try {
       await restore();
-      toast({ title: "Purchases restored", description: "Any previous purchases tied to your account have been restored." });
+      await refetchProfile();
+      toast({ title: "Purchases restored", description: "Any previous purchases tied to your account have been restored and your balance refreshed." });
     } catch (err: any) {
       toast({ title: "Restore Error", description: err?.message || "Could not restore purchases", variant: "destructive" });
     } finally {
