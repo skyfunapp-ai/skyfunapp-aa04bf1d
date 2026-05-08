@@ -12,7 +12,7 @@ import { useIAP, IAPPackage } from "@/hooks/useIAP";
 const SkoinPage = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { profile, loading } = useProfile();
+  const { profile, loading, refetchProfile } = useProfile();
   const { toast } = useToast();
   const [purchasing, setPurchasing] = useState<string | null>(null);
   const [restoring, setRestoring] = useState(false);
