@@ -29,7 +29,8 @@ const SkoinPage = () => {
     setPurchasing(pkg.identifier);
     try {
       await purchase(pkg);
-      toast({ title: "Purchase successful", description: "Your Skoin balance will update shortly." });
+      await refetchProfile();
+      toast({ title: "Purchase successful", description: "Your Skoin balance has been updated." });
     } catch (err: any) {
       if (err?.userCancelled) return;
       toast({ title: "Purchase Error", description: err?.message || "Could not complete purchase", variant: "destructive" });
