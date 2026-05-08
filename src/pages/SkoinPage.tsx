@@ -1,51 +1,52 @@
 import HeaderMinimal from "@/components/HeaderMinimal";
 import BottomNav from "@/components/BottomNav";
-import { Coins } from "lucide-react";
+import { Coins, RefreshCw } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useProfile } from "@/hooks/useProfile";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
+import { useIAP, IAPPackage } from "@/hooks/useIAP";
 
 const SkoinPage = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { profile, loading } = useProfile();
   const { toast } = useToast();
-  const [purchasing, setPurchasing] = useState<number | null>(null);
+  const [purchasing, setPurchasing] = useState<string | null>(null);
+  const [restoring, setRestoring] = useState(false);
+  const { isNative, ready, packages, error: iapError, purchase, restore } = useIAP();
 
-  const coinOptions = [
-    { coins: 1, price: ".99", label: "1 Gold Coin", badge: null },
-    { coins: 12, price: "9.99", label: "12 Gold Coins", badge: "12" },
-    { coins: 25, price: "19.99", label: "25 Gold Coins", badge: "25" },
+  // Fallback display tiers (used on web, or before RevenueCat offerings load)
+  const fallbackOptions = [
+    { id: "skoin_1", coins: 1, price: ".99", label: "1 Gold Coin", badge: null },
+    { id: "skoin_12", coins: 12, price: "9.99", label: "12 Gold Coins", badge: "12" },
+    { id: "skoin_25", coins: 25, price: "19.99", label: "25 Gold Coins", badge: "25" },
   ];
 
-  const handlePurchase = async (coins: number) => {
-    setPurchasing(coins);
+  const handleNativePurchase = async (pkg: IAPPackage) => {
+    setPurchasing(pkg.identifier);
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      const { data, error } = await supabase.functions.invoke("create-skoin-checkout", {
-        headers: { Authorization: `Bearer ${session?.access_token}` },
-        body: { coins },
-      });
-      if (error) throw error;
-      if (data?.url) {
-        window.location.href = data.url;
-      }
+      await purchase(pkg);
+      toast({ title: "Purchase successful", description: "Your Skoin balance will update shortly." });
     } catch (err: any) {
-      const msg = err.message?.toLowerCase() || "";
-      const isAuthError = !user || msg.includes("not authenticated") || msg.includes("authorization") || msg.includes("non-2xx");
-      toast({ 
-        title: "Payment Error", 
-        description: isAuthError 
-          ? "Please Log In to Purchase Skoin" 
-          : (err.message || "Could not start checkout"), 
-        variant: "destructive" 
-      });
+      if (err?.userCancelled) return;
+      toast({ title: "Purchase Error", description: err?.message || "Could not complete purchase", variant: "destructive" });
     } finally {
       setPurchasing(null);
+    }
+  };
+
+  const handleRestore = async () => {
+    setRestoring(true);
+    try {
+      await restore();
+      toast({ title: "Purchases restored", description: "Any previous purchases tied to your account have been restored." });
+    } catch (err: any) {
+      toast({ title: "Restore Error", description: err?.message || "Could not restore purchases", variant: "destructive" });
+    } finally {
+      setRestoring(false);
     }
   };
 
@@ -72,29 +73,67 @@ const SkoinPage = () => {
           </div>
         )}
 
+        {!isNative && user && (
+          <div className="mb-8 w-full max-w-xs text-center text-sm text-muted-foreground bg-card/60 border border-border/50 rounded-2xl px-4 py-3">
+            Skoin can only be purchased inside the SkyFunApp iOS or Android app. Download the app to top up your balance.
+          </div>
+        )}
+
         <div className="space-y-8 w-full max-w-xs">
-          {coinOptions.map((option) => (
-            <button
-              key={option.coins}
-              onClick={() => handlePurchase(option.coins)}
-              disabled={purchasing !== null}
-              className="w-full flex items-center justify-between bg-card/80 backdrop-blur rounded-2xl px-6 py-5 border border-border/50 hover:bg-card/95 transition-colors cursor-pointer disabled:opacity-50"
-            >
-              <div className="flex items-center gap-3">
-                <div className="relative">
+          {isNative && ready && packages.length > 0 ? (
+            packages.map((pkg) => (
+              <button
+                key={pkg.identifier}
+                onClick={() => handleNativePurchase(pkg)}
+                disabled={purchasing !== null}
+                className="w-full flex items-center justify-between bg-card/80 backdrop-blur rounded-2xl px-6 py-5 border border-border/50 hover:bg-card/95 transition-colors cursor-pointer disabled:opacity-50"
+              >
+                <div className="flex items-center gap-3">
                   <Coins size={36} className="text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.5)]" />
-                  {option.badge && (
-                    <span className="absolute -top-1 -right-2 bg-accent text-accent-foreground text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">{option.badge}</span>
-                  )}
+                  <span className="text-lg font-semibold text-card-foreground">{pkg.product.title || pkg.identifier}</span>
                 </div>
-                <span className="text-lg font-semibold text-card-foreground">{option.label}</span>
+                <span className="text-xl font-bold text-primary-foreground">
+                  {purchasing === pkg.identifier ? "..." : pkg.priceString}
+                </span>
+              </button>
+            ))
+          ) : (
+            fallbackOptions.map((option) => (
+              <div
+                key={option.id}
+                className="w-full flex items-center justify-between bg-card/80 backdrop-blur rounded-2xl px-6 py-5 border border-border/50 opacity-70"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="relative">
+                    <Coins size={36} className="text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.5)]" />
+                    {option.badge && (
+                      <span className="absolute -top-1 -right-2 bg-accent text-accent-foreground text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">{option.badge}</span>
+                    )}
+                  </div>
+                  <span className="text-lg font-semibold text-card-foreground">{option.label}</span>
+                </div>
+                <span className="text-xl font-bold text-primary-foreground">${option.price}</span>
               </div>
-              <span className="text-xl font-bold text-primary-foreground">
-                {purchasing === option.coins ? "..." : `$${option.price}`}
-              </span>
-            </button>
-          ))}
+            ))
+          )}
         </div>
+
+        {isNative && user && (
+          <div className="mt-8 w-full max-w-xs flex flex-col items-center gap-2">
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={handleRestore}
+              disabled={restoring}
+            >
+              <RefreshCw className={`mr-2 h-4 w-4 ${restoring ? "animate-spin" : ""}`} />
+              {restoring ? "Restoring..." : "Restore Purchases"}
+            </Button>
+            {iapError && (
+              <p className="text-xs text-destructive text-center">{iapError}</p>
+            )}
+          </div>
+        )}
       </main>
 
       <BottomNav activePage="profile" />
