@@ -43,7 +43,8 @@ const SkoinPage = () => {
     setRestoring(true);
     try {
       await restore();
-      toast({ title: "Purchases restored", description: "Any previous purchases tied to your account have been restored." });
+      await refetchProfile();
+      toast({ title: "Purchases restored", description: "Any previous purchases tied to your account have been restored and your balance refreshed." });
     } catch (err: any) {
       toast({ title: "Restore Error", description: err?.message || "Could not restore purchases", variant: "destructive" });
     } finally {
