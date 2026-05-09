@@ -1,6 +1,7 @@
 import HeaderMinimal from "@/components/HeaderMinimal";
 import BottomNav from "@/components/BottomNav";
 import { FileText } from "lucide-react";
+import DeleteAccountButton from "@/components/DeleteAccountButton";
 
 const PrivacyPage = () => {
   return (
@@ -34,6 +35,13 @@ const PrivacyPage = () => {
           <div className="bg-card/80 backdrop-blur rounded-xl p-4 border border-border/50">
             <h3 className="font-semibold text-card-foreground mb-2">Policy Updates</h3>
             <p className="text-muted-foreground text-sm">SkyFunApp reserves the right to update this privacy policy at any time. Users will be notified of significant changes through the app.</p>
+          </div>
+          <div className="bg-card/80 backdrop-blur rounded-xl p-4 border border-destructive/40 mt-2">
+            <h3 className="font-semibold text-destructive mb-2">Delete Your Account</h3>
+            <p className="text-muted-foreground text-sm mb-4">
+              Permanently remove your account and all associated data. This action cannot be undone.
+            </p>
+            <DeleteAccountButton />
           </div>
         </div>
       </main>
