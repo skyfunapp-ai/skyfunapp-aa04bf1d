@@ -47,5 +47,15 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
+	<!-- App Store: declare we don't use non-exempt encryption (skips yearly export compliance prompt) -->
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+	<!-- Privacy strings: required if/when these features are added; safe to keep as placeholders -->
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>SkyFunApp needs access to your photo library so you can choose a profile picture.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>SkyFunApp needs camera access so you can take a profile picture.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>SkyFunApp uses your location to show people near your current airport.</string>
 </dict>
 </plist>
