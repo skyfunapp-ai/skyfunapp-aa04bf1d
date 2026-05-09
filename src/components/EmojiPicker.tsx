@@ -77,13 +77,9 @@ const CATEGORIES: Category[] = [
 ];
 
 // Pre-compute rows: each category produces a header row + N emoji rows
-interface Row {
-  type: "header";
-  label: string;
-} | {
-  type: "emojis";
-  items: string[];
-}
+type Row =
+  | { type: "header"; label: string }
+  | { type: "emojis"; items: string[] };
 
 function buildRows(categories: Category[], cols: number): Row[] {
   const rows: Row[] = [];
