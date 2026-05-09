@@ -7,7 +7,6 @@ import BottomNav from "@/components/BottomNav";
 import EditProfileModal from "@/components/EditProfileModal";
 import ShareBanner from "@/components/ShareBanner";
 import ReferralCard from "@/components/ReferralCard";
-import DeleteAccountButton from "@/components/DeleteAccountButton";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useProfile, type ProfileData } from "@/hooks/useProfile";
 import { useAuth } from "@/contexts/AuthContext";
