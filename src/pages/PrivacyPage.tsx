@@ -1,6 +1,7 @@
 import HeaderMinimal from "@/components/HeaderMinimal";
 import BottomNav from "@/components/BottomNav";
 import { FileText } from "lucide-react";
+import DeleteAccountButton from "@/components/DeleteAccountButton";
 
 const PrivacyPage = () => {
   return (
