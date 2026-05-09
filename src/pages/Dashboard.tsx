@@ -164,9 +164,6 @@ const Dashboard = () => {
             </div>
           </div>
         )}
-        <div className="mt-10 mb-4 flex justify-center">
-          <DeleteAccountButton />
-        </div>
         </div>
       </main>
       
