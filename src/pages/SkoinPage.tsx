@@ -77,7 +77,7 @@ const SkoinPage = () => {
 
         {!isNative && user && (
           <div className="mb-8 w-full max-w-xs text-center text-sm text-muted-foreground bg-card/60 border border-border/50 rounded-2xl px-4 py-3">
-            Skoin can only be purchased inside the SkyFunApp iOS or Android app. Download the app to top up your balance.
+            For a limited time, enjoy your new travel SkyFunApp friends on us.
           </div>
         )}
 
