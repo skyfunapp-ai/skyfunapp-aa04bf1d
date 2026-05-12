@@ -131,6 +131,15 @@ Deno.serve(async (req) => {
       });
     }
 
+    // Honor user notification preferences
+    const { data: prefs } = await supabase
+      .from("notification_preferences")
+      .select("push_enabled,email_enabled")
+      .eq("user_id", receiverId)
+      .maybeSingle();
+    const pushEnabled = prefs?.push_enabled ?? true;
+    const emailEnabled = prefs?.email_enabled ?? true;
+
     const preview = messageText
       ? (messageText.length > 120 ? messageText.slice(0, 120) + "…" : messageText)
       : "📷 Photo";
@@ -141,7 +150,7 @@ Deno.serve(async (req) => {
     let pushResults: any[] = [];
     let tokenCount = 0;
 
-    if (fcmJson) {
+    if (fcmJson && pushEnabled) {
       const { data: tokens } = await supabase
         .from("device_tokens")
         .select("token, platform")
@@ -175,7 +184,7 @@ Deno.serve(async (req) => {
 
     // ---------- Email fallback ----------
     const { data: userData } = await supabase.auth.admin.getUserById(receiverId);
-    const email = userData?.user?.email;
+    const email = emailEnabled ? userData?.user?.email : null;
 
     let emailSent = false;
     if (email) {
