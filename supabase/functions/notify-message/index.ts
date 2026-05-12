@@ -150,7 +150,7 @@ Deno.serve(async (req) => {
     let pushResults: any[] = [];
     let tokenCount = 0;
 
-    if (fcmJson) {
+    if (fcmJson && pushEnabled) {
       const { data: tokens } = await supabase
         .from("device_tokens")
         .select("token, platform")
@@ -184,7 +184,7 @@ Deno.serve(async (req) => {
 
     // ---------- Email fallback ----------
     const { data: userData } = await supabase.auth.admin.getUserById(receiverId);
-    const email = userData?.user?.email;
+    const email = emailEnabled ? userData?.user?.email : null;
 
     let emailSent = false;
     if (email) {
