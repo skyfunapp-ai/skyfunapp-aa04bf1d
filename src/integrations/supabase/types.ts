@@ -113,6 +113,36 @@ export type Database = {
         }
         Relationships: []
       }
+      notification_preferences: {
+        Row: {
+          consent_at: string | null
+          created_at: string
+          email_enabled: boolean
+          marketing_emails: boolean
+          push_enabled: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          consent_at?: string | null
+          created_at?: string
+          email_enabled?: boolean
+          marketing_emails?: boolean
+          push_enabled?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          consent_at?: string | null
+          created_at?: string
+          email_enabled?: boolean
+          marketing_emails?: boolean
+          push_enabled?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
