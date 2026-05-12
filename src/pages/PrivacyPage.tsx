@@ -1,6 +1,7 @@
+import { Link } from "react-router-dom";
 import HeaderMinimal from "@/components/HeaderMinimal";
 import BottomNav from "@/components/BottomNav";
-import { FileText } from "lucide-react";
+import { FileText, Bell, ChevronRight } from "lucide-react";
 import DeleteAccountButton from "@/components/DeleteAccountButton";
 
 const PrivacyPage = () => {
@@ -12,6 +13,19 @@ const PrivacyPage = () => {
           <FileText size={28} /> Privacy & Policy
         </h1>
         <div className="max-w-md space-y-4 w-full">
+          <Link
+            to="/notifications"
+            className="bg-card/80 backdrop-blur rounded-xl p-4 border border-border/50 flex items-center justify-between hover:bg-card transition-colors"
+          >
+            <div className="flex items-center gap-3">
+              <Bell size={20} className="text-primary-foreground" />
+              <div>
+                <h3 className="font-semibold text-card-foreground">Notification Preferences</h3>
+                <p className="text-muted-foreground text-sm">Manage push & email notifications</p>
+              </div>
+            </div>
+            <ChevronRight size={20} className="text-muted-foreground" />
+          </Link>
           <div className="bg-card/80 backdrop-blur rounded-xl p-4 border border-border/50">
             <h3 className="font-semibold text-card-foreground mb-2">Data Collection</h3>
             <p className="text-muted-foreground text-sm">SkyFunApp collects only the information you provide, including your profile details, current location, and destination. We do not collect data without your knowledge or consent.</p>
