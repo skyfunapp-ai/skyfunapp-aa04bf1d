@@ -37,6 +37,8 @@ export const useNotifications = () => useContext(NotificationContext);
 export const NotificationProvider = ({ children }: { children: ReactNode }) => {
   const { user } = useAuth();
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  usePresence();
+  usePushNotifications();
 
   const navigate = useNavigate();
 
