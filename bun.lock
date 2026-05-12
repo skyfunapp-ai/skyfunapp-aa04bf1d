@@ -8,6 +8,7 @@
         "@capacitor/android": "^8.3.2",
         "@capacitor/core": "^8.3.2",
         "@capacitor/ios": "^8.3.2",
+        "@capacitor/push-notifications": "^8.0.4",
         "@hookform/resolvers": "^3.10.0",
         "@radix-ui/react-accordion": "^1.2.11",
         "@radix-ui/react-alert-dialog": "^1.1.14",
@@ -97,6 +98,8 @@
     "@capacitor/core": ["@capacitor/core@8.3.2", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@capacitor/core/-/core-8.3.2.tgz", { "dependencies": { "tslib": "^2.1.0" } }, "sha512-6Y0ksciqhkH4Bm2K5RxSFnuyRkeX3+vy+aLprRR5gzJnv85YYd52eIH4hjVhFAv/mFbPz5E4256yZ5ti0dh7Uw=="],
 
     "@capacitor/ios": ["@capacitor/ios@8.3.2", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@capacitor/ios/-/ios-8.3.2.tgz", { "peerDependencies": { "@capacitor/core": "^8.3.0" } }, "sha512-YyA7kSFH4M0wPa3236OSBbnz/KwF5//nm5VHzAfBotPZlZD7D60KDyYjZPrmWkvbSpI/x9l0xxtSKKTr4hd3rA=="],
+
+    "@capacitor/push-notifications": ["@capacitor/push-notifications@8.0.4", "https://europe-west4-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@capacitor/push-notifications/-/push-notifications-8.0.4.tgz", { "peerDependencies": { "@capacitor/core": ">=8.0.0" } }, "sha512-14ZWKik9ExTu65AZ9+o7+k05uEOaTstuYv6lLq1Bobip+SC5AOwciSICYLALgTTKN2jEDTRoigFAEixmVEJp/w=="],
 
     "@esbuild/aix-ppc64": ["@esbuild/aix-ppc64@0.25.0", "", { "os": "aix", "cpu": "ppc64" }, "sha512-O7vun9Sf8DFjH2UtqK8Ku3LkquL9SZL8OLY1T5NZkA34+wG3OQF7cl4Ql8vdNzM6fzBbYfLaiRLIOZ+2FOCgBQ=="],
 
