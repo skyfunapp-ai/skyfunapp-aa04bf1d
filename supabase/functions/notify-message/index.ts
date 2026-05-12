@@ -131,6 +131,15 @@ Deno.serve(async (req) => {
       });
     }
 
+    // Honor user notification preferences
+    const { data: prefs } = await supabase
+      .from("notification_preferences")
+      .select("push_enabled,email_enabled")
+      .eq("user_id", receiverId)
+      .maybeSingle();
+    const pushEnabled = prefs?.push_enabled ?? true;
+    const emailEnabled = prefs?.email_enabled ?? true;
+
     const preview = messageText
       ? (messageText.length > 120 ? messageText.slice(0, 120) + "…" : messageText)
       : "📷 Photo";
