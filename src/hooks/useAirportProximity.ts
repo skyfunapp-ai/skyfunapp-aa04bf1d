@@ -34,11 +34,13 @@ export function useAirportProximity(): ProximityState {
   });
 
   useEffect(() => {
+    // Fail open when geolocation is unavailable so the app remains usable
+    // (e.g. iPad without GPS, denied permission, App Store reviewers).
     if (!navigator.geolocation) {
       setState({
-        isNearAirport: false,
+        isNearAirport: true,
         loading: false,
-        error: "Geolocation is not supported by your browser.",
+        error: null,
         nearestAirport: null,
         distanceMiles: null,
       });
@@ -67,14 +69,13 @@ export function useAirportProximity(): ProximityState {
           distanceMiles: Math.round(minDist * 10) / 10,
         });
       },
-      (err) => {
+      () => {
+        // Permission denied / timeout / unavailable: allow access instead
+        // of locking the user out of every screen.
         setState({
-          isNearAirport: false,
+          isNearAirport: true,
           loading: false,
-          error:
-            err.code === 1
-              ? "Location access denied. Please enable location services to use this app."
-              : "Unable to determine your location. Please try again.",
+          error: null,
           nearestAirport: null,
           distanceMiles: null,
         });
