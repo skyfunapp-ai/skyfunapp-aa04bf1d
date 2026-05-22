@@ -12,7 +12,7 @@ const AboutPage = () => {
         </h1>
         <div className="max-w-md text-center space-y-4">
           <p className="text-primary-foreground/80">
-            SkyFunApp is your ultimate travel companion — connecting travelers worldwide, helping you find flights, and making every journey an adventure.
+            SkyFunApp is your ultimate travel companion — connecting travelers worldwide and making every journey an adventure.
           </p>
           <p className="text-primary-foreground/80">
             Meet fellow travelers, share experiences, and explore the world together.
