@@ -263,6 +263,7 @@ export type Database = {
     }
     Functions: {
       generate_referral_code: { Args: never; Returns: string }
+      get_my_skoin_balance: { Args: never; Returns: number }
       get_or_create_referral_code: { Args: never; Returns: string }
       redeem_referral: { Args: { p_code: string }; Returns: Json }
     }

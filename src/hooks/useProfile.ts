@@ -33,9 +33,10 @@ export const useProfile = () => {
     queryKey: ["profile", user?.id],
     queryFn: async () => {
       if (!user) return defaultProfile;
+      const cols = "id,name,occupation,hobbies,interested_in,favorite_food,profile_photo,current_airport,destination_airport";
       let { data } = await supabase
         .from("profiles")
-        .select("*")
+        .select(cols)
         .eq("id", user.id)
         .maybeSingle();
 
@@ -44,10 +45,13 @@ export const useProfile = () => {
         const { data: inserted } = await supabase
           .from("profiles")
           .insert({ id: user.id })
-          .select("*")
+          .select(cols)
           .maybeSingle();
         data = inserted;
       }
+
+      // Owner-only RPC for skoin balance (column is not readable directly)
+      const { data: balance } = await supabase.rpc("get_my_skoin_balance");
 
       if (data) {
         return {
@@ -59,7 +63,7 @@ export const useProfile = () => {
           profilePhoto: data.profile_photo || undefined,
           currentAirport: data.current_airport || undefined,
           destinationAirport: data.destination_airport || undefined,
-          skoinBalance: data.skoin_balance,
+          skoinBalance: typeof balance === "number" ? balance : 5,
         } as ProfileData;
       }
       return defaultProfile;
@@ -105,16 +109,15 @@ export const useProfile = () => {
       .on(
         "postgres_changes",
         { event: "UPDATE", schema: "public", table: "profiles", filter: `id=eq.${user.id}` },
-        (payload: RealtimePostgresChangesPayload<{ [key: string]: unknown }>) => {
+        async (payload: RealtimePostgresChangesPayload<{ [key: string]: unknown }>) => {
           const newRow = payload.new as Record<string, unknown>;
-          if (newRow) {
-            queryClient.setQueryData(["profile", user.id], (prev: ProfileData) => ({
-              ...prev,
-              skoinBalance: newRow.skoin_balance as number,
-              name: (newRow.name as string) || prev?.name || "",
-              occupation: (newRow.occupation as string) || prev?.occupation || "",
-            }));
-          }
+          const { data: balance } = await supabase.rpc("get_my_skoin_balance");
+          queryClient.setQueryData(["profile", user.id], (prev: ProfileData) => ({
+            ...prev,
+            skoinBalance: typeof balance === "number" ? balance : prev?.skoinBalance,
+            name: (newRow?.name as string) || prev?.name || "",
+            occupation: (newRow?.occupation as string) || prev?.occupation || "",
+          }));
         }
       )
       .subscribe();
