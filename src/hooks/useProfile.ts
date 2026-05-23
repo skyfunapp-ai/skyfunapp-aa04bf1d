@@ -109,16 +109,15 @@ export const useProfile = () => {
       .on(
         "postgres_changes",
         { event: "UPDATE", schema: "public", table: "profiles", filter: `id=eq.${user.id}` },
-        (payload: RealtimePostgresChangesPayload<{ [key: string]: unknown }>) => {
+        async (payload: RealtimePostgresChangesPayload<{ [key: string]: unknown }>) => {
           const newRow = payload.new as Record<string, unknown>;
-          if (newRow) {
-            queryClient.setQueryData(["profile", user.id], (prev: ProfileData) => ({
-              ...prev,
-              skoinBalance: newRow.skoin_balance as number,
-              name: (newRow.name as string) || prev?.name || "",
-              occupation: (newRow.occupation as string) || prev?.occupation || "",
-            }));
-          }
+          const { data: balance } = await supabase.rpc("get_my_skoin_balance");
+          queryClient.setQueryData(["profile", user.id], (prev: ProfileData) => ({
+            ...prev,
+            skoinBalance: typeof balance === "number" ? balance : prev?.skoinBalance,
+            name: (newRow?.name as string) || prev?.name || "",
+            occupation: (newRow?.occupation as string) || prev?.occupation || "",
+          }));
         }
       )
       .subscribe();
