@@ -94,26 +94,29 @@ serve(async (req) => {
       throw new Error(insertError.message);
     }
 
-    const { data: profile, error: profileError } = await admin
-      .from("profiles")
-      .select("skoin_balance")
-      .eq("id", userId)
-      .single();
-    if (profileError || !profile) throw new Error("profile not found");
+    const { data: bal } = await admin
+      .from("skoin_balances")
+      .select("balance")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    const currentBalance = bal?.balance ?? 0;
+    const newBalance = currentBalance + coins;
 
     const { error: updateError } = await admin
-      .from("profiles")
-      .update({
-        skoin_balance: profile.skoin_balance + coins,
+      .from("skoin_balances")
+      .upsert({
+        user_id: userId,
+        balance: newBalance,
         updated_at: new Date().toISOString(),
-      })
-      .eq("id", userId);
+      }, { onConflict: "user_id" });
     if (updateError) throw new Error(updateError.message);
 
     return new Response(
-      JSON.stringify({ ok: true, credited: coins, newBalance: profile.skoin_balance + coins }),
+      JSON.stringify({ ok: true, credited: coins, newBalance }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
+
   } catch (err: any) {
     return new Response(JSON.stringify({ error: err?.message || "unknown" }), {
       status: 500,
