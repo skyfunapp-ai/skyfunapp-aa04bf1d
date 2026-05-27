@@ -49,47 +49,43 @@ serve(async (req) => {
     const isUnlimitedUser = user.email === "skyfunapp@gmail.com";
 
     if (!isUnlimitedUser) {
-      // Check balance
-      const { data: profile } = await supabaseAdmin
-        .from("profiles")
-        .select("skoin_balance")
-        .eq("id", user.id)
-        .single();
+      const { data: bal } = await supabaseAdmin
+        .from("skoin_balances")
+        .select("balance")
+        .eq("user_id", user.id)
+        .maybeSingle();
 
-      if (!profile || profile.skoin_balance < 1) {
+      if (!bal || bal.balance < 1) {
         return new Response(
           JSON.stringify({ error: "Insufficient Skoin balance" }),
           { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 400 }
         );
       }
 
-      // Deduct 1 Skoin
       const { error: updateError } = await supabaseAdmin
-        .from("profiles")
-        .update({ skoin_balance: profile.skoin_balance - 1, updated_at: new Date().toISOString() })
-        .eq("id", user.id);
+        .from("skoin_balances")
+        .update({ balance: bal.balance - 1, updated_at: new Date().toISOString() })
+        .eq("user_id", user.id);
 
       if (updateError) throw new Error("Could not deduct Skoin");
     }
 
-    // Create connection
     const { error: connError } = await supabaseAdmin
       .from("connections")
       .insert({ user_id: user.id, connected_user_id });
 
     if (connError) {
       if (!isUnlimitedUser) {
-        // Rollback balance if connection insert fails
-        const { data: currentProfile } = await supabaseAdmin
-          .from("profiles")
-          .select("skoin_balance")
-          .eq("id", user.id)
+        const { data: currentBal } = await supabaseAdmin
+          .from("skoin_balances")
+          .select("balance")
+          .eq("user_id", user.id)
           .single();
-        if (currentProfile) {
+        if (currentBal) {
           await supabaseAdmin
-            .from("profiles")
-            .update({ skoin_balance: currentProfile.skoin_balance + 1, updated_at: new Date().toISOString() })
-            .eq("id", user.id);
+            .from("skoin_balances")
+            .update({ balance: currentBal.balance + 1, updated_at: new Date().toISOString() })
+            .eq("user_id", user.id);
         }
       }
       throw new Error("Could not create connection");
@@ -102,16 +98,17 @@ serve(async (req) => {
       );
     }
 
-    const { data: updatedProfile } = await supabaseAdmin
-      .from("profiles")
-      .select("skoin_balance")
-      .eq("id", user.id)
+    const { data: updatedBal } = await supabaseAdmin
+      .from("skoin_balances")
+      .select("balance")
+      .eq("user_id", user.id)
       .single();
 
     return new Response(
-      JSON.stringify({ success: true, newBalance: updatedProfile?.skoin_balance }),
+      JSON.stringify({ success: true, newBalance: updatedBal?.balance }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
+
   } catch (error) {
     return new Response(
       JSON.stringify({ error: error.message }),
