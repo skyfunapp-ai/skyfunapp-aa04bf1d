@@ -42,6 +42,7 @@ Deno.serve(async (req) => {
     await admin.from("referrals").delete().or(`referrer_id.eq.${userId},referred_id.eq.${userId}`);
     await admin.from("referral_codes").delete().eq("user_id", userId);
     await admin.from("skoin_transactions").delete().eq("user_id", userId);
+    await admin.from("skoin_balances").delete().eq("user_id", userId);
     await admin.from("profiles").delete().eq("id", userId);
 
     // Delete profile photos in storage
