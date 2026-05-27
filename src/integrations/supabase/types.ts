@@ -156,7 +156,6 @@ export type Database = {
           name: string | null
           occupation: string | null
           profile_photo: string | null
-          skoin_balance: number
           updated_at: string
         }
         Insert: {
@@ -171,7 +170,6 @@ export type Database = {
           name?: string | null
           occupation?: string | null
           profile_photo?: string | null
-          skoin_balance?: number
           updated_at?: string
         }
         Update: {
@@ -186,7 +184,6 @@ export type Database = {
           name?: string | null
           occupation?: string | null
           profile_photo?: string | null
-          skoin_balance?: number
           updated_at?: string
         }
         Relationships: []
@@ -230,6 +227,24 @@ export type Database = {
           referred_id?: string
           referrer_id?: string
           rewarded?: boolean
+        }
+        Relationships: []
+      }
+      skoin_balances: {
+        Row: {
+          balance: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          balance?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          balance?: number
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
