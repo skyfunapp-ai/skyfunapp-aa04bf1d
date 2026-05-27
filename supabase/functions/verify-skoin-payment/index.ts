@@ -65,20 +65,18 @@ serve(async (req) => {
       .maybeSingle();
 
     if (existing) {
-      // Already processed — return success without double-crediting
-      const { data: profile } = await supabaseAdmin
-        .from("profiles")
-        .select("skoin_balance")
-        .eq("id", user.id)
+      const { data: bal } = await supabaseAdmin
+        .from("skoin_balances")
+        .select("balance")
+        .eq("user_id", user.id)
         .single();
 
       return new Response(
-        JSON.stringify({ success: true, coins, newBalance: profile?.skoin_balance ?? 0, already_processed: true }),
+        JSON.stringify({ success: true, coins, newBalance: bal?.balance ?? 0, already_processed: true }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 200 }
       );
     }
 
-    // Record the transaction first (acts as idempotency lock)
     const { error: insertError } = await supabaseAdmin
       .from("skoin_transactions")
       .insert({
@@ -88,49 +86,51 @@ serve(async (req) => {
       });
 
     if (insertError) {
-      // Unique constraint violation means another request already processed it
       if (insertError.code === "23505") {
-        const { data: profile } = await supabaseAdmin
-          .from("profiles")
-          .select("skoin_balance")
-          .eq("id", user.id)
+        const { data: bal } = await supabaseAdmin
+          .from("skoin_balances")
+          .select("balance")
+          .eq("user_id", user.id)
           .single();
 
         return new Response(
-          JSON.stringify({ success: true, coins, newBalance: profile?.skoin_balance ?? 0, already_processed: true }),
+          JSON.stringify({ success: true, coins, newBalance: bal?.balance ?? 0, already_processed: true }),
           { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 200 }
         );
       }
       throw new Error("Could not record transaction");
     }
 
-    // Now credit the balance
-    const { data: profile, error: profileError } = await supabaseAdmin
-      .from("profiles")
-      .select("skoin_balance")
-      .eq("id", user.id)
-      .single();
+    const { data: bal, error: balError } = await supabaseAdmin
+      .from("skoin_balances")
+      .select("balance")
+      .eq("user_id", user.id)
+      .maybeSingle();
 
-    if (profileError || !profile) {
-      throw new Error("Could not fetch profile");
+    if (balError) {
+      throw new Error("Could not fetch balance");
     }
 
+    const currentBalance = bal?.balance ?? 0;
+    const newBalance = currentBalance + coins;
+
     const { error: updateError } = await supabaseAdmin
-      .from("profiles")
-      .update({
-        skoin_balance: profile.skoin_balance + coins,
+      .from("skoin_balances")
+      .upsert({
+        user_id: user.id,
+        balance: newBalance,
         updated_at: new Date().toISOString(),
-      })
-      .eq("id", user.id);
+      }, { onConflict: "user_id" });
 
     if (updateError) {
       throw new Error("Could not update balance");
     }
 
     return new Response(
-      JSON.stringify({ success: true, coins, newBalance: profile.skoin_balance + coins }),
+      JSON.stringify({ success: true, coins, newBalance }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 200 }
     );
+
   } catch (error) {
     return new Response(
       JSON.stringify({ error: error.message }),
