@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import { Menu } from "lucide-react";
@@ -19,9 +19,15 @@ const Index = () => {
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  // If already logged in, redirect to dashboard
+  // If already logged in, redirect to dashboard (in effect to avoid
+  // navigating during render, which can blank the screen on iOS WebKit).
+  useEffect(() => {
+    if (!loading && user) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [loading, user, navigate]);
+
   if (!loading && user) {
-    navigate("/dashboard", { replace: true });
     return null;
   }
 
