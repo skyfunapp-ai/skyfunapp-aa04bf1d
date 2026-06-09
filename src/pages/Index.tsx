@@ -93,7 +93,7 @@ const Index = () => {
             <button onClick={handleLogin} disabled={submitting} className="text-2xl sm:text-5xl font-medium hover:underline">
               {submitting ? "Checking In..." : "Check In (Log In)"}
             </button>
-            <button onClick={() => navigate("/create-account")} className="text-lg sm:text-3xl opacity-80 hover:underline">Purchase Flight (Create Account)</button>
+            <button onClick={() => navigate("/create-account")} className="text-lg sm:text-3xl opacity-80 hover:underline">Boarding Pass (Create Account)</button>
           </div>
         </div>
 
