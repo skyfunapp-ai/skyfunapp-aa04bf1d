@@ -226,9 +226,9 @@ Deno.serve(async (req) => {
           const html = `
             <div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 30px;">
               <h2 style="color:#e94560;">✈️ SkyFunApp</h2>
-              <p>You have a new message from <strong>${senderName}</strong>:</p>
+              <p>You have a new message from <strong>${escHtml(senderName)}</strong>:</p>
               <div style="background:#f5f5f5;border-radius:12px;padding:16px;margin:16px 0;">
-                <p style="margin:0;color:#333;">${preview}</p>
+                <p style="margin:0;color:#333;">${escHtml(preview)}</p>
               </div>
               <a href="https://skyfunapp.lovable.app" style="display:inline-block;background:#e94560;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:bold;">Open SkyFunApp</a>
               <p style="color:#999;font-size:12px;margin-top:24px;">You're receiving this because you missed a message on SkyFunApp.</p>
