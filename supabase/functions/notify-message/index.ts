@@ -99,13 +99,44 @@ async function sendFcmPush(
   return { ok: true };
 }
 
+const escHtml = (s: string) =>
+  s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   try {
+    // Require authenticated caller
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const earlyUrl = Deno.env.get("SUPABASE_URL")!;
+    const userClient = createClient(earlyUrl, anonKey, {
+      global: { headers: { Authorization: authHeader } },
+    });
+    const { data: userRes, error: userErr } = await userClient.auth.getUser();
+    if (userErr || !userRes?.user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const callerId = userRes.user.id;
+
     const { receiverId, senderName, messageText } = await req.json();
     if (!receiverId || !senderName) {
       return new Response(JSON.stringify({ error: "Missing required fields" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    if (callerId === receiverId) {
+      return new Response(JSON.stringify({ error: "Invalid recipient" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
