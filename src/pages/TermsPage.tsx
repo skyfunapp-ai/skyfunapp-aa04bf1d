@@ -28,6 +28,7 @@ const TermsPage = () => {
           <div className="bg-card/80 backdrop-blur rounded-xl p-4 border border-border/50">
             <h3 className="font-semibold text-card-foreground mb-2">3. Acceptable Use</h3>
             <p className="text-muted-foreground text-sm">You agree not to use SkyFunApp to harass, threaten, or harm other users; post false, misleading, or offensive content; impersonate any person or entity; engage in any illegal activity; or attempt to access another user's account without permission.</p>
+            <p className="text-muted-foreground text-sm mt-2">By using this app, you agree not to harass others; reported incidents will be investigated. Harassment of any sort is prohibited. Reported violations may lead to suspension or permanently deleting your account.</p>
           </div>
 
           <div className="bg-card/80 backdrop-blur rounded-xl p-4 border border-border/50">

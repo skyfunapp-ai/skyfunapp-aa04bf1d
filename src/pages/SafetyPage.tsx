@@ -24,6 +24,10 @@ const SafetyPage = () => {
             <p className="text-muted-foreground text-sm">If you encounter suspicious behavior, use the report feature or contact our safety team.</p>
             <p className="text-muted-foreground text-sm mt-2 font-semibold">For immediate response, please contact your local police department.</p>
           </div>
+          <div className="bg-card/80 backdrop-blur rounded-xl p-4 border border-border/50">
+            <h3 className="font-semibold text-card-foreground mb-2">No Harassment Policy</h3>
+            <p className="text-muted-foreground text-sm">By using this app, you agree not to harass others; reported incidents will be investigated. Harassment of any sort is prohibited. Reported violations may lead to suspension or permanently deleting your account.</p>
+          </div>
         </div>
       </main>
       <BottomNav activePage="profile" />
