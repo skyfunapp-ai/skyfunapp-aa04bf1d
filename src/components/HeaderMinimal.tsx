@@ -26,7 +26,6 @@ const HeaderMinimal = ({ onEditClick, showEdit = false }: HeaderMinimalProps) =>
         { label: "Profile", path: "/dashboard" },
         { label: "Search", path: "/search" },
         { label: "Messages", path: "/messages" },
-        { label: "Skoin", path: "/skoin" },
         { label: "Safety", path: "/safety" },
         { label: "Help", path: "/help" },
         { label: "Privacy & Policy", path: "/privacy" },
@@ -35,7 +34,7 @@ const HeaderMinimal = ({ onEditClick, showEdit = false }: HeaderMinimalProps) =>
     : [
         { label: "Home", path: "/" },
         { label: "About", path: "/about" },
-        { label: "Skoin", path: "/skoin" },
+        
         { label: "Safety", path: "/safety" },
         { label: "Help", path: "/help" },
         { label: "Privacy & Policy", path: "/privacy" },
