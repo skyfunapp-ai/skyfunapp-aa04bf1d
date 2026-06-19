@@ -68,7 +68,7 @@ const Index = () => {
               {[
                 { label: "Home", path: "/" },
                 { label: "About", path: "/about" },
-                { label: "Skoin", path: "/skoin" },
+                
                 { label: "Safety", path: "/safety" },
                 { label: "Help", path: "/help" },
                 { label: "Privacy & Policy", path: "/privacy" },

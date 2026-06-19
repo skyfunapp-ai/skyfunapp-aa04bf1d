@@ -199,8 +199,7 @@ const UserProfilePage = () => {
                       });
                       if (error) throw error;
                       if (data?.error) {
-                        toast({ title: "No Skoin remaining", description: "Purchase Skoin to connect with new users." });
-                        navigate("/skoin");
+                        toast({ title: "No Skoin remaining", description: "You're out of Skoin for new connections." });
                         return;
                       }
                       if (!data?.already_connected) {

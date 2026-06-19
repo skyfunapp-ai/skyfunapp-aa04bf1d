@@ -13,9 +13,6 @@ import SearchPage from "./pages/SearchPage";
 import MessagesPage from "./pages/MessagesPage";
 import UserProfilePage from "./pages/UserProfilePage";
 import NotFound from "./pages/NotFound";
-import SkoinPage from "./pages/SkoinPage";
-
-import SkoinSuccessPage from "./pages/SkoinSuccessPage";
 import AboutPage from "./pages/AboutPage";
 import SafetyPage from "./pages/SafetyPage";
 import HelpPage from "./pages/HelpPage";
@@ -42,8 +39,6 @@ const AnimatedRoutes = () => {
         <Route path="/messages" element={<MessagesPage />} />
         <Route path="/messages/:userId" element={<MessagesPage />} />
         <Route path="/user/:userId" element={<UserProfilePage />} />
-        <Route path="/skoin" element={<SkoinPage />} />
-        <Route path="/skoin/success" element={<SkoinSuccessPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/safety" element={<SafetyPage />} />
         <Route path="/help" element={<HelpPage />} />
