@@ -242,7 +242,7 @@ const MessagesPage = () => {
         )}
 
         {/* Steady top: user info bar */}
-        <div className="fixed top-14 sm:top-16 left-0 right-0 z-30 bg-background border-b border-border/30 shadow-md px-4 py-2.5">
+        <div className="fixed top-16 sm:top-24 left-0 right-0 z-30 bg-background border-b border-border/30 shadow-md px-4 py-2.5">
           <div className="flex items-center">
             <button onClick={() => navigate("/search")} className="text-primary-foreground/70 hover:text-primary-foreground transition-colors shrink-0 w-8">
               <ArrowLeft size={20} />
@@ -275,7 +275,7 @@ const MessagesPage = () => {
         </div>
 
         {/* Scrollable messages area between fixed top and fixed bottom */}
-        <div className="absolute left-0 right-0 top-28 sm:top-32 bottom-40 overflow-hidden">
+        <div className="absolute left-0 right-0 top-32 sm:top-40 bottom-40 overflow-hidden">
           <div className="h-full overflow-y-auto px-4 scroll-smooth" ref={scrollRef} onScroll={handleScroll}>
             <div className="space-y-3 min-h-[200px] pb-2">
               {messagesLoading && (
