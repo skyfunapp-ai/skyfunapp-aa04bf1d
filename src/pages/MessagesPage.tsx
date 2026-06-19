@@ -275,7 +275,7 @@ const MessagesPage = () => {
         </div>
 
         {/* Scrollable messages area between fixed top and fixed bottom */}
-        <div className="absolute left-0 right-0 top-28 sm:top-32 bottom-40 overflow-hidden">
+        <div className="absolute left-0 right-0 top-32 sm:top-40 bottom-40 overflow-hidden">
           <div className="h-full overflow-y-auto px-4 scroll-smooth" ref={scrollRef} onScroll={handleScroll}>
             <div className="space-y-3 min-h-[200px] pb-2">
               {messagesLoading && (
