@@ -28,6 +28,7 @@ const HeaderMinimal = ({ onEditClick, showEdit = false }: HeaderMinimalProps) =>
         { label: "Messages", path: "/messages" },
         { label: "Safety", path: "/safety" },
         { label: "Help", path: "/help" },
+        { label: "Terms of Service", path: "/terms" },
         { label: "Privacy & Policy", path: "/privacy" },
         { label: "Log Out", path: "/logout" },
       ]
@@ -37,6 +38,7 @@ const HeaderMinimal = ({ onEditClick, showEdit = false }: HeaderMinimalProps) =>
         
         { label: "Safety", path: "/safety" },
         { label: "Help", path: "/help" },
+        { label: "Terms of Service", path: "/terms" },
         { label: "Privacy & Policy", path: "/privacy" },
       ];
 

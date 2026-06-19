@@ -72,7 +72,7 @@ const CreateAccountPage = () => {
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
       <main className="flex-1 flex flex-col items-center justify-center px-4 pt-24 sm:pt-36">
-        <h1 className="text-2xl sm:text-4xl font-bold text-primary-foreground mb-6">Purchase Flight (Create Account)</h1>
+        <h1 className="text-2xl sm:text-4xl font-bold text-primary-foreground mb-6">Boarding Pass (Create Account)</h1>
 
         <div className="w-full max-w-sm space-y-4">
           <div className="space-y-2">
