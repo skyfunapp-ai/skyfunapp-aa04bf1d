@@ -22,7 +22,7 @@
     --secondary-foreground: 0 0% 20%;
 
     --muted: 20 20% 94%;
-    --muted-foreground: 0 0% 45%;
+    --muted-foreground: 0 0% 100%;
 
     --accent: 350 80% 60%;
     --accent-foreground: 0 0% 100%;
@@ -86,6 +86,20 @@
   body {
     @apply bg-background text-foreground font-sans antialiased;
     font-family: 'Outfit', sans-serif;
+    font-weight: 500;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Improve readability of low-opacity text on coral background */
+  .text-primary-foreground\/50,
+  .text-primary-foreground\/60,
+  .text-primary-foreground\/70 {
+    color: hsl(0 0% 100% / 0.9) !important;
+  }
+  .text-primary-foreground\/80 {
+    color: hsl(0 0% 100% / 0.95) !important;
   }
 }
 
