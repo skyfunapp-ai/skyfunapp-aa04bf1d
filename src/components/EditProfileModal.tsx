@@ -113,7 +113,7 @@ const EditProfileModal = ({ open, onOpenChange, profileData, onSave }: EditProfi
               disabled={uploadingPhoto}
             >
               {uploadingPhoto ? <Loader2 size={16} className="animate-spin" /> : <Camera size={16} />}
-              {uploadingPhoto ? "Uploading..." : "Upload Photo"}
+              {uploadingPhoto ? "Uploading..." : "Browse Photo"}
             </Button>
           </div>
 
