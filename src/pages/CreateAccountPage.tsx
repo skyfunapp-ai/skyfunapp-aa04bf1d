@@ -93,7 +93,7 @@ const CreateAccountPage = () => {
               onCheckedChange={(checked) => setAgeConfirmed(checked === true)}
               className="mt-1"
             />
-<label htmlFor="age" className="text-sm text-primary-foreground/80 leading-snug cursor-pointer">
+<label htmlFor="age" className="text-sm text-primary-foreground leading-snug cursor-pointer">
               I confirm that I am at least 18 years old or older
             </label>
           </div>
@@ -122,7 +122,7 @@ const CreateAccountPage = () => {
 
           <div className="space-y-2">
             <Label htmlFor="ref-code" className="text-primary-foreground text-base sm:text-lg">
-              Referral Code <span className="text-primary-foreground/50 text-sm">(optional — earn 5 Skoins)</span>
+              Referral Code <span className="text-primary-foreground text-sm">(optional — earn 5 Skoins)</span>
             </Label>
             <Input
               id="ref-code"
@@ -139,11 +139,11 @@ const CreateAccountPage = () => {
             {loading ? "Creating..." : "Create Account"}
           </Button>
 
-          <button onClick={() => navigate("/")} className="w-full text-center text-primary-foreground/70 hover:underline mt-2">
+          <button onClick={() => navigate("/")} className="w-full text-center text-primary-foreground hover:underline mt-2">
             Already have an account? Log In
           </button>
 
-          <p className="text-xs text-primary-foreground/60 text-center mt-2">
+          <p className="text-xs text-primary-foreground text-center mt-2">
             By creating an account, you agree to our{" "}
             <span onClick={() => navigate("/terms")} className="underline text-accent hover:text-accent/80 cursor-pointer">Terms of Service</span>,{" "}
             <span onClick={() => navigate("/refund")} className="underline text-accent hover:text-accent/80 cursor-pointer">Refund Policy</span>{" "}and{" "}

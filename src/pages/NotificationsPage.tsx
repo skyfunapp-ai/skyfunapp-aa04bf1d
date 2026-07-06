@@ -97,7 +97,7 @@ const NotificationsPage = () => {
         <div className="max-w-md w-full">
           <Link
             to="/privacy"
-            className="inline-flex items-center gap-1 text-primary-foreground/80 hover:text-primary-foreground mb-4 text-sm"
+            className="inline-flex items-center gap-1 text-primary-foreground hover:text-primary-foreground mb-4 text-sm"
           >
             <ArrowLeft size={16} /> Back
           </Link>

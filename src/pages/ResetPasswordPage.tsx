@@ -59,7 +59,7 @@ const ResetPasswordPage = () => {
         <Header />
         <main className="flex-1 flex flex-col items-center justify-center px-4 pt-24 sm:pt-36">
           <p className="text-primary-foreground">Invalid or expired reset link.</p>
-          <button onClick={() => navigate("/")} className="mt-4 text-primary-foreground/70 hover:underline">
+          <button onClick={() => navigate("/")} className="mt-4 text-primary-foreground hover:underline">
             Back to Log In
           </button>
         </main>
@@ -84,7 +84,7 @@ const ResetPasswordPage = () => {
           <Button onClick={handleResetPassword} className="w-full h-12 text-lg" variant="gradient" disabled={loading}>
             {loading ? "Resetting..." : "Reset Password"}
           </Button>
-          <button onClick={() => navigate("/")} className="w-full text-center text-primary-foreground/70 hover:underline mt-2">
+          <button onClick={() => navigate("/")} className="w-full text-center text-primary-foreground hover:underline mt-2">
             Back to Log In
           </button>
         </div>

@@ -11,10 +11,10 @@ const AboutPage = () => {
           <Info size={28} /> About SkyFunApp
         </h1>
         <div className="max-w-md text-center space-y-4">
-          <p className="text-primary-foreground/80">
+          <p className="text-primary-foreground">
             SkyFunApp is your ultimate travel companion — connecting travelers worldwide and making every journey an adventure.
           </p>
-          <p className="text-primary-foreground/80">
+          <p className="text-primary-foreground">
             Meet fellow travelers, share experiences, and explore the world together.
           </p>
           <p className="text-muted-foreground text-sm mt-8">Version 1.0.0</p>

@@ -74,13 +74,13 @@ const ShareBanner = ({
             className="absolute top-2 right-2 p-1 rounded-full hover:bg-accent/20 transition-colors"
             aria-label="Dismiss"
           >
-            <X size={16} className="text-primary-foreground/70" />
+            <X size={16} className="text-primary-foreground" />
           </button>
           <div className="flex items-center gap-2 mb-2">
             <Share2 size={18} className="text-accent" />
             <p className="text-primary-foreground font-semibold text-base">Share SkyFunApp</p>
           </div>
-          <p className="text-primary-foreground/80 text-sm mb-3">
+          <p className="text-primary-foreground text-sm mb-3">
             Help friends find travel companions — share the app!
           </p>
           <div className="flex flex-wrap gap-2">
