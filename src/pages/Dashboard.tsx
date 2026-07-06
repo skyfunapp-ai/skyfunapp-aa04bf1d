@@ -19,10 +19,12 @@ const REF_PENDING_KEY = "skyfun_pending_ref_code";
 
 const Dashboard = () => {
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const { profile, loading, updateProfile } = useProfile();
   const { user } = useAuth();
   const navigate = useNavigate();
   const touchStartX = useRef(0);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Welcome-back toast (max once per WELCOME_HOURS)
   useEffect(() => {
