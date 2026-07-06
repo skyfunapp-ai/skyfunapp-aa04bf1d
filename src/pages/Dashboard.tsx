@@ -132,7 +132,7 @@ const Dashboard = () => {
             </button>
           </div>
         ) : (
-          <div className="mt-6 text-center px-4">
+          <div className="mt-6 text-center px-4 w-full max-w-md mx-auto">
             <div className="flex justify-center mb-4">
               <button
                 type="button"
@@ -141,14 +141,14 @@ const Dashboard = () => {
                 aria-label="Change profile photo"
                 className="relative rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
               >
-                <Avatar className="w-28 h-28">
-                  <AvatarImage src={profile.profilePhoto} alt={profile.name || "Profile"} />
-                  <AvatarFallback className="text-2xl font-bold">
+                <Avatar className="w-32 h-32 sm:w-44 sm:h-44 ring-4 ring-primary-foreground/30 shadow-[0_0_30px_rgba(255,255,255,0.25)]">
+                  <AvatarImage src={profile.profilePhoto} alt={profile.name || "Profile"} className="object-cover" />
+                  <AvatarFallback className="text-3xl sm:text-5xl font-bold">
                     {profile.name ? profile.name.split(" ").map(n => n[0]).join("") : "+"}
                   </AvatarFallback>
                 </Avatar>
-                <span className="absolute bottom-0 right-0 flex items-center justify-center w-8 h-8 rounded-full bg-accent text-accent-foreground shadow-md border-2 border-background">
-                  {uploadingPhoto ? <Loader2 size={14} className="animate-spin" /> : <Camera size={14} />}
+                <span className="absolute bottom-1 right-1 flex items-center justify-center w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-accent text-accent-foreground shadow-md border-2 border-background">
+                  {uploadingPhoto ? <Loader2 size={16} className="animate-spin" /> : <Camera size={18} />}
                 </span>
               </button>
               <input
