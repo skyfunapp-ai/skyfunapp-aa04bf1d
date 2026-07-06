@@ -122,7 +122,7 @@ const Dashboard = () => {
         <div className="flex-1 flex flex-col items-center w-full">
         {isProfileEmpty ? (
           <div className="flex-1 flex flex-col items-center justify-center text-center px-4">
-            <p className="text-xl text-primary-foreground/70 mb-4">Your profile is empty</p>
+            <p className="text-xl text-primary-foreground mb-4">Your profile is empty</p>
             <p className="text-muted-foreground mb-6">Tap the edit icon to add your information</p>
             <button
               onClick={handleEditClick}
@@ -166,12 +166,12 @@ const Dashboard = () => {
               <span className="text-accent font-semibold">{profile.skoinBalance} Skoin</span>
             </div>
             {profile.currentAirport && (
-              <p className="text-primary-foreground/70 mt-1 flex items-center justify-center gap-1 text-sm">
+              <p className="text-primary-foreground mt-1 flex items-center justify-center gap-1 text-sm">
                 <MapPin size={14} /> From: {profile.currentAirport}
               </p>
             )}
             {profile.destinationAirport && (
-              <p className="text-primary-foreground/70 mt-1 flex items-center justify-center gap-1 text-sm">
+              <p className="text-primary-foreground mt-1 flex items-center justify-center gap-1 text-sm">
                 <MapPin size={14} /> To: {profile.destinationAirport}
               </p>
             )}
@@ -181,7 +181,7 @@ const Dashboard = () => {
               {profile.hobbies.length > 0 && (
                 <div className="flex flex-wrap justify-center gap-2 mt-1">
                   {profile.hobbies.map((hobby, i) => (
-                    <span key={i} className="text-primary-foreground/80 text-sm">{hobby}</span>
+                    <span key={i} className="text-primary-foreground text-sm">{hobby}</span>
                   ))}
                 </div>
               )}
@@ -192,7 +192,7 @@ const Dashboard = () => {
               {profile.interestedIn.length > 0 && (
                 <div className="flex flex-wrap justify-center gap-2 mt-1">
                   {profile.interestedIn.map((interest, i) => (
-                    <span key={i} className="text-primary-foreground/80 text-sm">{interest}</span>
+                    <span key={i} className="text-primary-foreground text-sm">{interest}</span>
                   ))}
                 </div>
               )}
@@ -203,7 +203,7 @@ const Dashboard = () => {
               {profile.favoriteFood.length > 0 && (
                 <div className="flex flex-wrap justify-center gap-2 mt-1">
                   {profile.favoriteFood.map((food, i) => (
-                    <span key={i} className="text-primary-foreground/80 text-sm">{food}</span>
+                    <span key={i} className="text-primary-foreground text-sm">{food}</span>
                   ))}
                 </div>
               )}

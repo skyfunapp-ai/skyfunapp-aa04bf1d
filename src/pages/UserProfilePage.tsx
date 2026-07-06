@@ -114,7 +114,7 @@ const UserProfilePage = () => {
         <div className="w-full max-w-md">
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center gap-1 text-primary-foreground/70 hover:text-primary-foreground mb-6 transition-colors"
+            className="flex items-center gap-1 text-primary-foreground hover:text-primary-foreground mb-6 transition-colors"
           >
             <ArrowLeft size={18} />
             <span className="text-sm">Back</span>
@@ -129,7 +129,7 @@ const UserProfilePage = () => {
             <h1 className="text-2xl font-bold text-primary-foreground">{user.name}</h1>
 
             {user.occupation && (
-              <p className="text-primary-foreground/80 mt-1">{user.occupation}</p>
+              <p className="text-primary-foreground mt-1">{user.occupation}</p>
             )}
 
             {user.currentAirport && (
@@ -151,7 +151,7 @@ const UserProfilePage = () => {
                 <p className="text-primary-foreground font-semibold text-sm">Hobbies</p>
                 <div className="flex flex-wrap justify-center gap-2 mt-1">
                   {user.hobbies.map((h, i) => (
-                    <span key={i} className="text-primary-foreground/80 text-sm">{h}</span>
+                    <span key={i} className="text-primary-foreground text-sm">{h}</span>
                   ))}
                 </div>
               </div>
@@ -162,7 +162,7 @@ const UserProfilePage = () => {
                 <p className="text-primary-foreground font-semibold text-sm">Interested In</p>
                 <div className="flex flex-wrap justify-center gap-2 mt-1">
                   {user.interestedIn.map((item, i) => (
-                    <span key={i} className="text-primary-foreground/80 text-sm">{item}</span>
+                    <span key={i} className="text-primary-foreground text-sm">{item}</span>
                   ))}
                 </div>
               </div>
@@ -173,7 +173,7 @@ const UserProfilePage = () => {
                 <p className="text-primary-foreground font-semibold text-sm">Favorite Food</p>
                 <div className="flex flex-wrap justify-center gap-2 mt-1">
                   {user.favoriteFood.map((f, i) => (
-                    <span key={i} className="text-primary-foreground/80 text-sm">{f}</span>
+                    <span key={i} className="text-primary-foreground text-sm">{f}</span>
                   ))}
                 </div>
               </div>

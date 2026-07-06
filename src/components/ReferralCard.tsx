@@ -63,7 +63,7 @@ const ReferralCard = () => {
         <Gift size={18} className="text-accent" />
         <p className="text-primary-foreground font-semibold">Invite & Earn 5 Skoins</p>
       </div>
-      <p className="text-primary-foreground/80 text-sm mb-3">
+      <p className="text-primary-foreground text-sm mb-3">
         Share your code. You and your friend both get 5 Skoins when they sign up.
       </p>
 
@@ -81,7 +81,7 @@ const ReferralCard = () => {
       </div>
 
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-1.5 text-primary-foreground/80 text-sm">
+        <div className="flex items-center gap-1.5 text-primary-foreground text-sm">
           <Users size={14} />
           <span>{count} {count === 1 ? "friend joined" : "friends joined"}</span>
         </div>

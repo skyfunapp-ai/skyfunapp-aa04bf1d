@@ -244,7 +244,7 @@ const MessagesPage = () => {
         {/* Steady top: user info bar */}
         <div className="fixed top-14 sm:top-16 left-0 right-0 z-30 bg-background border-b border-border/30 shadow-md px-4 py-2.5">
           <div className="flex items-center">
-            <button onClick={() => navigate("/search")} className="text-primary-foreground/70 hover:text-primary-foreground transition-colors shrink-0 w-8">
+            <button onClick={() => navigate("/search")} className="text-primary-foreground hover:text-primary-foreground transition-colors shrink-0 w-8">
               <ArrowLeft size={20} />
             </button>
             <button onClick={() => setShowProfile(true)} className="flex-1 flex items-center justify-center gap-2 hover:opacity-80 transition-opacity">

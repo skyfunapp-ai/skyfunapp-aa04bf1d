@@ -44,7 +44,7 @@ const ForgotPasswordPage = () => {
 
         <div className="w-full max-w-sm space-y-4">
           {sent ? (
-            <p className="text-primary-foreground/70 text-center">
+            <p className="text-primary-foreground text-center">
               We've sent a password reset link to <span className="font-semibold text-primary-foreground">{email}</span>. Check your inbox and follow the link to reset your password.
             </p>
           ) : (
@@ -66,7 +66,7 @@ const ForgotPasswordPage = () => {
             </>
           )}
 
-          <button onClick={() => navigate("/")} className="w-full text-center text-primary-foreground/70 hover:underline mt-2">
+          <button onClick={() => navigate("/")} className="w-full text-center text-primary-foreground hover:underline mt-2">
             Back to Log In
           </button>
         </div>
