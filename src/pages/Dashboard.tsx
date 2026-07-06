@@ -133,16 +133,32 @@ const Dashboard = () => {
           </div>
         ) : (
           <div className="mt-6 text-center px-4">
-            {profile.profilePhoto && (
-              <div className="flex justify-center mb-4">
+            <div className="flex justify-center mb-4">
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploadingPhoto}
+                aria-label="Change profile photo"
+                className="relative rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+              >
                 <Avatar className="w-28 h-28">
-                  <AvatarImage src={profile.profilePhoto} alt={profile.name} />
+                  <AvatarImage src={profile.profilePhoto} alt={profile.name || "Profile"} />
                   <AvatarFallback className="text-2xl font-bold">
-                    {profile.name.split(" ").map(n => n[0]).join("")}
+                    {profile.name ? profile.name.split(" ").map(n => n[0]).join("") : "+"}
                   </AvatarFallback>
                 </Avatar>
-              </div>
-            )}
+                <span className="absolute bottom-0 right-0 flex items-center justify-center w-8 h-8 rounded-full bg-accent text-accent-foreground shadow-md border-2 border-background">
+                  {uploadingPhoto ? <Loader2 size={14} className="animate-spin" /> : <Camera size={14} />}
+                </span>
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handlePhotoChange}
+                className="hidden"
+              />
+            </div>
             <h2 className="text-2xl font-bold text-primary-foreground">{profile.name}</h2>
             <p className="text-primary-foreground mt-2">{profile.occupation}</p>
             <div className="mt-2 inline-flex items-center gap-1.5 bg-accent/20 px-3 py-1 rounded-full">
