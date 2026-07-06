@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { MapPin, Coins, Plane } from "lucide-react";
+import { MapPin, Coins, Plane, Camera, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import HeaderMinimal from "@/components/HeaderMinimal";
 import BottomNav from "@/components/BottomNav";
@@ -19,10 +19,12 @@ const REF_PENDING_KEY = "skyfun_pending_ref_code";
 
 const Dashboard = () => {
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const { profile, loading, updateProfile } = useProfile();
   const { user } = useAuth();
   const navigate = useNavigate();
   const touchStartX = useRef(0);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Welcome-back toast (max once per WELCOME_HOURS)
   useEffect(() => {
@@ -72,6 +74,34 @@ const Dashboard = () => {
 
   const handleEditClick = () => setIsEditOpen(true);
 
+  const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: "Image too large", description: "Please choose an image under 5 MB.", variant: "destructive" });
+      return;
+    }
+    setUploadingPhoto(true);
+    try {
+      const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
+      const filePath = `${user.id}/avatar.${ext}`;
+      const { error: upErr } = await supabase.storage
+        .from("profile-photos")
+        .upload(filePath, file, { upsert: true, cacheControl: "3600" });
+      if (upErr) throw upErr;
+      const { data: urlData } = supabase.storage.from("profile-photos").getPublicUrl(filePath);
+      const photoUrl = `${urlData.publicUrl}?t=${Date.now()}`;
+      const result = await updateProfile({ profilePhoto: photoUrl });
+      if (result?.error) throw new Error(result.error);
+      toast({ title: "Profile photo updated" });
+    } catch (err) {
+      toast({ title: "Upload failed", description: err instanceof Error ? err.message : "Try again.", variant: "destructive" });
+    } finally {
+      setUploadingPhoto(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
   const isProfileEmpty = !loading && !profile.name && !profile.occupation;
 
   if (loading) return (
@@ -103,16 +133,32 @@ const Dashboard = () => {
           </div>
         ) : (
           <div className="mt-6 text-center px-4">
-            {profile.profilePhoto && (
-              <div className="flex justify-center mb-4">
+            <div className="flex justify-center mb-4">
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploadingPhoto}
+                aria-label="Change profile photo"
+                className="relative rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+              >
                 <Avatar className="w-28 h-28">
-                  <AvatarImage src={profile.profilePhoto} alt={profile.name} />
+                  <AvatarImage src={profile.profilePhoto} alt={profile.name || "Profile"} />
                   <AvatarFallback className="text-2xl font-bold">
-                    {profile.name.split(" ").map(n => n[0]).join("")}
+                    {profile.name ? profile.name.split(" ").map(n => n[0]).join("") : "+"}
                   </AvatarFallback>
                 </Avatar>
-              </div>
-            )}
+                <span className="absolute bottom-0 right-0 flex items-center justify-center w-8 h-8 rounded-full bg-accent text-accent-foreground shadow-md border-2 border-background">
+                  {uploadingPhoto ? <Loader2 size={14} className="animate-spin" /> : <Camera size={14} />}
+                </span>
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handlePhotoChange}
+                className="hidden"
+              />
+            </div>
             <h2 className="text-2xl font-bold text-primary-foreground">{profile.name}</h2>
             <p className="text-primary-foreground mt-2">{profile.occupation}</p>
             <div className="mt-2 inline-flex items-center gap-1.5 bg-accent/20 px-3 py-1 rounded-full">
