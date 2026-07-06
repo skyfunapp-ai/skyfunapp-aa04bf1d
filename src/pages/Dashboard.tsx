@@ -74,6 +74,34 @@ const Dashboard = () => {
 
   const handleEditClick = () => setIsEditOpen(true);
 
+  const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: "Image too large", description: "Please choose an image under 5 MB.", variant: "destructive" });
+      return;
+    }
+    setUploadingPhoto(true);
+    try {
+      const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
+      const filePath = `${user.id}/avatar.${ext}`;
+      const { error: upErr } = await supabase.storage
+        .from("profile-photos")
+        .upload(filePath, file, { upsert: true, cacheControl: "3600" });
+      if (upErr) throw upErr;
+      const { data: urlData } = supabase.storage.from("profile-photos").getPublicUrl(filePath);
+      const photoUrl = `${urlData.publicUrl}?t=${Date.now()}`;
+      const result = await updateProfile({ profilePhoto: photoUrl });
+      if (result?.error) throw new Error(result.error);
+      toast({ title: "Profile photo updated" });
+    } catch (err) {
+      toast({ title: "Upload failed", description: err instanceof Error ? err.message : "Try again.", variant: "destructive" });
+    } finally {
+      setUploadingPhoto(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
   const isProfileEmpty = !loading && !profile.name && !profile.occupation;
 
   if (loading) return (
