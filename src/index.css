@@ -101,6 +101,7 @@
   .text-primary-foreground\/80 {
     color: hsl(0 0% 100% / 0.95) !important;
   }
+}
 
 @layer utilities {
   .gradient-primary {
