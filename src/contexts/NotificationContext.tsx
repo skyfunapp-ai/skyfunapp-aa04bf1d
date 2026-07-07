@@ -75,7 +75,7 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
     if (!user) return;
 
     const channel = supabase
-      .channel(`global-notif-${user.id}`)
+      .channel(`global-notif-${user.id}-${Math.random().toString(36).slice(2)}`)
       .on(
         "postgres_changes",
         {
