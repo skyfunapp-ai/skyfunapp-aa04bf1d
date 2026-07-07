@@ -27,9 +27,10 @@ const Index = () => {
     }
   }, [loading, user, navigate]);
 
-  if (!loading && user) {
-    return null;
-  }
+  // Note: we intentionally do NOT return null while redirecting. On iOS
+  // WebKit (iPad), returning null from a route while AnimatePresence is
+  // transitioning can leave a blank screen. Rendering the normal tree is
+  // safe — the effect above will navigate to /dashboard.
 
   const handleLogin = async () => {
     if (!email.trim() || !password) {
