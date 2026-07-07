@@ -105,7 +105,7 @@ export const useProfile = () => {
   useEffect(() => {
     if (!user) return;
     const channel = supabase
-      .channel(`profile-${user.id}`)
+      .channel(`profile-${user.id}-${Math.random().toString(36).slice(2)}`)
       .on(
         "postgres_changes",
         { event: "UPDATE", schema: "public", table: "profiles", filter: `id=eq.${user.id}` },
