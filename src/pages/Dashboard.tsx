@@ -178,9 +178,9 @@ const Dashboard = () => {
             
             <div className="mt-4">
               <p className="text-primary-foreground font-semibold">Hobbies</p>
-              {profile.hobbies.length > 0 && (
+              {(profile.hobbies?.length ?? 0) > 0 && (
                 <div className="flex flex-wrap justify-center gap-2 mt-1">
-                  {profile.hobbies.map((hobby, i) => (
+                  {profile.hobbies?.map((hobby, i) => (
                     <span key={i} className="text-primary-foreground text-sm">{hobby}</span>
                   ))}
                 </div>
@@ -189,9 +189,9 @@ const Dashboard = () => {
             
             <div className="mt-3">
               <p className="text-primary-foreground font-semibold">Interested In</p>
-              {profile.interestedIn.length > 0 && (
+              {(profile.interestedIn?.length ?? 0) > 0 && (
                 <div className="flex flex-wrap justify-center gap-2 mt-1">
-                  {profile.interestedIn.map((interest, i) => (
+                  {profile.interestedIn?.map((interest, i) => (
                     <span key={i} className="text-primary-foreground text-sm">{interest}</span>
                   ))}
                 </div>
@@ -200,9 +200,9 @@ const Dashboard = () => {
             
             <div className="mt-3">
               <p className="text-primary-foreground font-semibold">Favorite Food</p>
-              {profile.favoriteFood.length > 0 && (
+              {(profile.favoriteFood?.length ?? 0) > 0 && (
                 <div className="flex flex-wrap justify-center gap-2 mt-1">
-                  {profile.favoriteFood.map((food, i) => (
+                  {profile.favoriteFood?.map((food, i) => (
                     <span key={i} className="text-primary-foreground text-sm">{food}</span>
                   ))}
                 </div>
