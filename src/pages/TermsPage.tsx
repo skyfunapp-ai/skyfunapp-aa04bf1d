@@ -1,3 +1,4 @@
+import Seo from "@/components/Seo";
 import HeaderMinimal from "@/components/HeaderMinimal";
 import BottomNav from "@/components/BottomNav";
 import { Scale } from "lucide-react";
@@ -5,6 +6,12 @@ import { Scale } from "lucide-react";
 const TermsPage = () => {
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <Seo
+        title="Terms of Service – SkyFunApp"
+        description="The terms and conditions that govern your use of SkyFunApp, including account eligibility, conduct rules, and account termination."
+        path="/terms"
+      />
+
       <HeaderMinimal />
       <main className="flex-1 flex flex-col items-center pt-20 sm:pt-24 pb-20 px-4">
         <h1 className="text-3xl font-bold text-primary-foreground mb-6 flex items-center gap-2">

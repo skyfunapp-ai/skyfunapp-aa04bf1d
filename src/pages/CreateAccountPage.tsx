@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import Seo from "@/components/Seo";
+
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -70,7 +72,13 @@ const CreateAccountPage = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <Seo
+        title="Create Account – Join SkyFunApp"
+        description="Sign up for SkyFunApp to meet fellow travelers at airports worldwide. Free to join on iOS, Android, and web."
+        path="/create-account"
+      />
       <Header />
+
       <main className="flex-1 flex flex-col items-center justify-center px-4 pt-24 sm:pt-36">
         <h1 className="text-2xl sm:text-4xl font-bold text-primary-foreground mb-6">Boarding Pass (Create Account)</h1>
 

@@ -1,0 +1,16 @@
+# SkyFunApp
+
+> Meet fellow travelers at airports worldwide. Chat, connect, and make your layover unforgettable with SkyFunApp.
+
+SkyFunApp is a social travel app for iOS, Android, and web that helps travelers connect with others at the same airport or destination.
+
+## Pages
+
+- [Home](/): Overview of SkyFunApp and sign-in.
+- [About](/about): What SkyFunApp is and who it's for.
+- [Create Account](/create-account): Sign up for a new account.
+- [Safety](/safety): Safety guidelines and community rules.
+- [Help](/help): Frequently asked questions and support.
+- [Terms of Service](/terms): Terms governing use of the app.
+- [Privacy & Policy](/privacy): How user data is handled.
+- [Refund Policy](/refund): Refund terms.

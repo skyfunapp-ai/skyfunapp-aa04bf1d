@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Seo from "@/components/Seo";
 import Header from "@/components/Header";
+
 import { Menu } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
@@ -52,7 +54,13 @@ const Index = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <Seo
+        title="SkyFunApp – Connect with Travelers at Airports Worldwide"
+        description="Meet fellow travelers at airports worldwide. Chat, connect, and make your layover unforgettable with SkyFunApp."
+        path="/"
+      />
       <Header />
+
       {/* Hamburger menu */}
       <div className="fixed top-6 right-4 z-50">
         <Sheet>

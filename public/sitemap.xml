@@ -1,38 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://skyfunapp.lovable.app/</loc>
+    <loc>https://www.skyfunapp.com/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://skyfunapp.lovable.app/about</loc>
+    <loc>https://www.skyfunapp.com/about</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://skyfunapp.lovable.app/skoin</loc>
+    <loc>https://www.skyfunapp.com/safety</loc>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://skyfunapp.lovable.app/safety</loc>
+    <loc>https://www.skyfunapp.com/help</loc>
     <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
+    <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://skyfunapp.lovable.app/help</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://skyfunapp.lovable.app/privacy</loc>
-    <changefreq>monthly</changefreq>
+    <loc>https://www.skyfunapp.com/terms</loc>
+    <changefreq>yearly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
-    <loc>https://skyfunapp.lovable.app/create-account</loc>
+    <loc>https://www.skyfunapp.com/privacy</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://www.skyfunapp.com/refund</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://www.skyfunapp.com/create-account</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.skyfunapp.com/forgot-password</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
   </url>
 </urlset>
