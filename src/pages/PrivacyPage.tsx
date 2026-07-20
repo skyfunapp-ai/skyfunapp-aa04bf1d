@@ -1,4 +1,6 @@
+import Seo from "@/components/Seo";
 import { Link } from "react-router-dom";
+
 import HeaderMinimal from "@/components/HeaderMinimal";
 import BottomNav from "@/components/BottomNav";
 import { FileText, Bell, ChevronRight } from "lucide-react";
@@ -7,6 +9,12 @@ import DeleteAccountButton from "@/components/DeleteAccountButton";
 const PrivacyPage = () => {
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <Seo
+        title="Privacy Policy – SkyFunApp"
+        description="How SkyFunApp collects, uses, and protects your data, plus your rights and options for managing your account."
+        path="/privacy"
+      />
+
       <HeaderMinimal />
       <main className="flex-1 flex flex-col items-center pt-20 sm:pt-24 pb-20 px-4">
         <h1 className="text-3xl font-bold text-primary-foreground mb-6 flex items-center gap-2">

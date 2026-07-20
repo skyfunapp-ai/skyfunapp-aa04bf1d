@@ -1,10 +1,50 @@
+import Seo from "@/components/Seo";
 import HeaderMinimal from "@/components/HeaderMinimal";
+
 import BottomNav from "@/components/BottomNav";
 import { HelpCircle } from "lucide-react";
 
 const HelpPage = () => {
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: "How do I message someone?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Visit a user's profile and tap 'Send Message', or go to the Messages page to start a conversation.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "What are Skoins?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Skoins are virtual gold coins you can purchase to unlock premium features in SkyFunApp.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Need more help?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Contact us at support@skyfunapp.com for additional assistance.",
+        },
+      },
+    ],
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <Seo
+        title="Help Center – SkyFunApp FAQ & Support"
+        description="Answers to common SkyFunApp questions about messaging, Skoins, and getting support from our team."
+        path="/help"
+        jsonLd={faqJsonLd}
+      />
+
       <HeaderMinimal />
       <main className="flex-1 flex flex-col items-center pt-20 sm:pt-24 pb-20 px-4">
         <h1 className="text-3xl font-bold text-primary-foreground mb-6 flex items-center gap-2">

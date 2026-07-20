@@ -1,10 +1,18 @@
+import Seo from "@/components/Seo";
 import HeaderMinimal from "@/components/HeaderMinimal";
+
 import BottomNav from "@/components/BottomNav";
 import { ShieldCheck } from "lucide-react";
 
 const SafetyPage = () => {
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <Seo
+        title="Safety Guidelines – SkyFunApp"
+        description="Read SkyFunApp's safety tips, meetup best practices, and community rules to stay safe while connecting with fellow travelers."
+        path="/safety"
+      />
+
       <HeaderMinimal />
       <main className="flex-1 flex flex-col items-center pt-20 sm:pt-24 pb-20 px-4">
         <h1 className="text-3xl font-bold text-primary-foreground mb-6 flex items-center gap-2">
