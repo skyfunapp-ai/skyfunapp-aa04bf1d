@@ -1,3 +1,4 @@
+import Seo from "@/components/Seo";
 import HeaderMinimal from "@/components/HeaderMinimal";
 import BottomNav from "@/components/BottomNav";
 import { Receipt } from "lucide-react";
@@ -5,6 +6,12 @@ import { Receipt } from "lucide-react";
 const RefundPage = () => {
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <Seo
+        title="Refund Policy – SkyFunApp"
+        description="SkyFunApp's refund terms for Skoin purchases and other in-app transactions across iOS, Android, and web."
+        path="/refund"
+      />
+
       <HeaderMinimal />
       <main className="flex-1 flex flex-col items-center pt-20 sm:pt-24 pb-20 px-4">
         <h1 className="text-3xl font-bold text-primary-foreground mb-6 flex items-center gap-2">
