@@ -302,10 +302,7 @@ const MessagesPage = () => {
                     {msg.fromMe && (
                       <span className="flex items-center gap-0.5">
                         {msg.status === "seen" ? (
-                          <>
-                            <CheckCheck size={12} className="text-accent" />
-                            <span className="text-[10px] text-accent">Seen</span>
-                          </>
+                          <CheckCheck size={12} className="text-accent" />
                         ) : msg.status === "delivered" ? (
                           <>
                             <CheckCheck size={12} className="text-muted-foreground" />
