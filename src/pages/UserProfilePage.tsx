@@ -146,33 +146,33 @@ const UserProfilePage = () => {
               </div>
             )}
 
-            {user.hobbies.length > 0 && (
+            {(user.hobbies?.length ?? 0) > 0 && (
               <div className="mt-4 text-center">
                 <p className="text-primary-foreground font-semibold text-sm">Hobbies</p>
                 <div className="flex flex-wrap justify-center gap-2 mt-1">
-                  {user.hobbies.map((h, i) => (
+                  {(user.hobbies ?? []).map((h, i) => (
                     <span key={i} className="text-primary-foreground text-sm">{h}</span>
                   ))}
                 </div>
               </div>
             )}
 
-            {user.interestedIn.length > 0 && (
+            {(user.interestedIn?.length ?? 0) > 0 && (
               <div className="mt-3 text-center">
                 <p className="text-primary-foreground font-semibold text-sm">Interested In</p>
                 <div className="flex flex-wrap justify-center gap-2 mt-1">
-                  {user.interestedIn.map((item, i) => (
+                  {(user.interestedIn ?? []).map((item, i) => (
                     <span key={i} className="text-primary-foreground text-sm">{item}</span>
                   ))}
                 </div>
               </div>
             )}
 
-            {user.favoriteFood.length > 0 && (
+            {(user.favoriteFood?.length ?? 0) > 0 && (
               <div className="mt-3 text-center">
                 <p className="text-primary-foreground font-semibold text-sm">Favorite Food</p>
                 <div className="flex flex-wrap justify-center gap-2 mt-1">
-                  {user.favoriteFood.map((f, i) => (
+                  {(user.favoriteFood ?? []).map((f, i) => (
                     <span key={i} className="text-primary-foreground text-sm">{f}</span>
                   ))}
                 </div>

@@ -109,33 +109,33 @@ const ChatProfileModal = ({ userId, onClose }: ChatProfileModalProps) => {
               </div>
             )}
 
-            {profile.hobbies.length > 0 && (
+            {(profile.hobbies?.length ?? 0) > 0 && (
               <div className="mt-4 text-center">
                 <p className="text-card-foreground font-semibold text-xs uppercase tracking-wide">Hobbies</p>
                 <div className="flex flex-wrap justify-center gap-1.5 mt-1">
-                  {profile.hobbies.map((h, i) => (
+                  {(profile.hobbies ?? []).map((h, i) => (
                     <span key={i} className="text-xs text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-full">{h}</span>
                   ))}
                 </div>
               </div>
             )}
 
-            {profile.interestedIn.length > 0 && (
+            {(profile.interestedIn?.length ?? 0) > 0 && (
               <div className="mt-3 text-center">
                 <p className="text-card-foreground font-semibold text-xs uppercase tracking-wide">Interested In</p>
                 <div className="flex flex-wrap justify-center gap-1.5 mt-1">
-                  {profile.interestedIn.map((item, i) => (
+                  {(profile.interestedIn ?? []).map((item, i) => (
                     <span key={i} className="text-xs text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-full">{item}</span>
                   ))}
                 </div>
               </div>
             )}
 
-            {profile.favoriteFood.length > 0 && (
+            {(profile.favoriteFood?.length ?? 0) > 0 && (
               <div className="mt-3 text-center">
                 <p className="text-card-foreground font-semibold text-xs uppercase tracking-wide">Favorite Food</p>
                 <div className="flex flex-wrap justify-center gap-1.5 mt-1">
-                  {profile.favoriteFood.map((f, i) => (
+                  {(profile.favoriteFood ?? []).map((f, i) => (
                     <span key={i} className="text-xs text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-full">{f}</span>
                   ))}
                 </div>
