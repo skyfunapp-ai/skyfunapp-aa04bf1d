@@ -69,7 +69,7 @@ const EditProfileModal = ({ open, onOpenChange, profileData, onSave }: EditProfi
     if (value.trim()) {
       setFormData(prev => ({
         ...prev,
-        [field]: [...prev[field], value.trim()]
+        [field]: [...(prev[field] ?? []), value.trim()]
       }));
       setter("");
     }
@@ -78,7 +78,7 @@ const EditProfileModal = ({ open, onOpenChange, profileData, onSave }: EditProfi
   const removeItem = (field: "hobbies" | "interestedIn" | "favoriteFood", index: number) => {
     setFormData(prev => ({
       ...prev,
-      [field]: prev[field].filter((_, i) => i !== index)
+      [field]: (prev[field] ?? []).filter((_, i) => i !== index)
     }));
   };
 
