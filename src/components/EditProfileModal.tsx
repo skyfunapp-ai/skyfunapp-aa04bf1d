@@ -69,7 +69,7 @@ const EditProfileModal = ({ open, onOpenChange, profileData, onSave }: EditProfi
     if (value.trim()) {
       setFormData(prev => ({
         ...prev,
-        [field]: [...prev[field], value.trim()]
+        [field]: [...(prev[field] ?? []), value.trim()]
       }));
       setter("");
     }
@@ -78,7 +78,7 @@ const EditProfileModal = ({ open, onOpenChange, profileData, onSave }: EditProfi
   const removeItem = (field: "hobbies" | "interestedIn" | "favoriteFood", index: number) => {
     setFormData(prev => ({
       ...prev,
-      [field]: prev[field].filter((_, i) => i !== index)
+      [field]: (prev[field] ?? []).filter((_, i) => i !== index)
     }));
   };
 
@@ -162,7 +162,7 @@ const EditProfileModal = ({ open, onOpenChange, profileData, onSave }: EditProfi
           <div>
             <Label className="text-primary-foreground">Hobbies</Label>
             <div className="flex flex-wrap gap-2 mt-2">
-              {formData.hobbies.map((hobby, i) => (
+              {(formData.hobbies ?? []).map((hobby, i) => (
                 <span key={i} className="bg-accent/30 text-primary-foreground px-3 py-1 rounded-full text-sm flex items-center gap-1">
                   {hobby}
                   <button onClick={() => removeItem("hobbies", i)}><X size={14} /></button>
@@ -184,7 +184,7 @@ const EditProfileModal = ({ open, onOpenChange, profileData, onSave }: EditProfi
           <div>
             <Label className="text-primary-foreground">Interested In</Label>
             <div className="flex flex-wrap gap-2 mt-2">
-              {formData.interestedIn.map((interest, i) => (
+              {(formData.interestedIn ?? []).map((interest, i) => (
                 <span key={i} className="bg-accent/30 text-primary-foreground px-3 py-1 rounded-full text-sm flex items-center gap-1">
                   {interest}
                   <button onClick={() => removeItem("interestedIn", i)}><X size={14} /></button>
@@ -206,7 +206,7 @@ const EditProfileModal = ({ open, onOpenChange, profileData, onSave }: EditProfi
           <div>
             <Label className="text-primary-foreground">Favorite Food</Label>
             <div className="flex flex-wrap gap-2 mt-2">
-              {formData.favoriteFood.map((food, i) => (
+              {(formData.favoriteFood ?? []).map((food, i) => (
                 <span key={i} className="bg-accent/30 text-primary-foreground px-3 py-1 rounded-full text-sm flex items-center gap-1">
                   {food}
                   <button onClick={() => removeItem("favoriteFood", i)}><X size={14} /></button>
