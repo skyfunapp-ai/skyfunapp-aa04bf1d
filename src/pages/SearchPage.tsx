@@ -56,7 +56,7 @@ const SearchPage = () => {
     queryFn: async (): Promise<SearchUser[]> => {
       const { data } = await supabase
         .from("profiles")
-        .select("id, name, profile_photo, current_airport, destination_airport")
+        .select("id, name, profile_photo, current_airport, destination_airport, last_seen")
         .not("name", "is", null)
         .neq("name", "")
         .limit(200);
@@ -66,11 +66,13 @@ const SearchPage = () => {
         profilePhoto: p.profile_photo || undefined,
         currentAirport: p.current_airport || undefined,
         destinationAirport: p.destination_airport || undefined,
+        lastSeen: (p as { last_seen?: string }).last_seen || undefined,
       }));
     },
     staleTime: 60_000,
     gcTime: 5 * 60_000,
     refetchOnWindowFocus: false,
+    refetchInterval: 60_000,
   });
 
   // Extract airport code from stored value like "ATL - Atlanta"
