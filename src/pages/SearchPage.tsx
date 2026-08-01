@@ -183,7 +183,11 @@ const SearchPage = () => {
                           Unblock
                         </button>
                       ) : (
-                        <div className="w-3 h-3 rounded-full shrink-0 bg-green-500" />
+                        <div
+                          title={isOnline(u.lastSeen) ? "Online" : "Offline"}
+                          className={`w-3 h-3 rounded-full shrink-0 ${isOnline(u.lastSeen) ? "bg-green-500" : "bg-red-600"}`}
+                        />
+
                       )}
                     </div>
                   );
