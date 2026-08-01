@@ -1,6 +1,8 @@
-import { PlaneTakeoff, Pencil, Menu } from "lucide-react";
+import { PlaneTakeoff, Pencil, Menu, MessageCircle, X } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { useNotifications } from "@/contexts/NotificationContext";
 import {
   Sheet,
   SheetContent,
@@ -17,8 +19,24 @@ interface HeaderMinimalProps {
 const HeaderMinimal = ({ onEditClick, showEdit = false }: HeaderMinimalProps) => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
+  const { unreadCount, notifications, markAllRead } = useNotifications();
+  const [popup, setPopup] = useState<{ fromUserId: string; fromUserName: string; message: string } | null>(null);
+
+  const latestUnread = notifications.find((n) => !n.read);
+
+  useEffect(() => {
+    if (!latestUnread) return;
+    setPopup({
+      fromUserId: latestUnread.fromUserId,
+      fromUserName: latestUnread.fromUserName,
+      message: latestUnread.message,
+    });
+    const t = setTimeout(() => setPopup(null), 6000);
+    return () => clearTimeout(t);
+  }, [latestUnread?.id]);
 
   const isLoggedIn = !!user;
+
 
   const menuItems = isLoggedIn
     ? [
