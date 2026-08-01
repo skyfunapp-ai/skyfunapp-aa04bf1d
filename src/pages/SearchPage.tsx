@@ -22,7 +22,12 @@ interface SearchUser {
   profilePhoto?: string;
   currentAirport?: string;
   destinationAirport?: string;
+  lastSeen?: string;
 }
+
+const ONLINE_WINDOW_MS = 3 * 60_000;
+const isOnline = (lastSeen?: string) =>
+  !!lastSeen && Date.now() - new Date(lastSeen).getTime() < ONLINE_WINDOW_MS;
 
 const SearchPage = () => {
   const [fromAirport, setFromAirport] = useState("All Airports");
@@ -51,7 +56,7 @@ const SearchPage = () => {
     queryFn: async (): Promise<SearchUser[]> => {
       const { data } = await supabase
         .from("profiles")
-        .select("id, name, profile_photo, current_airport, destination_airport")
+        .select("id, name, profile_photo, current_airport, destination_airport, last_seen")
         .not("name", "is", null)
         .neq("name", "")
         .limit(200);
@@ -61,11 +66,13 @@ const SearchPage = () => {
         profilePhoto: p.profile_photo || undefined,
         currentAirport: p.current_airport || undefined,
         destinationAirport: p.destination_airport || undefined,
+        lastSeen: (p as { last_seen?: string }).last_seen || undefined,
       }));
     },
     staleTime: 60_000,
     gcTime: 5 * 60_000,
     refetchOnWindowFocus: false,
+    refetchInterval: 60_000,
   });
 
   // Extract airport code from stored value like "ATL - Atlanta"
@@ -176,7 +183,11 @@ const SearchPage = () => {
                           Unblock
                         </button>
                       ) : (
-                        <div className="w-3 h-3 rounded-full shrink-0 bg-green-500" />
+                        <div
+                          title={isOnline(u.lastSeen) ? "Online" : "Offline"}
+                          className={`w-3 h-3 rounded-full shrink-0 ${isOnline(u.lastSeen) ? "bg-green-500" : "bg-red-600"}`}
+                        />
+
                       )}
                     </div>
                   );
