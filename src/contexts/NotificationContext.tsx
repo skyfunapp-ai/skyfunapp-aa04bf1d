@@ -87,6 +87,16 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
         async (payload) => {
           const row = payload.new as any;
 
+          // Ignore messages from users this user has blocked (or who blocked them)
+          const { data: blocks } = await supabase
+            .from("blocked_users")
+            .select("id")
+            .or(
+              `and(user_id.eq.${user.id},blocked_user_id.eq.${row.sender_id}),and(user_id.eq.${row.sender_id},blocked_user_id.eq.${user.id})`
+            )
+            .limit(1);
+          if (blocks && blocks.length > 0) return;
+
           // Look up sender name
           let senderName = userCache[row.sender_id]?.name;
           if (!senderName) {
@@ -110,6 +120,7 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
 
     return () => { supabase.removeChannel(channel); };
   }, [user, addMessageNotification]);
+
 
   const clearUnread = useCallback(() => {
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
