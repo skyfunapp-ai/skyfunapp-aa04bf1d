@@ -22,7 +22,12 @@ interface SearchUser {
   profilePhoto?: string;
   currentAirport?: string;
   destinationAirport?: string;
+  lastSeen?: string;
 }
+
+const ONLINE_WINDOW_MS = 3 * 60_000;
+const isOnline = (lastSeen?: string) =>
+  !!lastSeen && Date.now() - new Date(lastSeen).getTime() < ONLINE_WINDOW_MS;
 
 const SearchPage = () => {
   const [fromAirport, setFromAirport] = useState("All Airports");
