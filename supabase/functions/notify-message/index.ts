@@ -146,7 +146,22 @@ Deno.serve(async (req) => {
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, serviceKey);
 
+    // Skip entirely if either party has blocked the other
+    const { data: blocks } = await supabase
+      .from("blocked_users")
+      .select("id")
+      .or(
+        `and(user_id.eq.${receiverId},blocked_user_id.eq.${callerId}),and(user_id.eq.${callerId},blocked_user_id.eq.${receiverId})`,
+      )
+      .limit(1);
+    if (blocks && blocks.length > 0) {
+      return new Response(JSON.stringify({ skipped: "blocked" }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     // Check receiver's online status
+
     const { data: profile } = await supabase
       .from("profiles")
       .select("last_seen")
