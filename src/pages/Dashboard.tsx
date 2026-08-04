@@ -77,14 +77,19 @@ const Dashboard = () => {
   const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
+    if (!file.type.startsWith("image/")) {
+      toast({ title: "Invalid file", description: "Please choose an image file.", variant: "destructive" });
+      return;
+    }
     if (file.size > 5 * 1024 * 1024) {
       toast({ title: "Image too large", description: "Please choose an image under 5 MB.", variant: "destructive" });
       return;
     }
     setUploadingPhoto(true);
     try {
-      const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
-      const filePath = `${user.id}/avatar.${ext}`;
+      const ext = (file.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "");
+      // Path is always derived from the authenticated user id (never client input)
+      const filePath = `${user.id}/avatar.${ext || "jpg"}`;
       const { error: upErr } = await supabase.storage
         .from("profile-photos")
         .upload(filePath, file, { upsert: true, cacheControl: "3600" });
