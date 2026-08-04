@@ -76,7 +76,10 @@ const Dashboard = () => {
 
   const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file || !user) return;
+    if (!file.type.startsWith("image/")) {
+      toast({ title: "Invalid file", description: "Please choose an image file.", variant: "destructive" });
+      return;
+    }
     if (file.size > 5 * 1024 * 1024) {
       toast({ title: "Image too large", description: "Please choose an image under 5 MB.", variant: "destructive" });
       return;
