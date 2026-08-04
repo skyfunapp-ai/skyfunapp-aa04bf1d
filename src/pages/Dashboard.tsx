@@ -76,6 +76,7 @@ const Dashboard = () => {
 
   const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    if (!file || !user) return;
     if (!file.type.startsWith("image/")) {
       toast({ title: "Invalid file", description: "Please choose an image file.", variant: "destructive" });
       return;
