@@ -40,11 +40,21 @@ const EditProfileModal = ({ open, onOpenChange, profileData, onSave }: EditProfi
   const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
-    
+    if (!file.type.startsWith('image/')) {
+      console.error('Invalid file type');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      console.error('Image too large');
+      return;
+    }
+
     setUploadingPhoto(true);
     try {
-      const ext = file.name.split('.').pop() || 'jpg';
-      const filePath = `${user.id}/avatar.${ext}`;
+      const ext = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '');
+      // Path is always derived from the authenticated user id (never client input)
+      const filePath = `${user.id}/avatar.${ext || 'jpg'}`;
+      
       
       const { error } = await supabase.storage
         .from('profile-photos')
