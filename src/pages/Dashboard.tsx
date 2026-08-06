@@ -125,6 +125,7 @@ const Dashboard = () => {
           <ReferralCard />
         </div>
         <div className="flex-1 flex flex-col items-center w-full">
+        <h1 className="sr-only">Your SkyFunApp Traveler Profile</h1>
         {isProfileEmpty ? (
           <div className="flex-1 flex flex-col items-center justify-center text-center px-4">
             <p className="text-xl text-primary-foreground mb-4">Your profile is empty</p>
