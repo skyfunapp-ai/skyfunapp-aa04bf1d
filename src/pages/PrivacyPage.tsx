@@ -28,38 +28,38 @@ const PrivacyPage = () => {
             <div className="flex items-center gap-3">
               <Bell size={20} className="text-primary-foreground" />
               <div>
-                <h2 className="font-semibold text-card-foreground">Notification Preferences</h3>
+                <h2 className="font-semibold text-card-foreground">Notification Preferences</h2>
                 <p className="text-muted-foreground text-sm">Manage push & email notifications</p>
               </div>
             </div>
             <ChevronRight size={20} className="text-muted-foreground" />
           </Link>
           <div className="bg-card/80 backdrop-blur rounded-xl p-4 border border-border/50">
-            <h2 className="font-semibold text-card-foreground mb-2">Data Collection</h3>
+            <h2 className="font-semibold text-card-foreground mb-2">Data Collection</h2>
             <p className="text-muted-foreground text-sm">SkyFunApp collects only the information you provide, including your profile details, current location, and destination. We do not collect data without your knowledge or consent.</p>
           </div>
           <div className="bg-card/80 backdrop-blur rounded-xl p-4 border border-border/50">
-            <h2 className="font-semibold text-card-foreground mb-2">How We Use Your Information</h3>
+            <h2 className="font-semibold text-card-foreground mb-2">How We Use Your Information</h2>
             <p className="text-muted-foreground text-sm">Your information is used to connect you with other travelers at the same location or destination. We do not sell or share your personal data with third parties for marketing purposes.</p>
           </div>
           <div className="bg-card/80 backdrop-blur rounded-xl p-4 border border-border/50">
-            <h2 className="font-semibold text-card-foreground mb-2">Messages & Communication</h3>
+            <h2 className="font-semibold text-card-foreground mb-2">Messages & Communication</h2>
             <p className="text-muted-foreground text-sm">Messages sent through SkyFunApp are private between you and the recipient. We do not read, monitor, or share your conversations.</p>
           </div>
           <div className="bg-card/80 backdrop-blur rounded-xl p-4 border border-border/50">
-            <h2 className="font-semibold text-card-foreground mb-2">Account Security</h3>
+            <h2 className="font-semibold text-card-foreground mb-2">Account Security</h2>
             <p className="text-muted-foreground text-sm">You are responsible for maintaining the security of your account credentials. SkyFunApp will never ask for your password via email or messages.</p>
           </div>
           <div className="bg-card/80 backdrop-blur rounded-xl p-4 border border-border/50">
-            <h2 className="font-semibold text-card-foreground mb-2">Your Rights</h3>
+            <h2 className="font-semibold text-card-foreground mb-2">Your Rights</h2>
             <p className="text-muted-foreground text-sm">You may update, modify, or delete your account and personal information at any time through your profile settings. Contact support@skyfunapp.com for any privacy-related inquiries.</p>
           </div>
           <div className="bg-card/80 backdrop-blur rounded-xl p-4 border border-border/50">
-            <h2 className="font-semibold text-card-foreground mb-2">Policy Updates</h3>
+            <h2 className="font-semibold text-card-foreground mb-2">Policy Updates</h2>
             <p className="text-muted-foreground text-sm">SkyFunApp reserves the right to update this privacy policy at any time. Users will be notified of significant changes through the app.</p>
           </div>
           <div className="bg-card/80 backdrop-blur rounded-xl p-4 border border-destructive/40 mt-2">
-            <h2 className="font-semibold text-destructive mb-2">Delete Your Account</h3>
+            <h2 className="font-semibold text-destructive mb-2">Delete Your Account</h2>
             <p className="text-muted-foreground text-sm mb-4">
               Permanently remove your account and all associated data. This action cannot be undone.
             </p>
