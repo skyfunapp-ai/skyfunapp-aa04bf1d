@@ -71,6 +71,7 @@ const HeaderMinimal = ({ onEditClick, showEdit = false }: HeaderMinimalProps) =>
           {showEdit && onEditClick && (
             <button
               onClick={onEditClick}
+              aria-label="Edit profile"
               className="p-2 hover:bg-accent rounded-md transition-colors"
             >
               <Pencil size={20} className="text-primary-foreground" />
@@ -78,7 +79,7 @@ const HeaderMinimal = ({ onEditClick, showEdit = false }: HeaderMinimalProps) =>
           )}
           <Sheet>
             <SheetTrigger asChild>
-              <button className="p-2 hover:bg-accent rounded-md transition-colors relative">
+              <button aria-label="Open menu" className="p-2 hover:bg-accent rounded-md transition-colors relative">
                 <Menu size={28} className="text-primary-foreground" />
                 {isLoggedIn && unreadCount > 0 && (
                   <span className="absolute top-0 right-0 bg-primary-foreground text-background text-[11px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
