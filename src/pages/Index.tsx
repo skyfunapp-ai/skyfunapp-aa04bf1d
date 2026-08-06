@@ -65,7 +65,7 @@ const Index = () => {
       <div className="fixed top-6 right-4 z-50">
         <Sheet>
           <SheetTrigger asChild>
-            <button className="p-2 hover:bg-accent rounded-md transition-colors">
+            <button aria-label="Open menu" className="p-2 hover:bg-accent rounded-md transition-colors">
               <Menu size={32} className="text-primary-foreground" />
             </button>
           </SheetTrigger>
