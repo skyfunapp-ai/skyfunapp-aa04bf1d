@@ -52,15 +52,15 @@ const HelpPage = () => {
         </h1>
         <div className="max-w-md space-y-4 w-full">
           <div className="bg-card/80 backdrop-blur rounded-xl p-4 border border-border/50">
-            <h3 className="font-semibold text-card-foreground mb-2">How do I message someone?</h3>
+            <h2 className="font-semibold text-card-foreground mb-2">How do I message someone?</h3>
             <p className="text-muted-foreground text-sm">Visit a user's profile and tap "Send Message", or go to the Messages page to start a conversation.</p>
           </div>
           <div className="bg-card/80 backdrop-blur rounded-xl p-4 border border-border/50">
-            <h3 className="font-semibold text-card-foreground mb-2">What are Skoins?</h3>
+            <h2 className="font-semibold text-card-foreground mb-2">What are Skoins?</h3>
             <p className="text-muted-foreground text-sm">Skoins are virtual gold coins you can purchase to unlock premium features in SkyFunApp.</p>
           </div>
           <div className="bg-card/80 backdrop-blur rounded-xl p-4 border border-border/50">
-            <h3 className="font-semibold text-card-foreground mb-2">Need more help?</h3>
+            <h2 className="font-semibold text-card-foreground mb-2">Need more help?</h3>
             <p className="text-muted-foreground text-sm">Contact us at support@skyfunapp.com for additional assistance.</p>
           </div>
         </div>
