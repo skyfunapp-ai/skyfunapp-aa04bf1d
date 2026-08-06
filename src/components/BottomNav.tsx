@@ -24,6 +24,7 @@ const BottomNav = ({ activePage }: BottomNavProps) => {
       <div className="flex justify-around items-center">
         <button 
           onClick={() => navigate("/dashboard")}
+          aria-label="Go to your profile"
           className="p-2 hover:bg-accent/20 rounded-full transition-colors"
         >
           <User 
@@ -33,6 +34,7 @@ const BottomNav = ({ activePage }: BottomNavProps) => {
         </button>
         <button 
           onClick={() => navigate("/search")}
+          aria-label="Search travelers"
           className="p-2 hover:bg-accent/20 rounded-full transition-colors"
         >
           <Search 
@@ -42,6 +44,7 @@ const BottomNav = ({ activePage }: BottomNavProps) => {
         </button>
         <button 
           onClick={handleMessagesClick}
+          aria-label="Open messages"
           className="p-2 hover:bg-accent/20 rounded-full transition-colors relative"
         >
           <MessageCircle 

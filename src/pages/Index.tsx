@@ -65,7 +65,7 @@ const Index = () => {
       <div className="fixed top-6 right-4 z-50">
         <Sheet>
           <SheetTrigger asChild>
-            <button className="p-2 hover:bg-accent rounded-md transition-colors">
+            <button aria-label="Open menu" className="p-2 hover:bg-accent rounded-md transition-colors">
               <Menu size={32} className="text-primary-foreground" />
             </button>
           </SheetTrigger>
@@ -97,6 +97,7 @@ const Index = () => {
       </div>
       
       <main className="flex-1 flex flex-col items-center justify-center px-4 pt-24 sm:pt-36">
+        <h1 className="sr-only">SkyFunApp — Connect with Fellow Travelers at Airports Worldwide</h1>
         {/* Auth Links */}
         <div className="flex flex-col items-center space-y-4 sm:space-y-6">
           <div className="flex flex-col items-center space-y-2 sm:space-y-4 text-primary-foreground">
