@@ -197,15 +197,34 @@ const UserProfilePage = () => {
                         headers: { Authorization: `Bearer ${session?.access_token}` },
                         body: { connected_user_id: user.id },
                       });
-                      if (error) throw error;
-                      if (data?.error) {
-                        toast({ title: "No Skoin remaining", description: "You're out of Skoin for new connections." });
+
+                      // Read the error payload returned with non-2xx responses
+                      let payloadError: string | undefined = data?.error;
+                      if (error) {
+                        const ctx = (error as any)?.context;
+                        if (ctx && typeof ctx.json === "function") {
+                          try {
+                            const body = await ctx.json();
+                            payloadError = body?.error;
+                          } catch { /* non-JSON body */ }
+                        }
+                        if (!payloadError) throw error;
+                      }
+
+                      if (payloadError) {
+                        if (/insufficient/i.test(payloadError)) {
+                          toast({ title: "No Skoin remaining", description: "You're out of Skoin for new connections." });
+                        } else {
+                          toast({ title: "Could not connect", description: payloadError, variant: "destructive" });
+                        }
                         return;
                       }
+
                       if (!data?.already_connected) {
                         await addConnection(user.id);
                         toast({ title: `Connected with ${user.name}`, description: "1 Skoin used. You can now chat freely!" });
                       }
+                      refetchProfile();
                     } catch (err: any) {
                       toast({ title: "Error", description: err.message || "Could not connect", variant: "destructive" });
                       return;
