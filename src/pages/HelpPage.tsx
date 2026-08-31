@@ -22,7 +22,7 @@ const HelpPage = () => {
         name: "What are Skoins?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Skoins are virtual gold coins you can purchase to unlock premium features in SkyFunApp.",
+          text: "Skoins are virtual gold coins used in SkyFunApp to connect with new travelers. New members start with free Skoins, and you can earn more by referring friends.",
         },
       },
       {
@@ -57,7 +57,7 @@ const HelpPage = () => {
           </div>
           <div className="bg-card/80 backdrop-blur rounded-xl p-4 border border-border/50">
             <h2 className="font-semibold text-card-foreground mb-2">What are Skoins?</h2>
-            <p className="text-muted-foreground text-sm">Skoins are virtual gold coins you can purchase to unlock premium features in SkyFunApp.</p>
+            <p className="text-muted-foreground text-sm">Skoins are virtual gold coins used in SkyFunApp to connect with new travelers. New members start with free Skoins, and you can earn more by referring friends.</p>
           </div>
           <div className="bg-card/80 backdrop-blur rounded-xl p-4 border border-border/50">
             <h2 className="font-semibold text-card-foreground mb-2">Need more help?</h2>
