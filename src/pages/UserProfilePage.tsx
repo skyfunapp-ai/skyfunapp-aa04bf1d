@@ -30,6 +30,7 @@ const UserProfilePage = () => {
 
   const { addConnection, isConnected } = useConnections();
   const { isBlocked, blockUser, unblockUser } = useBlockedUsers();
+  const { refetchProfile } = useProfile();
 
   const blocked = userId ? isBlocked(userId) : false;
 
