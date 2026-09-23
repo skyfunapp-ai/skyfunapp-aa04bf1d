@@ -1,6 +1,17 @@
 import { useState, useEffect } from "react";
-import { X, Share2, Copy, Check } from "lucide-react";
-import { FaInstagram, FaFacebook, FaTiktok, FaWhatsapp } from "react-icons/fa";
+import { X, Share2, Copy, Check, Mail, MessageSquare } from "lucide-react";
+import {
+  FaInstagram,
+  FaFacebook,
+  FaTiktok,
+  FaWhatsapp,
+  FaXTwitter,
+  FaLinkedin,
+  FaTelegram,
+  FaFacebookMessenger,
+  FaReddit,
+  FaPinterest,
+} from "react-icons/fa6";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "@/hooks/use-toast";
 
