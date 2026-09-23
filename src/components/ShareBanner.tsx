@@ -1,6 +1,17 @@
 import { useState, useEffect } from "react";
-import { X, Share2, Copy, Check } from "lucide-react";
-import { FaInstagram, FaFacebook, FaTiktok, FaWhatsapp } from "react-icons/fa";
+import { X, Share2, Copy, Check, Mail, MessageSquare } from "lucide-react";
+import {
+  FaInstagram,
+  FaFacebook,
+  FaTiktok,
+  FaWhatsapp,
+  FaXTwitter,
+  FaLinkedin,
+  FaTelegram,
+  FaFacebookMessenger,
+  FaReddit,
+  FaPinterest,
+} from "react-icons/fa6";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "@/hooks/use-toast";
 
@@ -36,6 +47,7 @@ const ShareBanner = ({
 
   const fullText = `${message} ${shareUrl}`;
   const encoded = encodeURIComponent(fullText);
+  const encodedUrl = encodeURIComponent(shareUrl);
 
   const copyLink = async () => {
     try {
@@ -90,33 +102,38 @@ const ShareBanner = ({
             >
               <Share2 size={14} /> Share
             </button>
-            <a
-              href={`https://wa.me/?text=${encoded}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center w-9 h-9 rounded-full bg-white text-green-600 hover:scale-105 transition-transform"
-              aria-label="Share to WhatsApp"
-            >
-              <FaWhatsapp size={18} />
-            </a>
+            {[
+              { label: "Share to WhatsApp", href: `https://wa.me/?text=${encoded}`, icon: <FaWhatsapp size={18} />, color: "text-green-600" },
+              { label: "Share to X", href: `https://twitter.com/intent/tweet?text=${encodeURIComponent(message)}&url=${encodedUrl}`, icon: <FaXTwitter size={17} />, color: "text-foreground" },
+              { label: "Share to Facebook", href: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`, icon: <FaFacebook size={18} />, color: "text-blue-600" },
+              { label: "Share to Messenger", href: `https://www.facebook.com/dialog/send?link=${encodedUrl}&redirect_uri=${encodedUrl}&app_id=0`, icon: <FaFacebookMessenger size={18} />, color: "text-blue-500" },
+              { label: "Share to LinkedIn", href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`, icon: <FaLinkedin size={18} />, color: "text-sky-700" },
+              { label: "Share to Telegram", href: `https://t.me/share/url?url=${encodedUrl}&text=${encodeURIComponent(message)}`, icon: <FaTelegram size={18} />, color: "text-sky-500" },
+              { label: "Share to Reddit", href: `https://www.reddit.com/submit?url=${encodedUrl}&title=${encodeURIComponent("SkyFunApp – meet travelers at the airport")}`, icon: <FaReddit size={18} />, color: "text-orange-600" },
+              { label: "Share to Pinterest", href: `https://pinterest.com/pin/create/button/?url=${encodedUrl}&description=${encodeURIComponent(message)}`, icon: <FaPinterest size={18} />, color: "text-red-600" },
+              { label: "Share by text message", href: `sms:?&body=${encoded}`, icon: <MessageSquare size={17} />, color: "text-foreground" },
+              { label: "Share by email", href: `mailto:?subject=${encodeURIComponent("Join me on SkyFunApp")}&body=${encoded}`, icon: <Mail size={17} />, color: "text-foreground" },
+            ].map((item) => (
+              <a
+                key={item.label}
+                href={item.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`flex items-center justify-center w-9 h-9 rounded-full bg-white hover:scale-105 transition-transform ${item.color}`}
+                aria-label={item.label}
+              >
+                {item.icon}
+              </a>
+            ))}
             <a
               href="https://www.instagram.com/skyfunapp"
               target="_blank"
               rel="noopener noreferrer"
               onClick={copyLink}
               className="flex items-center justify-center w-9 h-9 rounded-full bg-white text-pink-500 hover:scale-105 transition-transform"
-              aria-label="Open Instagram"
+              aria-label="Open SkyFunApp on Instagram"
             >
               <FaInstagram size={18} />
-            </a>
-            <a
-              href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center w-9 h-9 rounded-full bg-white text-blue-600 hover:scale-105 transition-transform"
-              aria-label="Share to Facebook"
-            >
-              <FaFacebook size={18} />
             </a>
             <a
               href="https://www.tiktok.com/@skyfunapp"
@@ -124,7 +141,7 @@ const ShareBanner = ({
               rel="noopener noreferrer"
               onClick={copyLink}
               className="flex items-center justify-center w-9 h-9 rounded-full bg-white text-foreground hover:scale-105 transition-transform"
-              aria-label="Open TikTok"
+              aria-label="Open SkyFunApp on TikTok"
             >
               <FaTiktok size={16} />
             </a>
