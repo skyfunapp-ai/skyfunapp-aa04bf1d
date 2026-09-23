@@ -47,6 +47,7 @@ const ShareBanner = ({
 
   const fullText = `${message} ${shareUrl}`;
   const encoded = encodeURIComponent(fullText);
+  const encodedUrl = encodeURIComponent(shareUrl);
 
   const copyLink = async () => {
     try {
