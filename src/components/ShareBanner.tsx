@@ -8,7 +8,6 @@ import {
   FaXTwitter,
   FaLinkedin,
   FaTelegram,
-  FaFacebookMessenger,
   FaReddit,
   FaPinterest,
 } from "react-icons/fa6";
@@ -24,7 +23,7 @@ interface ShareBannerProps {
 }
 
 const ShareBanner = ({
-  shareUrl = "https://skyfunapp.lovable.app/create-account",
+  shareUrl = "https://www.skyfunapp.com/create-account",
   message = "Meet fellow travelers at the airport with SkyFunApp! ✈️ Sign up here:",
 }: ShareBannerProps) => {
   const [visible, setVisible] = useState(false);
@@ -106,7 +105,6 @@ const ShareBanner = ({
               { label: "Share to WhatsApp", href: `https://wa.me/?text=${encoded}`, icon: <FaWhatsapp size={18} />, color: "text-green-600" },
               { label: "Share to X", href: `https://twitter.com/intent/tweet?text=${encodeURIComponent(message)}&url=${encodedUrl}`, icon: <FaXTwitter size={17} />, color: "text-foreground" },
               { label: "Share to Facebook", href: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`, icon: <FaFacebook size={18} />, color: "text-blue-600" },
-              { label: "Share to Messenger", href: `https://www.facebook.com/dialog/send?link=${encodedUrl}&redirect_uri=${encodedUrl}&app_id=0`, icon: <FaFacebookMessenger size={18} />, color: "text-blue-500" },
               { label: "Share to LinkedIn", href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`, icon: <FaLinkedin size={18} />, color: "text-sky-700" },
               { label: "Share to Telegram", href: `https://t.me/share/url?url=${encodedUrl}&text=${encodeURIComponent(message)}`, icon: <FaTelegram size={18} />, color: "text-sky-500" },
               { label: "Share to Reddit", href: `https://www.reddit.com/submit?url=${encodedUrl}&title=${encodeURIComponent("SkyFunApp – meet travelers at the airport")}`, icon: <FaReddit size={18} />, color: "text-orange-600" },

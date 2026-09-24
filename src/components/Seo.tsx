@@ -7,7 +7,7 @@ interface SeoProps {
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
 }
 
-const SITE = "https://skyfunapp.lovable.app";
+const SITE = "https://www.skyfunapp.com";
 
 const Seo = ({ title, description, path, jsonLd }: SeoProps) => {
   const url = `${SITE}${path}`;
