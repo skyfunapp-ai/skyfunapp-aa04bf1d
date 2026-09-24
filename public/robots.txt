@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://skyfunapp.lovable.app/sitemap.xml
+Sitemap: https://www.skyfunapp.com/sitemap.xml
