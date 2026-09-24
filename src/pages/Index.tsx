@@ -12,6 +12,7 @@ import { FcGoogle } from "react-icons/fc";
 import { FaInstagram, FaFacebook, FaTiktok } from "react-icons/fa";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import SocialAuthButtons from "@/components/SocialAuthButtons";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -110,6 +111,7 @@ const Index = () => {
 
         {/* Email & Password Fields */}
         <div className="mt-6 sm:mt-8 w-full max-w-sm space-y-3 sm:space-y-4">
+          <SocialAuthButtons label="Sign in" />
           <div className="space-y-2">
             <Label htmlFor="email" className="text-primary-foreground text-base sm:text-lg">Email</Label>
             <Input 

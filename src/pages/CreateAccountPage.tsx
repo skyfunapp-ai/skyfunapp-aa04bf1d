@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import SocialAuthButtons from "@/components/SocialAuthButtons";
 
 const REF_PENDING_KEY = "skyfun_pending_ref_code";
 
@@ -83,6 +84,8 @@ const CreateAccountPage = () => {
         <h1 className="text-2xl sm:text-4xl font-bold text-primary-foreground mb-6">Boarding Pass (Create Account)</h1>
 
         <div className="w-full max-w-sm space-y-4">
+          <p className="text-sm text-primary-foreground text-center">By continuing, you confirm you are 18 or older.</p>
+          <SocialAuthButtons label="Sign up" />
           <div className="space-y-2">
             <Label htmlFor="new-email" className="text-primary-foreground text-base sm:text-lg">Email</Label>
             <Input
