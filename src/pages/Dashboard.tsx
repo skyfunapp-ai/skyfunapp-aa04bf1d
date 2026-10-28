@@ -6,15 +6,12 @@ import HeaderMinimal from "@/components/HeaderMinimal";
 import BottomNav from "@/components/BottomNav";
 import EditProfileModal from "@/components/EditProfileModal";
 import ShareBanner from "@/components/ShareBanner";
-import ReferralCard from "@/components/ReferralCard";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useProfile, type ProfileData } from "@/hooks/useProfile";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
-const WELCOME_KEY = "skyfun_last_welcome_at";
-const WELCOME_HOURS = 12;
 const REF_PENDING_KEY = "skyfun_pending_ref_code";
 
 const Dashboard = () => {
@@ -25,22 +22,6 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const touchStartX = useRef(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  // Welcome-back toast (max once per WELCOME_HOURS)
-  useEffect(() => {
-    if (!user) return;
-    const last = Number(localStorage.getItem(WELCOME_KEY) || 0);
-    const hours = (Date.now() - last) / (1000 * 60 * 60);
-    if (hours >= WELCOME_HOURS) {
-      localStorage.setItem(WELCOME_KEY, String(Date.now()));
-      setTimeout(() => {
-        toast({
-          title: "Welcome back ✈️",
-          description: "Share SkyFunApp with a friend and earn 5 Skoins each!",
-        });
-      }, 600);
-    }
-  }, [user]);
 
   // Redeem pending referral code after sign-in
   useEffect(() => {
@@ -122,7 +103,6 @@ const Dashboard = () => {
       <main className="flex-1 flex flex-col pt-20 sm:pt-24 pb-20">
         <div className="w-full max-w-md mx-auto">
           <ShareBanner />
-          <ReferralCard />
         </div>
         <div className="flex-1 flex flex-col items-center w-full">
         <h1 className="sr-only">Your SkyFunApp Traveler Profile</h1>
