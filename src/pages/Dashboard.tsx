@@ -23,7 +23,6 @@ const Dashboard = () => {
   const touchStartX = useRef(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-
   // Redeem pending referral code after sign-in
   useEffect(() => {
     if (!user) return;
