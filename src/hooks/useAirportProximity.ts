@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { airportCoordinates } from "@/data/airportCoordinates";
+import { airports } from "@/data/flights";
 
 interface ProximityState {
   isNearAirport: boolean;
