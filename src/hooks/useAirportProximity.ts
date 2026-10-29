@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { airportCoordinates } from "@/data/airportCoordinates";
+import { airports } from "@/data/flights";
 
 interface ProximityState {
   isNearAirport: boolean;
@@ -57,7 +58,11 @@ export function useAirportProximity(): ProximityState {
           const dist = haversineDistance(latitude, longitude, airport.lat, airport.lng);
           if (dist < minDist) {
             minDist = dist;
-            closest = `${airport.code} - ${airport.name}`;
+            // Prefer the shared airport list so the label matches the format
+            // shown everywhere else (code - city, country).
+            closest =
+              airports.find((a) => a.startsWith(`${airport.code} - `)) ||
+              `${airport.code} - ${airport.name}`;
           }
         }
 
